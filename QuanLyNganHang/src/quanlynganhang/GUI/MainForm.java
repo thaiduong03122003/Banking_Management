@@ -19,20 +19,21 @@ import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import quanlynganhang.GUI.model.Menu;
-import quanlynganhang.GUI.model.MenuAction;
-import quanlynganhang.GUI.model.HeaderBar;
+import quanlynganhang.BUS.DieuHuongMenuBUS;
+import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.headerbar.HeaderBar;
 
 public class MainForm extends JLayeredPane {
 
-    public MainForm() {
+    public MainForm(Menu menu, DieuHuongMenuBUS menuBUS) {
+        this.menu = menu;
+        this.menuBUS = menuBUS;
         init();
     }
 
     private void init() {
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setLayout(new MainFormLayout());
-        menu = new Menu();
         headerBar = new HeaderBar();
         panelBody = new JPanel(new BorderLayout());
         initMenuArrowIcon();
@@ -44,7 +45,7 @@ public class MainForm extends JLayeredPane {
         menuButton.addActionListener((ActionEvent e) -> {
             setMenuFull(!menu.isMenuFull());
         });
-        initMenuEvent();
+        menuBUS.initMenuEvent();
         setLayer(menuButton, JLayeredPane.POPUP_LAYER);
         add(menuButton);
         add(menu);
@@ -65,29 +66,6 @@ public class MainForm extends JLayeredPane {
         }
         String icon = (getComponentOrientation().isLeftToRight()) ? "menu_left.svg" : "menu_right.svg";
         menuButton.setIcon(new FlatSVGIcon("quanlynganhang/icon/" + icon, 0.8f));
-    }
-
-    private void initMenuEvent() {
-        menu.addMenuEvent((int index, int subIndex, MenuAction action) -> {
-            //Application.mainForm.showForm(new DefaultForm("Form : " + index + " " + subIndex));
-            if (index == 0) {
-                Application.showForm(new FormTrangChu());
-            } else if (index == 1) {
-                Application.showForm(new FormThongKe());
-            } else if (index == 2) {
-               if (subIndex == 1) {
-                    //Application.showForm(new FormThongKe());
-                } else if (subIndex == 2) {
-                    //Application.showForm(new FormRead());
-                } else {
-                    action.cancel();
-                }
-            } else if (index == 9) {
-                //Application.logout();
-            } else {
-                action.cancel();
-            }
-        });
     }
 
     private void setMenuFull(boolean full) {
@@ -113,14 +91,15 @@ public class MainForm extends JLayeredPane {
         panelBody.revalidate();
     }
 
-    public void setSelectedMenu(int index, int subIndex) {
-        menu.setSelectedMenu(index, subIndex);
-    }
+//    public void setSelectedMenu(int index, int subIndex) {
+//        menu.setSelectedMenu(index, subIndex);
+//    }
 
-    private Menu menu;
+    public Menu menu;
     private HeaderBar headerBar;
     private JPanel panelBody;
     private JButton menuButton;
+    private DieuHuongMenuBUS menuBUS;
 
     private class MainFormLayout implements LayoutManager {
 
@@ -176,7 +155,7 @@ public class MainForm extends JLayeredPane {
                 int bodyX = x + menu.getMenuMinWidth() + gap;
                 int bodyY = y + headerBar.getPreferredSize().height + gap;
 //                panelBody.setBounds(bodyx, bodyy, bodyWidth, bodyHeight);
-                headerBar.setBounds(headerBarX, headerBarY, headerBar.getPreferredSize().width, headerBar.getPreferredSize().height);
+                headerBar.setBounds(headerBarX, headerBarY, headerBar.getPreferredSize().width + gap*15, headerBar.getPreferredSize().height);
                 panelBody.setBounds(bodyX, bodyY, bodyWidth, bodyHeight);
 
             }

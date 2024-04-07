@@ -1,4 +1,4 @@
-package quanlynganhang.GUI.model;
+package quanlynganhang.GUI.model.menubar;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;

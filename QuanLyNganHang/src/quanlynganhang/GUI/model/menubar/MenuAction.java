@@ -1,4 +1,4 @@
-package quanlynganhang.GUI.model;
+package quanlynganhang.GUI.model.menubar;
 
 public class MenuAction {
 

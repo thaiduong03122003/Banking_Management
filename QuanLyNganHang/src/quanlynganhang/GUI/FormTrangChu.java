@@ -10,6 +10,11 @@ import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import javax.swing.JButton;
 import javax.swing.UIManager;
+import quanlynganhang.GUI.model.slider.Slide1;
+import quanlynganhang.GUI.model.slider.Slide2;
+import quanlynganhang.GUI.model.slider.Slide3;
+import quanlynganhang.GUI.model.slider.Slideshow;
+
 
 /**
  *
@@ -20,6 +25,7 @@ public class FormTrangChu extends javax.swing.JPanel {
     /** Creates new form FormTrangChu */
     public FormTrangChu() {
         initComponents();
+        slideshow1.initSlideshow(new Slide1(), new Slide2(), new Slide3());
     }
 
     /** This method is called from within the constructor to
@@ -32,7 +38,6 @@ public class FormTrangChu extends javax.swing.JPanel {
     private void initComponents() {
 
         jPBody = new javax.swing.JPanel();
-        jpSlider = new javax.swing.JPanel();
         jPSubMenu = new javax.swing.JPanel();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
@@ -47,20 +52,10 @@ public class FormTrangChu extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
+        slideshow1 = new quanlynganhang.GUI.model.slider.Slideshow();
         jPFooter = new javax.swing.JPanel();
 
-        setPreferredSize(new java.awt.Dimension(1220, 650));
-
-        javax.swing.GroupLayout jpSliderLayout = new javax.swing.GroupLayout(jpSlider);
-        jpSlider.setLayout(jpSliderLayout);
-        jpSliderLayout.setHorizontalGroup(
-            jpSliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jpSliderLayout.setVerticalGroup(
-            jpSliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 318, Short.MAX_VALUE)
-        );
+        setPreferredSize(new java.awt.Dimension(1220, 511));
 
         jButton4.setText("jButton4");
 
@@ -153,11 +148,11 @@ public class FormTrangChu extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 745, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
+            .addGap(0, 39, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPBodyLayout = new javax.swing.GroupLayout(jPBody);
@@ -165,11 +160,10 @@ public class FormTrangChu extends javax.swing.JPanel {
         jPBodyLayout.setHorizontalGroup(
             jPBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPBodyLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPBodyLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jpSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(slideshow1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jPSubMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -180,7 +174,7 @@ public class FormTrangChu extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPBodyLayout.createSequentialGroup()
-                        .addComponent(jpSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(slideshow1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPSubMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -238,6 +232,6 @@ public class FormTrangChu extends javax.swing.JPanel {
     private javax.swing.JPanel jPFooter;
     private javax.swing.JPanel jPSubMenu;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jpSlider;
+    private quanlynganhang.GUI.model.slider.Slideshow slideshow1;
     // End of variables declaration//GEN-END:variables
 }

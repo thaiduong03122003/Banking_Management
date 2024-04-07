@@ -1,14 +1,18 @@
-package quanlynganhang.GUI;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ */
+package quanlynganhang.GUI.model.slider;
 
-import com.formdev.flatlaf.FlatClientProperties;
+/**
+ *
+ * @author THAI
+ */
+public class Slide2 extends javax.swing.JPanel {
 
-public class FormDashboard extends javax.swing.JPanel {
-
-    
-    public FormDashboard() {
+    /** Creates new form Slide1 */
+    public Slide2() {
         initComponents();
-        lb.putClientProperty(FlatClientProperties.STYLE, ""
-                + "font:$h1.font");
     }
 
     /** This method is called from within the constructor to
@@ -20,33 +24,24 @@ public class FormDashboard extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lb = new javax.swing.JLabel();
+        pictureBox1 = new quanlynganhang.GUI.model.picturebox.PictureBox();
 
-        setPreferredSize(new java.awt.Dimension(1220, 650));
-
-        lb.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lb.setText("Dashboard");
+        pictureBox1.setImage(new javax.swing.ImageIcon(getClass().getResource("/quanlynganhang/image/banner2.png"))); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lb, javax.swing.GroupLayout.DEFAULT_SIZE, 1208, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(pictureBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lb)
-                .addContainerGap(628, Short.MAX_VALUE))
+            .addComponent(pictureBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel lb;
+    private quanlynganhang.GUI.model.picturebox.PictureBox pictureBox1;
     // End of variables declaration//GEN-END:variables
 }

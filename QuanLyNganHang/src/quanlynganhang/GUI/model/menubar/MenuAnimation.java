@@ -1,4 +1,4 @@
-package quanlynganhang.GUI.model;
+package quanlynganhang.GUI.model.menubar;
 
 import com.formdev.flatlaf.util.Animator;
 import java.util.HashMap;

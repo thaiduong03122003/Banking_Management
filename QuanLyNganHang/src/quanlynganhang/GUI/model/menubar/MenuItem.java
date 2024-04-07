@@ -1,5 +1,6 @@
-package quanlynganhang.GUI.model;
+package quanlynganhang.GUI.model.menubar;
 
+import quanlynganhang.GUI.model.menubar.PopupSubMenu;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.ui.FlatUIUtils;
@@ -21,7 +22,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 
 public class MenuItem extends JPanel {
 
@@ -84,8 +84,8 @@ public class MenuItem extends JPanel {
     private void init() {
         setLayout(new MenuLayout());
         putClientProperty(FlatClientProperties.STYLE, ""
-                + "background:$Menu.background;"
-                + "foreground:$Menu.lineColor");
+            + "background:$Menu.background;"
+            + "foreground:$Menu.lineColor");
         for (int i = 0; i < menus.length; i++) {
             JButton menuItem = createButtonItem(menus[i]);
             menuItem.setHorizontalAlignment(menuItem.getComponentOrientation().isLeftToRight() ? JButton.LEADING : JButton.TRAILING);
@@ -132,16 +132,16 @@ public class MenuItem extends JPanel {
     private JButton createButtonItem(String text) {
         JButton button = new JButton(text);
         button.putClientProperty(FlatClientProperties.STYLE, ""
-                + "background:$Menu.background;"
-                + "foreground:$Menu.foreground;"
-                + "selectedBackground:$Menu.button.selectedBackground;"
-                + "selectedForeground:$Menu.button.selectedForeground;"
-                + "borderWidth:0;"
-                + "focusWidth:0;"
-                + "innerFocusWidth:0;"
-                + "arc:10;"
-                + "iconTextGap:10;"
-                + "margin:3,11,3,11");
+            + "background:$Menu.background;"
+            + "foreground:$Menu.foreground;"
+            + "selectedBackground:$Menu.button.selectedBackground;"
+            + "selectedForeground:$Menu.button.selectedForeground;"
+            + "borderWidth:0;"
+            + "focusWidth:0;"
+            + "innerFocusWidth:0;"
+            + "arc:10;"
+            + "iconTextGap:10;"
+            + "margin:3,11,3,11");
         return button;
     }
 

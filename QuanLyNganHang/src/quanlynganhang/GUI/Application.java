@@ -13,20 +13,24 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import raven.toast.Notifications;
+import quanlynganhang.BUS.DieuHuongMenuBUS;
 import quanlynganhang.GUI.MainForm;
+import quanlynganhang.GUI.model.menubar.Menu;
 
 public class Application extends javax.swing.JFrame {
 
     private static Application app;
     private final MainForm mainForm;
+    private DieuHuongMenuBUS menuBUS;
+    private Menu menu;
 
     public Application() {
         initComponents();
         setLocationRelativeTo(null);
-        mainForm = new MainForm();
+        menu = new Menu();
+        menuBUS = new DieuHuongMenuBUS(menu);
+        mainForm = new MainForm(menu, menuBUS);
         setContentPane(mainForm);
-        Notifications.getInstance().setJFrame(this);
     }
 
     public static void showForm(Component component) {
@@ -35,7 +39,7 @@ public class Application extends javax.swing.JFrame {
     }
 
     public static void setSelectedMenu(int index, int subIndex) {
-        app.mainForm.setSelectedMenu(index, subIndex);
+        app.menuBUS.setSelectedMenu(index, subIndex);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,6 +80,7 @@ public class Application extends javax.swing.JFrame {
             app.setTitle("Quản lý ngân hàng");
             setSelectedMenu(0, 0);
             app.setVisible(true);
+            app.setResizable(false);
             app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         });
     }
