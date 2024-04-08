@@ -40,9 +40,14 @@ public class HeaderBar extends javax.swing.JPanel {
         }
 
         lbWelcome.putClientProperty(FlatClientProperties.STYLE, ""
-            + "font:$h3.font;");
+            + "font:$h3.font;"
+            + "foreground:#fff");
+        lbSubWelcome.putClientProperty(FlatClientProperties.STYLE, ""
+            + "foreground:#fff");
+        
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tìm kiếm trong menu");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        txtSearch.setVisible(false);
     }
 
     /** This method is called from within the constructor to
@@ -63,8 +68,9 @@ public class HeaderBar extends javax.swing.JPanel {
         jpProfile = new javax.swing.JPanel();
         btnProfile = new javax.swing.JButton();
         btnNotifi = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnMessage = new javax.swing.JButton();
+        btnMail = new javax.swing.JButton();
+        btnShowSearch = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(1017, 74));
         addAncestorListener(new javax.swing.event.AncestorListener() {
@@ -114,14 +120,17 @@ public class HeaderBar extends javax.swing.JPanel {
         jpSearch.setLayout(jpSearchLayout);
         jpSearchLayout.setHorizontalGroup(
             jpSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+            .addGroup(jpSearchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jpSearchLayout.setVerticalGroup(
             jpSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSearchLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         btnProfile.setContentAreaFilled(false);
@@ -146,22 +155,39 @@ public class HeaderBar extends javax.swing.JPanel {
             }
         });
 
-        jButton3.setIcon(new FlatSVGIcon("quanlynganhang/icon/chat_btn.svg")
+        btnMessage.setIcon(new FlatSVGIcon("quanlynganhang/icon/chat_btn.svg")
         );
-        jButton3.setToolTipText("Tin nhắn");
-        jButton3.setBorderPainted(false);
-        jButton3.setContentAreaFilled(false);
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnMessage.setToolTipText("Tin nhắn");
+        btnMessage.setBorderPainted(false);
+        btnMessage.setContentAreaFilled(false);
+        btnMessage.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        jButton4.setIcon(new FlatSVGIcon("quanlynganhang/icon/mail_btn.svg")
+        btnMail.setIcon(new FlatSVGIcon("quanlynganhang/icon/mail_btn.svg")
         );
-        jButton4.setToolTipText("Email");
-        jButton4.setBorderPainted(false);
-        jButton4.setContentAreaFilled(false);
-        jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnMail.setToolTipText("Email");
+        btnMail.setBorderPainted(false);
+        btnMail.setContentAreaFilled(false);
+        btnMail.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnMail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnMailActionPerformed(evt);
+            }
+        });
+
+        btnShowSearch.setIcon(new FlatSVGIcon("quanlynganhang/icon/show_search_btn.svg")
+        );
+        btnShowSearch.setToolTipText("Tìm kiếm");
+        btnShowSearch.setBorderPainted(false);
+        btnShowSearch.setContentAreaFilled(false);
+        btnShowSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnShowSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnShowSearchMouseClicked(evt);
+            }
+        });
+        btnShowSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnShowSearchActionPerformed(evt);
             }
         });
 
@@ -171,9 +197,11 @@ public class HeaderBar extends javax.swing.JPanel {
             jpProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpProfileLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnShowSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnMail, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnNotifi, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -184,9 +212,10 @@ public class HeaderBar extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpProfileLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jpProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(btnMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                     .addComponent(btnNotifi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnMail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnShowSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(btnProfile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -198,7 +227,7 @@ public class HeaderBar extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jpWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jpSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -212,8 +241,9 @@ public class HeaderBar extends javax.swing.JPanel {
                     .addComponent(jpWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jpProfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
                         .addComponent(jpSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 10, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -226,16 +256,31 @@ public class HeaderBar extends javax.swing.JPanel {
         btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/notifi_btn.svg"));
     }//GEN-LAST:event_btnNotifiActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btnMailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_btnMailActionPerformed
+
+    private void btnShowSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowSearchActionPerformed
+        
+    }//GEN-LAST:event_btnShowSearchActionPerformed
+
+    private void btnShowSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnShowSearchMouseClicked
+        if(!txtSearch.isVisible()) {
+            txtSearch.setVisible(true);
+            revalidate();
+        } else {
+            txtSearch.setVisible(false);
+            revalidate();
+        }
+    }//GEN-LAST:event_btnShowSearchMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnMail;
+    private javax.swing.JButton btnMessage;
     private javax.swing.JButton btnNotifi;
     private javax.swing.JButton btnProfile;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnShowSearch;
     private javax.swing.JPanel jpProfile;
     private javax.swing.JPanel jpSearch;
     private javax.swing.JPanel jpWelcome;

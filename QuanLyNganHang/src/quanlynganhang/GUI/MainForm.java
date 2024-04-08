@@ -148,16 +148,15 @@ public class MainForm extends JLayeredPane {
                 menuButton.setBounds(menubX, UIScale.scale(30), menuButtonWidth, menuButtonHeight);
                 int gap = UIScale.scale(5);
 //                int bodyWidth = width - menuWidth - gap;
-                int headerBarX = x + menu.getMenuMinWidth() + gap * 4;
+                int headerBarX = x + menu.getMenuMinWidth() + gap * 2;
                 int headerBarY = y;
                 int bodyWidth = width - menu.getMenuMinWidth() + gap;
                 int bodyHeight = height;
                 int bodyX = x + menu.getMenuMinWidth() + gap;
                 int bodyY = y + headerBar.getPreferredSize().height + gap;
 //                panelBody.setBounds(bodyx, bodyy, bodyWidth, bodyHeight);
-                headerBar.setBounds(headerBarX, headerBarY, headerBar.getPreferredSize().width + gap*15, headerBar.getPreferredSize().height);
-                panelBody.setBounds(bodyX, bodyY, bodyWidth, bodyHeight);
-
+                headerBar.setBounds(headerBarX, headerBarY, headerBar.getPreferredSize().width + gap*20, headerBar.getPreferredSize().height);
+                panelBody.setBounds(bodyX, bodyY, 1132, 530);
             }
         }
     }
