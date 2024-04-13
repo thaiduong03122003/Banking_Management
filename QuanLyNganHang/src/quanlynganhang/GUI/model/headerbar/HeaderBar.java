@@ -7,8 +7,10 @@ package quanlynganhang.GUI.model.headerbar;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import java.awt.Color;
-import java.time.LocalTime;
+import quanlynganhang.GUI.FormPopupProfile;
+import quanlynganhang.GUI.JFrameThongBao;
+import quanlynganhang.GUI.model.glasspanepopup.DefaultOption;
+import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 
 public class HeaderBar extends javax.swing.JPanel {
 
@@ -25,29 +27,13 @@ public class HeaderBar extends javax.swing.JPanel {
         jpProfile.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$HeaderBar.background;");
         
-        LocalTime currentTime = LocalTime.now();
-        int hour = currentTime.getHour();
-
-        if (hour >= 0 && hour < 12) {
-            lbIconWelcome.setIcon(new FlatSVGIcon("quanlynganhang/icon/morning.svg"));
-            lbSubWelcome.setText("Chúc bạn có một buổi sáng làm việc tốt lành");
-        } else if (hour >= 12 && hour < 18) {
-            lbIconWelcome.setIcon(new FlatSVGIcon("quanlynganhang/icon/afternoon.svg"));
-            lbSubWelcome.setText("Chúc bạn có một buổi chiều làm việc vui vẻ");
-        } else {
-            lbIconWelcome.setIcon(new FlatSVGIcon("quanlynganhang/icon/night.svg"));
-            lbSubWelcome.setText("Hãy kiểm tra lại mọi giao dịch trước khi về nào!");
-        }
-
-        lbWelcome.putClientProperty(FlatClientProperties.STYLE, ""
-            + "font:$h3.font;"
-            + "foreground:#fff");
-        lbSubWelcome.putClientProperty(FlatClientProperties.STYLE, ""
-            + "foreground:#fff");
-        
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tìm kiếm trong menu");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
         txtSearch.setVisible(false);
+    }
+    
+    public void setTitleName(String name) {
+        lbPanelName.setText(name);
     }
 
     /** This method is called from within the constructor to
@@ -60,9 +46,7 @@ public class HeaderBar extends javax.swing.JPanel {
     private void initComponents() {
 
         jpWelcome = new javax.swing.JPanel();
-        lbWelcome = new javax.swing.JLabel();
-        lbSubWelcome = new javax.swing.JLabel();
-        lbIconWelcome = new javax.swing.JLabel();
+        lbPanelName = new javax.swing.JLabel();
         jpSearch = new javax.swing.JPanel();
         txtSearch = new javax.swing.JTextField();
         jpProfile = new javax.swing.JPanel();
@@ -83,36 +67,24 @@ public class HeaderBar extends javax.swing.JPanel {
             }
         });
 
-        lbWelcome.setText("Xin chào Dương Nguyễn Nghĩa Thái");
-
-        lbSubWelcome.setText("Chúc bạn có một  buổi chiều làm việc vui vẻ");
-
-        lbIconWelcome.setIcon(new FlatSVGIcon("quanlynganhang/icon/night.svg")
-        );
+        lbPanelName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lbPanelName.setForeground(new java.awt.Color(255, 255, 255));
+        lbPanelName.setText("Trang chủ");
 
         javax.swing.GroupLayout jpWelcomeLayout = new javax.swing.GroupLayout(jpWelcome);
         jpWelcome.setLayout(jpWelcomeLayout);
         jpWelcomeLayout.setHorizontalGroup(
             jpWelcomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpWelcomeLayout.createSequentialGroup()
+            .addGroup(jpWelcomeLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbIconWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jpWelcomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbSubWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(lbPanelName, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jpWelcomeLayout.setVerticalGroup(
             jpWelcomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpWelcomeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jpWelcomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lbIconWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jpWelcomeLayout.createSequentialGroup()
-                        .addComponent(lbWelcome)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbSubWelcome)))
+                .addGap(20, 20, 20)
+                .addComponent(lbPanelName)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -142,6 +114,11 @@ public class HeaderBar extends javax.swing.JPanel {
         btnProfile.setBorderPainted(false);
         btnProfile.setContentAreaFilled(false);
         btnProfile.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnProfileMouseClicked(evt);
+            }
+        });
 
         btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/have_notifi_btn.svg")
         );
@@ -254,6 +231,10 @@ public class HeaderBar extends javax.swing.JPanel {
 
     private void btnNotifiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotifiActionPerformed
         btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/notifi_btn.svg"));
+        JFrameThongBao thongbao = new JFrameThongBao();
+        thongbao.setTitle("Thông báo");
+        thongbao.setDefaultCloseOperation(JFrameThongBao.DISPOSE_ON_CLOSE);
+        thongbao.setVisible(true);
     }//GEN-LAST:event_btnNotifiActionPerformed
 
     private void btnMailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMailActionPerformed
@@ -274,6 +255,10 @@ public class HeaderBar extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnShowSearchMouseClicked
 
+    private void btnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProfileMouseClicked
+        GlassPanePopup.showPopup(new FormPopupProfile());
+    }//GEN-LAST:event_btnProfileMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMail;
@@ -284,9 +269,7 @@ public class HeaderBar extends javax.swing.JPanel {
     private javax.swing.JPanel jpProfile;
     private javax.swing.JPanel jpSearch;
     private javax.swing.JPanel jpWelcome;
-    private javax.swing.JLabel lbIconWelcome;
-    private javax.swing.JLabel lbSubWelcome;
-    private javax.swing.JLabel lbWelcome;
+    private javax.swing.JLabel lbPanelName;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

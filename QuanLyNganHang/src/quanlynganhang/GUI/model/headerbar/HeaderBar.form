@@ -59,51 +59,33 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="lbIconWelcome" min="-2" pref="38" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="lbWelcome" min="-2" pref="293" max="-2" attributes="0"/>
-                      <Component id="lbSubWelcome" min="-2" pref="269" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="lbPanelName" pref="343" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="lbIconWelcome" max="32767" attributes="0"/>
-                      <Group type="102" attributes="0">
-                          <Component id="lbWelcome" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="lbSubWelcome" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
+                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="lbPanelName" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="lbWelcome">
+        <Component class="javax.swing.JLabel" name="lbPanelName">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Xin ch&#xe0;o D&#x1b0;&#x1a1;ng Nguy&#x1ec5;n Ngh&#x129;a Th&#xe1;i"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lbSubWelcome">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Ch&#xfa;c b&#x1ea1;n c&#xf3; m&#x1ed9;t  bu&#x1ed5;i chi&#x1ec1;u l&#xe0;m vi&#x1ec7;c vui v&#x1ebb;"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="lbIconWelcome">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="new FlatSVGIcon(&quot;quanlynganhang/icon/night.svg&quot;)&#xd;&#xa;" type="code"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="18" style="1"/>
             </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Trang ch&#x1ee7;"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -183,6 +165,9 @@
               <Color id="Hand Cursor"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnProfileMouseClicked"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="btnProfile.setContentAreaFilled(false);&#xa;btnProfile.setOpaque(false);&#xa;btnProfile.setBorderPainted(false);"/>
           </AuxValues>

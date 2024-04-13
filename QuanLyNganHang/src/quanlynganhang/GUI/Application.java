@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import quanlynganhang.BUS.DieuHuongMenuBUS;
 import quanlynganhang.GUI.MainForm;
+import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 import quanlynganhang.GUI.model.menubar.Menu;
 
 public class Application extends javax.swing.JFrame {
@@ -33,9 +34,9 @@ public class Application extends javax.swing.JFrame {
         setContentPane(mainForm);
     }
 
-    public static void showForm(Component component) {
+    public static void showForm(Component component, String titleName) {
         component.applyComponentOrientation(app.getComponentOrientation());
-        app.mainForm.showForm(component);
+        app.mainForm.showForm(component, titleName);
     }
 
     public static void setSelectedMenu(int index, int subIndex) {
@@ -78,6 +79,7 @@ public class Application extends javax.swing.JFrame {
             app = new Application();
             app.setIconImage(favicon.getImage());
             app.setTitle("Quản lý ngân hàng");
+            GlassPanePopup.install(app);
             setSelectedMenu(0, 0);
             app.setVisible(true);
             app.setResizable(false);

@@ -9,6 +9,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -26,18 +27,17 @@ public class Menu extends JPanel {
         {"Thống kê"},
         {"~THÔNG TIN~"},
         {"Danh sách khách hàng"},
-        {"Danh sách tài khoản KH", "Tất cả", "Tài khoản cá nhân", "Tài khoản doanh nghiệp"},
-        {"Danh sách thẻ ngân hàng", "Tất cả", "Thẻ ghi nợ", "Thẻ tín dụng"},
-        {"Danh sách giao dịch", "Tất cả", "Giao dịch chuyển tiền", "Giao dịch khoản nợ", "Giao dịch khoản tiết kiệm"},
+        {"Danh sách tài khoản KH"},
+        {"Danh sách thẻ ngân hàng"},
+        {"Danh sách giao dịch"},
         {"~DỊCH VỤ PHÁT HÀNH~"},
         {"Mở tài khoản ngân hàng"},
         {"Mở thẻ ngân hàng", "Thẻ ghi nợ", "Thẻ tín dụng"},
         {"~DỊCH VỤ KHÁC~"},
-        {"Chuyển tiền", "Gửi tiền vào tài khoản", "Rút tiền khỏi tài khoản", "Chuyển cùng ngân hàng", "Chuyển liên ngân hàng"},
+        {"Chuyển tiền", "Nạp tiền vào tài khoản", "Rút tiền khỏi tài khoản", "Chuyển cùng ngân hàng", "Chuyển liên ngân hàng"},
         {"Gửi tiết kiệm"},
         {"Vay vốn", "Cho vay vốn", "Trả khoản vay"},
-        {"~~"},
-        {"Đăng xuất"}
+        {"Thanh toán tín dụng"}
     };
 
     public boolean isMenuFull() {
@@ -65,8 +65,8 @@ public class Menu extends JPanel {
 
     private final List<MenuEvent> events = new ArrayList<>();
     private boolean menuFull = true;
-    private final String headerName = "   " + "Dương Nguyễn Nghĩa Thái";
-    private final String descriptionName = "Giao dịch viên";
+    private final String headerName = "           DANH MỤC";
+    private final String descriptionName = "";
 
     protected final boolean hideMenuTitleOnMinimum = true;
     protected final int menuTitleLeftInset = 5;
@@ -77,6 +77,7 @@ public class Menu extends JPanel {
 
     public Menu() {
         init();
+        setInfoMenuHeader();
     }
 
     private void init() {
@@ -86,7 +87,7 @@ public class Menu extends JPanel {
             + "background:$Menu.background;"
             + "arc:10");
         header = new JLabel(headerName);
-        descriptionInfo = new JLabel(descriptionName);
+        descriptionInfo = new JLabel();
         header.setIcon(new FlatSVGIcon("quanlynganhang/icon/logo.svg"));
         header.putClientProperty(FlatClientProperties.STYLE, ""
             + "font:$Menu.header.font;"
@@ -120,6 +121,19 @@ public class Menu extends JPanel {
         add(descriptionInfo);
         add(scroll);
         add(lightDarkMode);
+    }
+    
+    private void setInfoMenuHeader() {
+        LocalTime currentTime = LocalTime.now();
+        int hour = currentTime.getHour();
+
+        if (hour >= 0 && hour < 12) {
+            header.setIcon(new FlatSVGIcon("quanlynganhang/icon/morning.svg"));
+        } else if (hour >= 12 && hour < 18) {
+            header.setIcon(new FlatSVGIcon("quanlynganhang/icon/afternoon.svg"));
+        } else {
+            header.setIcon(new FlatSVGIcon("quanlynganhang/icon/night.svg"));
+        }
     }
 
     private void createMenu() {

@@ -39,6 +39,8 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPEmail.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
+        jPMatKhau.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$BodyPanel.background;");
         jPFooterCus.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPCusNameInfo.putClientProperty(FlatClientProperties.STYLE, ""
@@ -47,7 +49,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPAccType.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        jPDateCreate.putClientProperty(FlatClientProperties.STYLE, ""
+        jPAccName.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPMoney.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
@@ -57,12 +59,12 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         txtFirstName.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tên");
         txtLastName.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Họ");
         txtIdCardNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 12 số");
-        txtAddress.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Số nhà, dường");
-        txtPhoneNumber.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu 10-11 số");
+        txtAddress.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Số nhà, đường");
+        txtPhoneNumber.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 10-11 số");
         txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập với định dạng ***@gmail.com");
+        txtMatKhau.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu 6 ký tự");
         txtAccNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 12 số");
-        txtDateCreate.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "HH:mm:ss dd/MM/yyyy");
-        txtMoney.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu là 0");
+        txtMoney.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu là 100.000 VND");
     }
     /** This method is called from within the constructor to
      * initialize the form.
@@ -111,6 +113,9 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         jPIdCardNum = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         txtIdCardNum = new javax.swing.JTextField();
+        jPMatKhau = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        txtMatKhau = new javax.swing.JTextField();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -123,14 +128,13 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         jPAccType = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jComboBox7 = new javax.swing.JComboBox<>();
-        jPDateCreate = new javax.swing.JPanel();
+        jPAccName = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        txtDateCreate = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        txtAccName = new javax.swing.JTextField();
         jPMoney = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         txtMoney = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
+        lbMoneyType = new javax.swing.JLabel();
         jPFooterAcc = new javax.swing.JPanel();
         jButton9 = new javax.swing.JButton();
         btnCreateAcc = new javax.swing.JButton();
@@ -315,9 +319,9 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             jPPhoneNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPPhoneNumberLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPPhoneNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPPhoneNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                    .addComponent(txtPhoneNumber))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPPhoneNumberLayout.setVerticalGroup(
@@ -339,13 +343,11 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         jPEmail.setLayout(jPEmailLayout);
         jPEmailLayout.setHorizontalGroup(
             jPEmailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPEmailLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPEmailLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPEmailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPEmailLayout.createSequentialGroup()
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtEmail))
+                .addGroup(jPEmailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtEmail)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPEmailLayout.setVerticalGroup(
@@ -362,7 +364,8 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         );
         jButton1.setText("Chọn ảnh");
 
-        jButton2.setText("Kiểm tra");
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("Kiểm tra và lưu");
 
         jButton3.setText("Đặt lại");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -386,11 +389,11 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton3)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPFooterCusLayout.setVerticalGroup(
@@ -433,6 +436,32 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/password_label.svg")
+        );
+        jLabel15.setText("Mật khẩu");
+
+        javax.swing.GroupLayout jPMatKhauLayout = new javax.swing.GroupLayout(jPMatKhau);
+        jPMatKhau.setLayout(jPMatKhauLayout);
+        jPMatKhauLayout.setHorizontalGroup(
+            jPMatKhauLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPMatKhauLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPMatKhauLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtMatKhau, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                    .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPMatKhauLayout.setVerticalGroup(
+            jPMatKhauLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPMatKhauLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPCustomerInfoLayout = new javax.swing.GroupLayout(jPCustomerInfo);
         jPCustomerInfo.setLayout(jPCustomerInfoLayout);
         jPCustomerInfoLayout.setHorizontalGroup(
@@ -443,21 +472,23 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                     .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPAddress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(jPYOB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
+                        .addComponent(jPCusName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(jPIdCardNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jPCusName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(jPIdCardNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPCustomerInfoLayout.setVerticalGroup(
@@ -479,10 +510,15 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 .addComponent(jPAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
+                        .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
+                        .addComponent(jPMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -547,7 +583,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel12.setText("Loại tài khoản");
 
-        jComboBox7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tài khoản cá nhân", "Item 2", "Item 3", "Item 4" }));
+        jComboBox7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tài khoản cá nhân", "Tài khoản doanh nghiệp" }));
 
         javax.swing.GroupLayout jPAccTypeLayout = new javax.swing.GroupLayout(jPAccType);
         jPAccType.setLayout(jPAccTypeLayout);
@@ -573,45 +609,46 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         );
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel13.setIcon(new FlatSVGIcon("quanlynganhang/icon/date_create_label.svg")
+        jLabel13.setIcon(new FlatSVGIcon("quanlynganhang/icon/account_name_label.svg")
         );
-        jLabel13.setText("Ngày tạo");
+        jLabel13.setText("Tên tài khoản");
 
-        jButton5.setText("Lấy ngày và giờ hiện tại");
-
-        javax.swing.GroupLayout jPDateCreateLayout = new javax.swing.GroupLayout(jPDateCreate);
-        jPDateCreate.setLayout(jPDateCreateLayout);
-        jPDateCreateLayout.setHorizontalGroup(
-            jPDateCreateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPDateCreateLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPAccNameLayout = new javax.swing.GroupLayout(jPAccName);
+        jPAccName.setLayout(jPAccNameLayout);
+        jPAccNameLayout.setHorizontalGroup(
+            jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPAccNameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPDateCreateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPDateCreateLayout.createSequentialGroup()
-                        .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtAccName)
+                    .addGroup(jPAccNameLayout.createSequentialGroup()
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 283, Short.MAX_VALUE)))
+                .addContainerGap())
         );
-        jPDateCreateLayout.setVerticalGroup(
-            jPDateCreateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPDateCreateLayout.createSequentialGroup()
+        jPAccNameLayout.setVerticalGroup(
+            jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPAccNameLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPDateCreateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                    .addComponent(txtDateCreate))
+                .addComponent(txtAccName, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel14.setIcon(new FlatSVGIcon("quanlynganhang/icon/money_label.svg")
         );
-        jLabel14.setText("Số dư");
+        jLabel14.setText("Số tiền ban đầu");
 
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel15.setText("VNĐ");
+        txtMoney.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtMoneyFocusLost(evt);
+            }
+        });
+
+        lbMoneyType.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lbMoneyType.setText("VND");
 
         javax.swing.GroupLayout jPMoneyLayout = new javax.swing.GroupLayout(jPMoney);
         jPMoney.setLayout(jPMoneyLayout);
@@ -623,7 +660,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                     .addGroup(jPMoneyLayout.createSequentialGroup()
                         .addComponent(txtMoney, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lbMoneyType, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -632,7 +669,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             .addGroup(jPMoneyLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPMoneyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel15)
+                    .addComponent(lbMoneyType)
                     .addGroup(jPMoneyLayout.createSequentialGroup()
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -647,12 +684,10 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
         jButton11.setText("Đặt lại");
 
-        jButton6.setText("Danh sách khách hàng");
+        jButton6.setText("Chọn khách hàng");
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel16.setIcon(new FlatSVGIcon("quanlynganhang/icon/account_name_label.svg")
-        );
-        jLabel16.setText("Tên tài khoản");
+        jLabel16.setText("Thông tin người giới thiệu (nếu có)");
 
         javax.swing.GroupLayout jPFooterAccLayout = new javax.swing.GroupLayout(jPFooterAcc);
         jPFooterAcc.setLayout(jPFooterAccLayout);
@@ -661,19 +696,20 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             .addGroup(jPFooterAccLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField1)
                     .addGroup(jPFooterAccLayout.createSequentialGroup()
-                        .addGroup(jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPFooterAccLayout.createSequentialGroup()
+                        .addGroup(jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPFooterAccLayout.createSequentialGroup()
                                 .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(24, 24, 24)
                                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCreateAcc, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCreateAcc, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPFooterAccLayout.setVerticalGroup(
             jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -682,14 +718,14 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addGap(18, 27, Short.MAX_VALUE)
                 .addGroup(jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPFooterAccLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnCreateAcc)
                         .addComponent(jButton11)
                         .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jButton9))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPAccountInfoLayout = new javax.swing.GroupLayout(jPAccountInfo);
@@ -699,19 +735,19 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             .addGroup(jPAccountInfoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPDateCreate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPAccountInfoLayout.createSequentialGroup()
                         .addComponent(jPAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPAccType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPFooterAcc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPMoney, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPAccountInfoLayout.createSequentialGroup()
                         .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPCusNameInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPMoney, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPCusNameInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPAccName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPAccountInfoLayout.setVerticalGroup(
@@ -728,7 +764,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                     .addComponent(jPAccType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPAccNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPAccName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPMoney, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -762,6 +798,10 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void txtMoneyFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtMoneyFocusLost
+        // Hàm xử lý dịnh dạng tiền tệ
+    }//GEN-LAST:event_txtMoneyFocusLost
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateAcc;
@@ -771,7 +811,6 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
@@ -798,6 +837,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPAccName;
     private javax.swing.JPanel jPAccNum;
     private javax.swing.JPanel jPAccType;
     private javax.swing.JPanel jPAccountInfo;
@@ -805,12 +845,12 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     private javax.swing.JPanel jPCusName;
     private javax.swing.JPanel jPCusNameInfo;
     private javax.swing.JPanel jPCustomerInfo;
-    private javax.swing.JPanel jPDateCreate;
     private javax.swing.JPanel jPEmail;
     private javax.swing.JPanel jPFooterAcc;
     private javax.swing.JPanel jPFooterCus;
     private javax.swing.JPanel jPGender;
     private javax.swing.JPanel jPIdCardNum;
+    private javax.swing.JPanel jPMatKhau;
     private javax.swing.JPanel jPMoney;
     private javax.swing.JPanel jPPhoneNumber;
     private javax.swing.JPanel jPYOB;
@@ -820,13 +860,15 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lbMoneyType;
+    private javax.swing.JTextField txtAccName;
     private javax.swing.JTextField txtAccNum;
     private javax.swing.JTextField txtAddress;
-    private javax.swing.JTextField txtDateCreate;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtIdCardNum;
     private javax.swing.JTextField txtLastName;
+    private javax.swing.JTextField txtMatKhau;
     private javax.swing.JTextField txtMoney;
     private javax.swing.JTextField txtPhoneNumber;
     // End of variables declaration//GEN-END:variables

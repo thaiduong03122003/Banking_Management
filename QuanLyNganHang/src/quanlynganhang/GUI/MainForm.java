@@ -84,7 +84,8 @@ public class MainForm extends JLayeredPane {
         menu.hideMenuItem();
     }
 
-    public void showForm(Component component) {
+    public void showForm(Component component, String titleName) {
+        headerBar.setTitleName(titleName);
         panelBody.removeAll();
         panelBody.add(component);
         panelBody.repaint();
