@@ -20,6 +20,8 @@ public class HeaderBar extends javax.swing.JPanel {
         
         putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$HeaderBar.background;");
+        jPHeaderBar.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$HeaderBar.background;");
         jpWelcome.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$HeaderBar.background;");
         jpSearch.putClientProperty(FlatClientProperties.STYLE, ""
@@ -45,6 +47,7 @@ public class HeaderBar extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPHeaderBar = new javax.swing.JPanel();
         jpWelcome = new javax.swing.JPanel();
         lbPanelName = new javax.swing.JLabel();
         jpSearch = new javax.swing.JPanel();
@@ -66,6 +69,7 @@ public class HeaderBar extends javax.swing.JPanel {
             public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
             }
         });
+        setLayout(new java.awt.BorderLayout());
 
         lbPanelName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lbPanelName.setForeground(new java.awt.Color(255, 255, 255));
@@ -75,9 +79,9 @@ public class HeaderBar extends javax.swing.JPanel {
         jpWelcome.setLayout(jpWelcomeLayout);
         jpWelcomeLayout.setHorizontalGroup(
             jpWelcomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpWelcomeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lbPanelName, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpWelcomeLayout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addComponent(lbPanelName, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jpWelcomeLayout.setVerticalGroup(
@@ -85,7 +89,7 @@ public class HeaderBar extends javax.swing.JPanel {
             .addGroup(jpWelcomeLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(lbPanelName)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpSearchLayout = new javax.swing.GroupLayout(jpSearch);
@@ -94,15 +98,15 @@ public class HeaderBar extends javax.swing.JPanel {
             jpSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSearchLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
+                .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jpSearchLayout.setVerticalGroup(
             jpSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSearchLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(12, 12, 12)
+                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnProfile.setContentAreaFilled(false);
@@ -197,11 +201,11 @@ public class HeaderBar extends javax.swing.JPanel {
             .addComponent(btnProfile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        javax.swing.GroupLayout jPHeaderBarLayout = new javax.swing.GroupLayout(jPHeaderBar);
+        jPHeaderBar.setLayout(jPHeaderBarLayout);
+        jPHeaderBarLayout.setHorizontalGroup(
+            jPHeaderBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPHeaderBarLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jpWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -210,24 +214,27 @@ public class HeaderBar extends javax.swing.JPanel {
                 .addComponent(jpProfile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        jPHeaderBarLayout.setVerticalGroup(
+            jPHeaderBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPHeaderBarLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jpWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPHeaderBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jpProfile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addComponent(jpSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jpWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jpSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        add(jPHeaderBar, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void formAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_formAncestorAdded
         // TODO add your handling code here:
     }//GEN-LAST:event_formAncestorAdded
+
+    private void btnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProfileMouseClicked
+        GlassPanePopup.showPopup(new FormPopupProfile());
+    }//GEN-LAST:event_btnProfileMouseClicked
 
     private void btnNotifiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotifiActionPerformed
         btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/notifi_btn.svg"));
@@ -241,10 +248,6 @@ public class HeaderBar extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnMailActionPerformed
 
-    private void btnShowSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowSearchActionPerformed
-        
-    }//GEN-LAST:event_btnShowSearchActionPerformed
-
     private void btnShowSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnShowSearchMouseClicked
         if(!txtSearch.isVisible()) {
             txtSearch.setVisible(true);
@@ -255,9 +258,9 @@ public class HeaderBar extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnShowSearchMouseClicked
 
-    private void btnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProfileMouseClicked
-        GlassPanePopup.showPopup(new FormPopupProfile());
-    }//GEN-LAST:event_btnProfileMouseClicked
+    private void btnShowSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowSearchActionPerformed
+
+    }//GEN-LAST:event_btnShowSearchActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -266,6 +269,7 @@ public class HeaderBar extends javax.swing.JPanel {
     private javax.swing.JButton btnNotifi;
     private javax.swing.JButton btnProfile;
     private javax.swing.JButton btnShowSearch;
+    private javax.swing.JPanel jPHeaderBar;
     private javax.swing.JPanel jpProfile;
     private javax.swing.JPanel jpSearch;
     private javax.swing.JPanel jpWelcome;

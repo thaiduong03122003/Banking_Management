@@ -24,12 +24,13 @@ public class Application extends javax.swing.JFrame {
     private final MainForm mainForm;
     private DieuHuongMenuBUS menuBUS;
     private Menu menu;
-
+    private boolean isAdmin = false;
+    
     public Application() {
         initComponents();
         setLocationRelativeTo(null);
-        menu = new Menu();
-        menuBUS = new DieuHuongMenuBUS(menu);
+        menu = new Menu(isAdmin);
+        menuBUS = new DieuHuongMenuBUS(menu, isAdmin);
         mainForm = new MainForm(menu, menuBUS);
         setContentPane(mainForm);
     }

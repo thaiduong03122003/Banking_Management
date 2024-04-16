@@ -21,25 +21,47 @@ import quanlynganhang.BUS.LightDarkMode;
 
 public class Menu extends JPanel {
 
-    private final String menuItems[][] = {
-        {"~CHÍNH~"},
-        {"Trang chủ"},
-        {"Thống kê"},
-        {"~THÔNG TIN~"},
-        {"Danh sách khách hàng"},
-        {"Danh sách tài khoản KH"},
-        {"Danh sách thẻ ngân hàng"},
-        {"Danh sách giao dịch"},
-        {"~DỊCH VỤ PHÁT HÀNH~"},
-        {"Mở tài khoản ngân hàng"},
-        {"Mở thẻ ngân hàng", "Thẻ ghi nợ", "Thẻ tín dụng"},
-        {"~DỊCH VỤ KHÁC~"},
-        {"Chuyển tiền", "Nạp tiền vào tài khoản", "Rút tiền khỏi tài khoản", "Chuyển cùng ngân hàng", "Chuyển liên ngân hàng"},
-        {"Gửi tiết kiệm"},
-        {"Vay vốn", "Cho vay vốn", "Trả khoản vay"},
-        {"Thanh toán tín dụng"}
-    };
+    boolean isAdmin;
+    private String menuItems[][];
 
+    private void setContentMenu() {
+        if (isAdmin) {
+            menuItems = new String[][] {
+                {"~CHÍNH~"},
+                {"Trang chủ"},
+                {"Thống kê biến động"},
+                {"~THÔNG TIN~"},
+                {"Danh sách khách hàng"},
+                {"Danh sách nhân viên"},
+                {"Danh sách tài khoản KH"},
+                {"Danh sách tài khoản NV"},
+                {"Danh sách thẻ ngân hàng"},
+                {"Danh sách giao dịch"},
+                {"~QUYỀN HẠN~"},
+                {"Phân quyền cho nhân viên"},
+                {"Thêm chức vụ"}
+            };
+        } else {
+            menuItems = new String[][] {
+                {"~CHÍNH~"},
+                {"Trang chủ"},
+                {"Thống kê"},
+                {"~THÔNG TIN~"},
+                {"Danh sách khách hàng"},
+                {"Danh sách tài khoản KH"},
+                {"Danh sách thẻ ngân hàng"},
+                {"Danh sách giao dịch"},
+                {"~DỊCH VỤ PHÁT HÀNH~"},
+                {"Mở tài khoản ngân hàng"},
+                {"Mở thẻ ngân hàng", "Thẻ ghi nợ", "Thẻ tín dụng"},
+                {"~DỊCH VỤ KHÁC~"},
+                {"Chuyển tiền", "Nạp tiền vào tài khoản", "Rút tiền khỏi tài khoản", "Chuyển cùng ngân hàng", "Chuyển liên ngân hàng"},
+                {"Gửi tiết kiệm"},
+                {"Vay vốn", "Cho vay vốn", "Trả khoản vay"},
+                {"Thanh toán tín dụng"}
+            };
+        }
+    }
     public boolean isMenuFull() {
         return menuFull;
     }
@@ -75,9 +97,12 @@ public class Menu extends JPanel {
     protected final int menuMinWidth = 60;
     protected final int headerFullHgap = 5;
 
-    public Menu() {
+    public Menu(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+        setContentMenu();
         init();
         setInfoMenuHeader();
+        System.out.println("Gia tri cua isAdmin: " + this.isAdmin);
     }
 
     private void init() {
@@ -88,7 +113,6 @@ public class Menu extends JPanel {
             + "arc:10");
         header = new JLabel(headerName);
         descriptionInfo = new JLabel();
-        header.setIcon(new FlatSVGIcon("quanlynganhang/icon/logo.svg"));
         header.putClientProperty(FlatClientProperties.STYLE, ""
             + "font:$Menu.header.font;"
             + "foreground:$Menu.foreground;");
@@ -143,7 +167,7 @@ public class Menu extends JPanel {
             if (menuName.startsWith("~") && menuName.endsWith("~")) {
                 panelMenu.add(createTitle(menuName));
             } else {
-                MenuItem menuItem = new MenuItem(this, menuItems[i], index++, events);
+                MenuItem menuItem = new MenuItem(this, menuItems[i], index++, events, isAdmin);
                 panelMenu.add(menuItem);
             }
         }
