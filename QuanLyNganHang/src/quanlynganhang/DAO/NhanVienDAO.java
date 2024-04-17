@@ -15,8 +15,8 @@ public class NhanVienDAO {
         if (selectByCCCD(nhanVien.getCccd(), biXoa) != null) {
             return null;
         } else {
-            String sql = "INSERT INTO tbl_nhan_vien(ho_dem, ten, gioi_tinh, ngay_sinh, ma_phuong_xa, so_nha, email, so_dien_thoai, cccd, anh_dai_dien, ma_chuc_vu, bi_xoa)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO tbl_nhan_vien(ho_dem, ten, gioi_tinh, ngay_sinh, ma_phuong_xa, so_nha, email, so_dien_thoai, cccd, anh_dai_dien, ma_chuc_vu, ngay_vao_lam, bi_xoa)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 
@@ -34,7 +34,11 @@ public class NhanVienDAO {
                 pstmt.setString(9, nhanVien.getCccd());
                 pstmt.setString(10, nhanVien.getAnhDaiDien());
                 pstmt.setInt(11, 1);
-                pstmt.setInt(12, 0);
+
+                java.sql.Date dateNgayVaoLam = new Date(nhanVien.getNgayVaoLam().getTime());
+                pstmt.setDate(12, dateNgayVaoLam);
+
+                pstmt.setInt(13, 0);
 
                 pstmt.executeUpdate();
 
@@ -50,8 +54,8 @@ public class NhanVienDAO {
 
     }
 
-    private boolean updateExecute(NhanVienDTO nhanVien, int biXoa) throws Exception {
-        String sql = "UPDATE tbl_nhan_vien SET ho_dem = ?, ten = ?, gioi_tinh = ?, ngay_sinh = ?, ma_phuong_xa = ?, so_nha = ?, email = ?, so_dien_thoai = ?, cccd = ?, anh_dai_dien = ?, ma_chuc_vu = ? WHERE ma_nhan_vien = ?";
+    private boolean updateExecute(NhanVienDTO nhanVien) throws Exception {
+        String sql = "UPDATE tbl_nhan_vien SET ho_dem = ?, ten = ?, gioi_tinh = ?, ngay_sinh = ?, ma_phuong_xa = ?, so_nha = ?, email = ?, so_dien_thoai = ?, cccd = ?, anh_dai_dien = ?, ngay_vao_lam = ? WHERE ma_nhan_vien = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
@@ -68,7 +72,10 @@ public class NhanVienDAO {
             pstmt.setString(8, nhanVien.getSdt());
             pstmt.setString(9, nhanVien.getCccd());
             pstmt.setString(10, nhanVien.getAnhDaiDien());
-            pstmt.setInt(11, biXoa);
+
+            java.sql.Date dateNgayVaoLam = new Date(nhanVien.getNgayVaoLam().getTime());
+            pstmt.setDate(11, dateNgayVaoLam);
+
             pstmt.setInt(12, nhanVien.getMaNV());
 
             return pstmt.executeUpdate() > 0;
@@ -78,11 +85,11 @@ public class NhanVienDAO {
     public boolean update(NhanVienDTO nhanVien, int biXoa) throws Exception {
 
         if (selectById(nhanVien.getMaNV(), biXoa).getCccd().equals(nhanVien.getCccd())) {
-            return updateExecute(nhanVien, biXoa);
+            return updateExecute(nhanVien);
         } else if (selectByCCCD(nhanVien.getCccd(), biXoa) != null) {
             return false;
         } else {
-            return updateExecute(nhanVien, biXoa);
+            return updateExecute(nhanVien);
         }
 
     }
@@ -93,6 +100,18 @@ public class NhanVienDAO {
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
             pstmt.setInt(1, 1);
+            pstmt.setInt(2, maNhanVien);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+    
+    public boolean restore(int maNhanVien) throws Exception {
+        String sql = "UPDATE tbl_nhan_vien SET bi_xoa = ? WHERE ma_nhan_vien = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setInt(1, 0);
             pstmt.setInt(2, maNhanVien);
 
             return pstmt.executeUpdate() > 0;
@@ -123,6 +142,7 @@ public class NhanVienDAO {
                     nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
                     nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
                     nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
                     nhanVien.setBiXoa(biXoa);
 
                     list.add(nhanVien);
@@ -155,6 +175,7 @@ public class NhanVienDAO {
                     nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
                     nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
                     nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
                     nhanVien.setBiXoa(biXoa);
 
                     return nhanVien;
@@ -187,6 +208,7 @@ public class NhanVienDAO {
                     nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
                     nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
                     nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
                     nhanVien.setBiXoa(biXoa);
 
                     return nhanVien;

@@ -5,12 +5,12 @@ import java.util.Date;
 public class NhanVienDTO {
     private int maNV, maPhuongXa, maChucVu, biXoa;
     private String hoDem, ten, gioiTinh, soNha, email, sdt, cccd, anhDaiDien, tenChucVu;
-    private Date ngaySinh;
+    private Date ngaySinh, ngayVaoLam;
     
     public NhanVienDTO() {
     }
 
-    public NhanVienDTO(int maNV, int maPhuongXa, int maChucVu, int biXoa, String hoDem, String ten, String gioiTinh, String soNha, String email, String sdt, String cccd, String anhDaiDien, String tenChucVu, Date ngaySinh) {
+    public NhanVienDTO(int maNV, int maPhuongXa, int maChucVu, int biXoa, String hoDem, String ten, String gioiTinh, String soNha, String email, String sdt, String cccd, String anhDaiDien, String tenChucVu, Date ngaySinh, Date ngayVaoLam) {
         this.maNV = maNV;
         this.maPhuongXa = maPhuongXa;
         this.maChucVu = maChucVu;
@@ -25,7 +25,10 @@ public class NhanVienDTO {
         this.anhDaiDien = anhDaiDien;
         this.tenChucVu = tenChucVu;
         this.ngaySinh = ngaySinh;
+        this.ngayVaoLam = ngayVaoLam;
     }
+
+    
 
     public int getMaNV() {
         return maNV;
@@ -137,6 +140,14 @@ public class NhanVienDTO {
 
     public void setNgaySinh(Date ngaySinh) {
         this.ngaySinh = ngaySinh;
+    }
+
+    public Date getNgayVaoLam() {
+        return ngayVaoLam;
+    }
+
+    public void setNgayVaoLam(Date ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
     }
     
 }

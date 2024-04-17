@@ -79,6 +79,15 @@ public class NhanVienBUS {
         }
     }
     
+    public boolean restoreNhanVien(int maNhanVien) {
+        try {
+            return nhanVienDAO.restore(maNhanVien);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
     public NhanVienDTO getNhanVienById(int maNhanVien, int biXoa) {
         try {
             return nhanVienDAO.selectById(maNhanVien, biXoa);
