@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import quanlynganhang.DAO.DiaChiDAO;
 import quanlynganhang.DTO.DiaChiDTO;
 
@@ -114,5 +116,14 @@ public class DiaChiBUS {
             }
         }
         return null;
+    }
+    
+    public DiaChiDTO layDiaChiTuIdPhuongXa(int maPhuongXa) {
+        try {
+            return diaChiDAO.getDiaChiByIdPhuongXa(maPhuongXa);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

@@ -5,14 +5,16 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import javax.swing.table.DefaultTableModel;
 import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormDSNhanVien extends javax.swing.JPanel {
 
     private JFrameBoLocDSNV boloc;
     private NhanVienBUS nhanVienBUS;
     private int biXoa;
-    
+
     public FormDSNhanVien() {
         nhanVienBUS = new NhanVienBUS();
         initComponents();
@@ -32,6 +34,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
         jTableDSNV.setDefaultEditor(Object.class, null);
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -41,11 +44,11 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPPMKH = new javax.swing.JPopupMenu();
-        jPPItemChiTiet = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jPPItemSua = new javax.swing.JMenuItem();
-        jPPItemXoa = new javax.swing.JMenuItem();
+        popupDSNV = new javax.swing.JPopupMenu();
+        ppmChiTiet = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        ppmSua = new javax.swing.JMenuItem();
+        ppmXoa = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         txtSearchNV = new javax.swing.JTextField();
@@ -68,26 +71,21 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableDSNV = new javax.swing.JTable();
 
-        jPPItemChiTiet.setText("Xem chi tiết");
-        jPPItemChiTiet.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jPPItemChiTietMouseClicked(evt);
-            }
-        });
-        jPPItemChiTiet.addActionListener(new java.awt.event.ActionListener() {
+        ppmChiTiet.setText("Xem chi tiết");
+        ppmChiTiet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPPItemChiTietActionPerformed(evt);
+                ppmChiTietActionPerformed(evt);
             }
         });
-        jPPMKH.add(jPPItemChiTiet);
-        jPPMKH.add(jSeparator1);
+        popupDSNV.add(ppmChiTiet);
+        popupDSNV.add(jSeparator2);
 
-        jPPItemSua.setText("Sửa");
-        jPPMKH.add(jPPItemSua);
+        ppmSua.setText("Sửa");
+        popupDSNV.add(ppmSua);
 
-        jPPItemXoa.setForeground(new java.awt.Color(255, 0, 51));
-        jPPItemXoa.setText("Xóa");
-        jPPMKH.add(jPPItemXoa);
+        ppmXoa.setForeground(new java.awt.Color(255, 0, 51));
+        ppmXoa.setText("Xóa");
+        popupDSNV.add(ppmXoa);
 
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
@@ -293,6 +291,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 "Mã nhân viên", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã CCCD", "Chức vụ"
             }
         ));
+        jTableDSNV.setComponentPopupMenu(popupDSNV);
         jScrollPane2.setViewportView(jTableDSNV);
 
         jPanel8.add(jScrollPane2, java.awt.BorderLayout.CENTER);
@@ -317,23 +316,13 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         add(jPanel3, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPPItemChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPPItemChiTietActionPerformed
-        JFrameChiTietKH chitiet = new JFrameChiTietKH();
-        chitiet.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
-        chitiet.setVisible(true);
-    }//GEN-LAST:event_jPPItemChiTietActionPerformed
-
-    private void jPPItemChiTietMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPPItemChiTietMouseClicked
-
-    }//GEN-LAST:event_jPPItemChiTietMouseClicked
-
     private void btnBoLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoLocActionPerformed
         if (boloc == null) {
             boloc = new JFrameBoLocDSNV();
             boloc.setResizable(false);
             boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
         }
-        
+
         boloc.setExtendedState(JFrameBoLocDSNV.NORMAL);
         boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
@@ -353,12 +342,39 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         JDialogThemTKNV themTKNV = new JDialogThemTKNV(null, true);
         themTKNV.setDefaultCloseOperation(JDialogThemTKNV.DISPOSE_ON_CLOSE);
         themTKNV.setVisible(true);
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void ppmChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmChiTietActionPerformed
+        int selectedRow = jTableDSNV.getSelectedRow();
+        if (selectedRow == -1) {
+            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi xem!");
+            return;
+        } else {
+
+            Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
+            if (idObj != null) {
+                int maNhanVien = Integer.parseInt(idObj.toString());
+                NhanVienDTO nhanVien = new NhanVienDTO();
+                nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
+                if (nhanVien == null) {
+                    MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
+                    return;
+                } else {
+                    JFrameChiTietNV chiTietNV = new JFrameChiTietNV(nhanVien);
+                    chiTietNV.setDefaultCloseOperation(JDialogThemChucVu.DISPOSE_ON_CLOSE);
+                    chiTietNV.setVisible(true);
+
+                    loadDSNhanVien(biXoa);
+
+                }
+            }
+        }
+    }//GEN-LAST:event_ppmChiTietActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -372,10 +388,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JMenuItem jPPItemChiTiet;
-    private javax.swing.JMenuItem jPPItemSua;
-    private javax.swing.JMenuItem jPPItemXoa;
-    private javax.swing.JPopupMenu jPPMKH;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -385,8 +397,12 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTableDSNV;
+    private javax.swing.JPopupMenu popupDSNV;
+    private javax.swing.JMenuItem ppmChiTiet;
+    private javax.swing.JMenuItem ppmSua;
+    private javax.swing.JMenuItem ppmXoa;
     private javax.swing.JTextField txtSearchNV;
     // End of variables declaration//GEN-END:variables
 }

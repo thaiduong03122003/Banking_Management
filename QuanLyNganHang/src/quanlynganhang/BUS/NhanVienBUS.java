@@ -79,9 +79,9 @@ public class NhanVienBUS {
         }
     }
     
-    public NhanVienDTO getNhanVienById(int maNhanVien) {
+    public NhanVienDTO getNhanVienById(int maNhanVien, int biXoa) {
         try {
-            return nhanVienDAO.selectById(maNhanVien, 0);
+            return nhanVienDAO.selectById(maNhanVien, biXoa);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
