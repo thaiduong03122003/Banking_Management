@@ -121,6 +121,9 @@
           </Layout>
           <SubComponents>
             <Component class="javax.swing.JTextField" name="txtSearchNV">
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtSearchNVKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="jButton5">
               <Properties>
@@ -138,7 +141,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="139" max="-2" attributes="0"/>
-                      <Component id="jComboBox1" min="-2" pref="202" max="-2" attributes="0"/>
+                      <Component id="cbxSapXep" min="-2" pref="202" max="-2" attributes="0"/>
                       <EmptySpace pref="117" max="32767" attributes="0"/>
                       <Component id="btnBoLoc" min="-2" pref="106" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -151,7 +154,7 @@
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btnBoLoc" pref="46" max="32767" attributes="0"/>
-                          <Component id="jComboBox1" max="32767" attributes="0"/>
+                          <Component id="cbxSapXep" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -170,7 +173,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBoLocActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JComboBox" name="jComboBox1">
+            <Component class="javax.swing.JComboBox" name="cbxSapXep">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="5">
@@ -182,6 +185,9 @@
                   </StringArray>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbxSapXepItemStateChanged"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
@@ -280,7 +286,7 @@
                           <Component id="btnThemNV" max="32767" attributes="0"/>
                           <Component id="jButton4" alignment="0" max="32767" attributes="0"/>
                           <Component id="jButton7" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jButton8" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnReload" alignment="0" max="32767" attributes="0"/>
                           <Component id="btnDoiBang" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -297,7 +303,7 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jButton7" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton8" min="-2" pref="35" max="-2" attributes="0"/>
+                      <Component id="btnReload" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnDoiBang" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace pref="15" max="32767" attributes="0"/>
@@ -327,12 +333,12 @@
                 <Property name="text" type="java.lang.String" value="Th&#xea;m ch&#x1ee9;c v&#x1ee5;"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton8">
+            <Component class="javax.swing.JButton" name="btnReload">
               <Properties>
                 <Property name="text" type="java.lang.String" value="T&#x1ea3;i l&#x1ea1;i DS"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton8ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReloadActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnDoiBang">

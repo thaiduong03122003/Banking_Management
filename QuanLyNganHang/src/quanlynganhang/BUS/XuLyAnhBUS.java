@@ -16,6 +16,7 @@ public class XuLyAnhBUS {
 
         try {
             Files.copy(selectedFile.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Luu anh " + newFileName + " thanh cong!" );
             return newFileName;
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -26,6 +27,7 @@ public class XuLyAnhBUS {
     public static boolean deleteImage(String fileName) {
         File fileToDelete = new File(IMAGE_DIRECTORY, fileName);
         if (fileToDelete.exists()) {
+            System.out.println("Xoa anh " + fileName + " thanh cong!" );
             return fileToDelete.delete();
         } else {
             System.out.println("File " + fileName + " does not exist!");

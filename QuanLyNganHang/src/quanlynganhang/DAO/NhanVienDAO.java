@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
+import java.sql.SQLException;
 
 public class NhanVienDAO {
 
@@ -105,7 +106,7 @@ public class NhanVienDAO {
             return pstmt.executeUpdate() > 0;
         }
     }
-    
+
     public boolean restore(int maNhanVien) throws Exception {
         String sql = "UPDATE tbl_nhan_vien SET bi_xoa = ? WHERE ma_nhan_vien = ?";
 
@@ -119,12 +120,18 @@ public class NhanVienDAO {
     }
 
     public List<NhanVienDTO> selectAll(int biXoa) throws Exception {
-        String sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu FROM tbl_nhan_vien nv LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu WHERE nv.bi_xoa = ?";
+        String sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_nhan_vien nv "
+            + "LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu "
+            + "LEFT JOIN tbl_phuong_xa wa ON nv.ma_phuong_xa = wa.wardId "
+            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+            + " WHERE nv.bi_xoa = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
             pstmt.setInt(1, biXoa);
 
             List<NhanVienDTO> list = new ArrayList<>();
+            String diaChi = "";
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
@@ -143,6 +150,11 @@ public class NhanVienDAO {
                     nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
                     nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
                     nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
+
+                    diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
+
+                    nhanVien.setDiaChi(diaChi);
+
                     nhanVien.setBiXoa(biXoa);
 
                     list.add(nhanVien);
@@ -196,25 +208,120 @@ public class NhanVienDAO {
                 while (rs.next()) {
                     NhanVienDTO nhanVien = new NhanVienDTO();
                     nhanVien.setMaNV(rs.getInt("ma_nhan_vien"));
-                    nhanVien.setHoDem(rs.getString("ho_dem"));
-                    nhanVien.setTen(rs.getString("ten"));
-                    nhanVien.setGioiTinh(rs.getString("gioi_tinh"));
-                    nhanVien.setNgaySinh(rs.getDate("ngay_sinh"));
-                    nhanVien.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
-                    nhanVien.setSoNha(rs.getString("so_nha"));
-                    nhanVien.setEmail(rs.getString("email"));
-                    nhanVien.setSdt(rs.getString("so_dien_thoai"));
-                    nhanVien.setCccd(rs.getString("cccd"));
-                    nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
-                    nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
-                    nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
-                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
+//                    nhanVien.setHoDem(rs.getString("ho_dem"));
+//                    nhanVien.setTen(rs.getString("ten"));
+//                    nhanVien.setGioiTinh(rs.getString("gioi_tinh"));
+//                    nhanVien.setNgaySinh(rs.getDate("ngay_sinh"));
+//                    nhanVien.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
+//                    nhanVien.setSoNha(rs.getString("so_nha"));
+//                    nhanVien.setEmail(rs.getString("email"));
+//                    nhanVien.setSdt(rs.getString("so_dien_thoai"));
+//                    nhanVien.setCccd(rs.getString("cccd"));
+//                    nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
+//                    nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
+//                    nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+//                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
                     nhanVien.setBiXoa(biXoa);
 
                     return nhanVien;
                 }
             }
             return null;
+        }
+    }
+
+    public List<NhanVienDTO> filter(int biXoa, String gender, java.sql.Date dateFrom, java.sql.Date dateTo, int provinceId, int districtId, int wardId, int roleId) throws Exception {
+        String sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_nhan_vien nv "
+            + "LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu "
+            + "LEFT JOIN tbl_phuong_xa wa ON nv.ma_phuong_xa = wa.wardId "
+            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+            + "WHERE nv.bi_xoa = ? ";
+
+        StringBuilder conditionalClause = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(biXoa);
+
+        System.out.println("Data input: " + gender + ", " + provinceId + ", " + districtId + ", " + wardId);
+        if (!gender.equals("All")) {
+            conditionalClause.append(" AND nv.gioi_tinh = ?");
+            params.add(gender);
+        }
+
+        if (dateFrom != null && dateTo != null) {
+            conditionalClause.append(" AND nv.ngay_sinh BETWEEN ? AND ?");
+            params.add(dateFrom);
+            params.add(dateTo);
+        }
+
+        if (provinceId != 0) {
+            conditionalClause.append(" AND pr.provinceId = ?");
+            params.add(provinceId);
+        }
+
+        if (districtId != 0) {
+            conditionalClause.append(" AND dt.districtId = ?");
+            params.add(districtId);
+        }
+
+        if (wardId != 0) {
+            conditionalClause.append(" AND wa.wardId = ?");
+            params.add(wardId);
+        }
+        
+        if (roleId != 0) {
+            conditionalClause.append(" AND nv.ma_chuc_vu = ?");
+            params.add(roleId);
+        }
+
+        if (conditionalClause.length() > 0) {
+            sql += conditionalClause.toString();
+        }
+        System.out.println("Cau SQL: " + sql);
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            for (int i = 1; i <= params.size(); i++) {
+                pstmt.setObject(i, params.get(i - 1));
+                System.out.println("Index:" + i + ", " + params.get(i - 1));
+            }
+
+            List<NhanVienDTO> list = new ArrayList<>();
+            String diaChi = "";
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {
+                    list = null;
+                } else {
+                    do {
+                        NhanVienDTO nhanVien = new NhanVienDTO();
+                        nhanVien.setMaNV(rs.getInt("ma_nhan_vien"));
+                        nhanVien.setHoDem(rs.getString("ho_dem"));
+                        nhanVien.setTen(rs.getString("ten"));
+                        nhanVien.setGioiTinh(rs.getString("gioi_tinh"));
+                        nhanVien.setNgaySinh(rs.getDate("ngay_sinh"));
+                        nhanVien.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
+                        nhanVien.setSoNha(rs.getString("so_nha"));
+                        nhanVien.setEmail(rs.getString("email"));
+                        nhanVien.setSdt(rs.getString("so_dien_thoai"));
+                        nhanVien.setCccd(rs.getString("cccd"));
+                        nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
+                        nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
+                        nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+                        nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
+
+                        diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
+
+                        nhanVien.setDiaChi(diaChi);
+
+                        nhanVien.setBiXoa(rs.getInt("bi_xoa"));
+                        list.add(nhanVien);
+                    } while (rs.next());
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                list = null;
+            }
+            return list;
+
         }
     }
 }

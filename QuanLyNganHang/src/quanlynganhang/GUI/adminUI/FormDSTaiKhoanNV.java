@@ -282,14 +282,14 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     }//GEN-LAST:event_jPPItemChiTietMouseClicked
 
     private void btnBoLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoLocActionPerformed
-        if (boloc == null) {
-            boloc = new JFrameBoLocDSNV();
-            boloc.setResizable(false);
-            boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
-        }
-        
-        boloc.setExtendedState(JFrameBoLocDSNV.NORMAL);
-        boloc.setVisible(true);
+//        if (boloc == null) {
+//            boloc = new JFrameBoLocDSNV(this);
+//            boloc.setResizable(false);
+//            boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
+//        }
+//        
+//        boloc.setExtendedState(JFrameBoLocDSNV.NORMAL);
+//        boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed

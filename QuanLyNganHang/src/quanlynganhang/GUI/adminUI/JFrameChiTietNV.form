@@ -692,6 +692,9 @@
                 <Property name="text" type="java.lang.String" value="C&#x1ead;p nh&#x1ead;t &#x1ea3;nh &#x111;&#x1ea1;i di&#x1ec7;n"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnChonAnhActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnSuaThongTin">
               <Properties>

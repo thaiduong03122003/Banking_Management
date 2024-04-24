@@ -32,7 +32,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
         super(parent, modal);
         nhanVienBUS = new NhanVienBUS();
         diaChiBUS = new DiaChiBUS();
-        fileName = "";
+        fileName = "no_image.png";
         initComponents();
         initCustomUI();
         loadTinhThanh();
@@ -158,12 +158,10 @@ public class JDialogThemNV extends javax.swing.JDialog {
         } else {
             error.append("\nNgày vào làm không hợp lệ");
         }
+
         
-        if (btnXemAnh.getText().equals("(Chưa có)")) {
-            error.append("\nVui lòng chọn ảnh đại diện");
-        } else {
-            nhanVien.setAnhDaiDien(fileName);
-        }
+        nhanVien.setAnhDaiDien(fileName);
+        
 
         if (rdbNam.isSelected()) {
             nhanVien.setGioiTinh("Nam");
@@ -720,13 +718,15 @@ public class JDialogThemNV extends javax.swing.JDialog {
         if (fileName.equals("")) {
             this.dispose();
         } else {
-            if (XuLyAnhBUS.deleteImage(fileName)) {
-                this.dispose();
-            } else {
-                System.out.println("Delete image file error!");
-            }
+//            if (XuLyAnhBUS.deleteImage(fileName)) {
+//                this.dispose();
+//            } else {
+//                System.out.println("Delete image file error!");
+//            }
+//      Sau khi thêm, nên thêm reset form thêm nhân viên thì mới không bị mất ảnh sau khi thêm
+            this.dispose();
         }
-        
+
     }//GEN-LAST:event_btnCloseActionPerformed
 
     private void cbxTinhThanhItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTinhThanhItemStateChanged

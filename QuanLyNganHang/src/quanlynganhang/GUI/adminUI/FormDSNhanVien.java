@@ -5,8 +5,16 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
@@ -18,25 +26,42 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private JFrameChiTietNV formChiTiet;
     private NhanVienBUS nhanVienBUS;
     private int biXoa;
+    private boolean isFiltered;
+    private List<NhanVienDTO> listLocNV;
 
-    public FormDSNhanVien() {
+    public FormDSNhanVien() throws Exception {
         nhanVienBUS = new NhanVienBUS();
+        listLocNV = new ArrayList<>();
         initComponents();
         txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / họ tên / mã căn cước của nhân viên cần tìm...");
         biXoa = 0;
-        loadDSNhanVien(biXoa);
+        loadDSNhanVien(biXoa, false, null);
+        jTableDSNV.getTableHeader().setReorderingAllowed(false);
     }
 
-    public void loadDSNhanVien(int biXoa) {
+    public void loadDSNhanVien(int biXoa, boolean isFiltered, List<NhanVienDTO> list) throws Exception {
+        this.isFiltered = isFiltered;
+        listLocNV = list;
         DefaultTableModel model = (DefaultTableModel) jTableDSNV.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = nhanVienBUS.doiSangObjectNhanVien(biXoa);
+        Object[][] dataModel = isFiltered ? nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, list) : nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, null);
 
         String[] title = {"Mã nhân viên", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã Căn cước công dân", "Chức vụ"};
         model.setDataVector(dataModel, title);
 
         jTableDSNV.setDefaultEditor(Object.class, null);
+    }
+
+    private void sapXep(int columnIndex, boolean isAscending) {
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSNV.getModel());
+        jTableDSNV.setRowSorter(sorter);
+
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(columnIndex, isAscending ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+
+        sorter.setSortKeys(sortKeys);
+        sorter.sort();
     }
 
     /** This method is called from within the constructor to
@@ -59,7 +84,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         jButton5 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         btnBoLoc = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxSapXep = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -68,7 +93,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         btnThemNV = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        btnReload = new javax.swing.JButton();
         btnDoiBang = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
@@ -104,6 +129,12 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
 
+        txtSearchNV.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchNVKeyReleased(evt);
+            }
+        });
+
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -135,7 +166,12 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        cbxSapXep.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxSapXepItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -143,7 +179,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(139, 139, 139)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxSapXep, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
                 .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -154,7 +190,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnBoLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(jComboBox1))
+                    .addComponent(cbxSapXep))
                 .addContainerGap())
         );
 
@@ -225,10 +261,10 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
         jButton7.setText("Thêm chức vụ");
 
-        jButton8.setText("Tải lại DS");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        btnReload.setText("Tải lại DS");
+        btnReload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                btnReloadActionPerformed(evt);
             }
         });
 
@@ -249,7 +285,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                     .addComponent(btnThemNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDoiBang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -263,7 +299,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnDoiBang, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -332,7 +368,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
     private void btnBoLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoLocActionPerformed
         if (boloc == null) {
-            boloc = new JFrameBoLocDSNV();
+            boloc = new JFrameBoLocDSNV(this);
             boloc.setResizable(false);
             boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
         }
@@ -341,15 +377,23 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
+    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
+        try {
+            loadDSNhanVien(biXoa, false, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnReloadActionPerformed
 
     private void btnThemNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemNVActionPerformed
         JDialogThemNV themNV = new JDialogThemNV(null, true);
         themNV.setDefaultCloseOperation(JDialogThemNV.DISPOSE_ON_CLOSE);
         themNV.setVisible(true);
-        loadDSNhanVien(0);
+        try {
+            loadDSNhanVien(0, false, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_btnThemNVActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -362,12 +406,20 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private void btnDoiBangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiBangActionPerformed
         if (biXoa == 0) {
             biXoa = 1;
-            loadDSNhanVien(biXoa);
+            try {
+                loadDSNhanVien(biXoa, false, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             ppmSua.setText("Khôi phục");
             btnDoiBang.setText("DSNV hiện tại");
         } else {
             biXoa = 0;
-            loadDSNhanVien(biXoa);
+            try {
+                loadDSNhanVien(biXoa, false, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             ppmSua.setText("Sửa");
             btnDoiBang.setText("DSNV bị xóa");
         }
@@ -397,7 +449,12 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                         formChiTiet.addWindowListener(new WindowAdapter() {
                             @Override
                             public void windowClosed(WindowEvent e) {
-                                loadDSNhanVien(biXoa);
+                                try {
+                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                                formChiTiet = null;
                             }
                         });
                     }
@@ -432,7 +489,11 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                         }
                         if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
                             MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
-                            loadDSNhanVien(biXoa);
+                            try {
+                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         } else {
                             MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
                         }
@@ -444,7 +505,11 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                         formSua.addWindowListener(new WindowAdapter() {
                             @Override
                             public void windowClosed(WindowEvent e) {
-                                loadDSNhanVien(biXoa);
+                                try {
+                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
                         });
                     }
@@ -477,25 +542,64 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                     } else {
                         MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
 
-                        loadDSNhanVien(biXoa);
+                        try {
+                            loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
         }
     }//GEN-LAST:event_ppmXoaActionPerformed
 
+    private void txtSearchNVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchNVKeyReleased
+        DefaultTableModel obj = (DefaultTableModel) jTableDSNV.getModel();
+        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+        jTableDSNV.setRowSorter(obj1);
+
+        int[] searchColumns = {0, 1, 2, 8, 9};
+
+        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchNV.getText(), searchColumns);
+
+        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_txtSearchNVKeyReleased
+
+    private void cbxSapXepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSapXepItemStateChanged
+        String selectedSortOption = (String) cbxSapXep.getSelectedItem();
+
+        switch (selectedSortOption) {
+            case "Mã nhân viên tăng dần":
+                sapXep(0, true);
+                break;
+            case "Mã nhân viên giảm dần":
+                sapXep(0, false);
+                break;
+            case "Tên theo thứ tự A -> Z":
+                sapXep(2, true);
+                break;
+            case "Tên theo thứ tự Z -> A":
+                sapXep(2, false);
+                break;
+            default:
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSNV.getModel());
+                jTableDSNV.setRowSorter(null);
+                break;
+        }
+    }//GEN-LAST:event_cbxSapXepItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBoLoc;
     private javax.swing.JButton btnDoiBang;
+    private javax.swing.JButton btnReload;
     private javax.swing.JButton btnThemNV;
+    private javax.swing.JComboBox<String> cbxSapXep;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

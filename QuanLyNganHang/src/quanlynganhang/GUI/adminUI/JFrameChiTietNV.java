@@ -15,10 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import quanlynganhang.BUS.DiaChiBUS;
 import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.BUS.XuLyAnhBUS;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.DiaChiDTO;
@@ -31,11 +34,14 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
     private NhanVienBUS nhanVienBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private NhanVienDTO nhanVienDTO;
+    private String fileName, newFileName;
 
     public JFrameChiTietNV(NhanVienDTO nhanVien, boolean isEdit) {
         nhanVienBUS = new NhanVienBUS();
         nhanVienDTO = new NhanVienDTO();
         nhanVienDTO = nhanVien;
+        newFileName = "";
+
         initComponents();
         diaChiBUS = new DiaChiBUS();
         dienThongTin(nhanVien);
@@ -137,6 +143,8 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         String imagePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "quanlynganhang" + File.separator + "image" + File.separator + "data_image" + File.separator + tenFileAnh;
         ImageIcon icon = new ImageIcon(imagePath);
         ptbAnh.setImage(icon);
+        repaint();
+        revalidate();
     }
 
     private void dienThongTin(NhanVienDTO nhanVien) {
@@ -184,11 +192,15 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         loadTinhThanh(diaChi.getTenTinhThanh());
         loadQuanHuyen(maTinhThanh, diaChi.getTenQuanHuyen());
         loadPhuongXa(maQuanHuyen, diaChi.getTenPhuongXa());
-        
-        if (!nhanVien.getAnhDaiDien().isEmpty()) {
-            loadAnh(nhanVien.getAnhDaiDien());
+
+        fileName = nhanVien.getAnhDaiDien();
+        if (fileName != null) {
+            loadAnh(fileName);
+        } else {
+            fileName = "no_image.png";
+            loadAnh(fileName);
         }
-        
+
     }
 
     private boolean capNhatNhanVien() throws ParseException {
@@ -265,6 +277,17 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             nhanVien.setGioiTinh("Nữ");
         } else {
             nhanVien.setGioiTinh("Khác");
+        }
+
+        if (newFileName.isEmpty()) {
+            if (fileName == null) {
+                nhanVien.setAnhDaiDien("no_image.png");
+            } else {
+                nhanVien.setAnhDaiDien(fileName);
+            }
+            
+        } else {
+            nhanVien.setAnhDaiDien(newFileName);
         }
 
         if (error.isEmpty()) {
@@ -723,6 +746,11 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
 
         btnChonAnh.setText("Cập nhật ảnh đại diện");
         btnChonAnh.setEnabled(false);
+        btnChonAnh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChonAnhActionPerformed(evt);
+            }
+        });
 
         btnSuaThongTin.setText("Sửa thông tin");
         btnSuaThongTin.addActionListener(new java.awt.event.ActionListener() {
@@ -968,6 +996,8 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         } else {
             dienThongTin(nhanVienDTO);
             doiTrangThaiNhap(false);
+            loadAnh(fileName);
+            btnChonAnh.setText("Cập nhật ảnh đại diện");
             btnSuaThongTin.setText("Sửa thông tin");
         }
     }//GEN-LAST:event_btnSuaThongTinActionPerformed
@@ -992,6 +1022,35 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_btnCapNhatActionPerformed
+
+    private void btnChonAnhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonAnhActionPerformed
+        if (btnChonAnh.getText().equals("Cập nhật ảnh đại diện")) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn ảnh");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png", "gif");
+            fileChooser.setFileFilter(filter);
+            
+            int returnValue = fileChooser.showOpenDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+
+                newFileName = XuLyAnhBUS.saveImage(selectedFile);
+                loadAnh(newFileName);
+            } else {
+                return;
+            }
+            
+            btnChonAnh.setText("Xóa ảnh");
+      
+        } else {
+            if (XuLyAnhBUS.deleteImage(newFileName)) {
+                loadAnh(fileName);
+                btnChonAnh.setText("Cập nhật ảnh đại diện");
+            } else {
+                MessageBox.showErrorMessage(null, "Xóa ảnh thất bại!");
+            }
+        }
+    }//GEN-LAST:event_btnChonAnhActionPerformed
 
     /**
      * @param args the command line arguments

@@ -1,6 +1,8 @@
 package quanlynganhang.BUS;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import quanlynganhang.DAO.ChucVuDAO;
@@ -87,5 +89,31 @@ public class ChucVuBUS {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    public Map<Integer, String> convertListChucVuToMap() {
+        List<ChucVuDTO> list = getDSChucVu(0);
+        if (list == null) {
+            return null;
+        }
+
+        Map<Integer, String> map = new HashMap<>();
+        for (ChucVuDTO chucVu : list) {
+            map.put(chucVu.getMaChucVu(), chucVu.getTenChucVu());
+        }
+
+        return map;
+    }
+    
+    public Integer getIdFromTenChucVu(String tenChucVu) {
+        Map<Integer, String> map = new HashMap<>();
+        map = convertListChucVuToMap();
+        
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            if (entry.getValue().equals(tenChucVu)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }

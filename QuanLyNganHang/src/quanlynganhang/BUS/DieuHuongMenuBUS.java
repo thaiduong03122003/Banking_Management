@@ -1,5 +1,7 @@
 package quanlynganhang.BUS;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import quanlynganhang.GUI.Application;
 import quanlynganhang.GUI.FormChoVayVon;
 import quanlynganhang.GUI.FormChuyenCungNganHang;
@@ -47,7 +49,11 @@ public class DieuHuongMenuBUS {
                 } else if (index == 2) {
                     ApplicationAdmin.showForm(new FormDSKhachHang(), "Danh sách khách hàng");
                 } else if (index == 3) {
-                    ApplicationAdmin.showForm(new FormDSNhanVien(), "Danh sách nhân viên");
+                    try {
+                        ApplicationAdmin.showForm(new FormDSNhanVien(), "Danh sách nhân viên");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 4) {
                     ApplicationAdmin.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
                 } else if (index == 5) {

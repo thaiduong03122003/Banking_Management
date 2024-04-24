@@ -84,4 +84,11 @@ public class InputValidation {
             return false;
         }
     }
+    
+    public static boolean kiemTraTrinhTuNhapNgay(java.util.Date dateFrom, java.util.Date dateTo) {
+        if (dateFrom.compareTo(dateTo) > 0) {
+            return false;
+        }
+        return true;
+    }
 }

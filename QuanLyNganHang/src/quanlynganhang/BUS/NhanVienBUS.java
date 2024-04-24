@@ -1,5 +1,7 @@
 package quanlynganhang.BUS;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,7 +11,9 @@ import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 
 public class NhanVienBUS {
-
+    private String gender;
+    private Date dateFrom, dateTo;
+    private int provinceId, districtId, wardId, roleId;
     private final ChucVuDAO chucVuDAO = new ChucVuDAO();
     private final NhanVienDAO nhanVienDAO = new NhanVienDAO();
     private NhanVienDTO nhanVien;
@@ -30,9 +34,16 @@ public class NhanVienBUS {
         }
     }
 
-    public Object[][] doiSangObjectNhanVien(int biXoa) {
-        List<NhanVienDTO> list = getDSNhanVien(biXoa);
-
+    public Object[][] doiSangObjectNhanVien(int biXoa, boolean isFiltered, List<NhanVienDTO> listNV) throws Exception {
+        List<NhanVienDTO> list = new ArrayList<>();
+        
+        if (isFiltered) {
+            list = listNV;
+        } else {
+            list = getDSNhanVien(biXoa);
+        }
+        
+        String diaChi = "";
         Object[][] data = new Object[list.size()][10];
         int rowIndex = 0;
         for (NhanVienDTO nhanVien : list) {
@@ -41,7 +52,7 @@ public class NhanVienBUS {
             data[rowIndex][2] = nhanVien.getTen();
             data[rowIndex][3] = nhanVien.getGioiTinh();
             data[rowIndex][4] = nhanVien.getNgaySinh();
-            data[rowIndex][5] = nhanVien.getMaPhuongXa();
+            data[rowIndex][5] = nhanVien.getDiaChi();
             data[rowIndex][6] = nhanVien.getEmail();
             data[rowIndex][7] = nhanVien.getSdt();
             data[rowIndex][8] = nhanVien.getCccd();
@@ -95,5 +106,22 @@ public class NhanVienBUS {
             ex.printStackTrace();
             return null;
         }
+    }
+    
+    public List<NhanVienDTO> locNhanVien(String gender, java.util.Date dateFrom, java.util.Date dateTo, int provinceId, int districtId, int wardId, int roleId) throws Exception {
+        this.gender = gender;
+        java.sql.Date dateBatDau = null;
+        java.sql.Date dateKetThuc = null;
+    
+        if (dateFrom != null && dateTo != null) {
+            dateBatDau = new Date(dateFrom.getTime());
+            dateKetThuc = new Date(dateTo.getTime());
+        }
+        
+        this.provinceId = provinceId;
+        this.districtId = districtId;
+        this.wardId = wardId;
+        this.roleId = roleId;
+        return nhanVienDAO.filter(0, gender, dateBatDau, dateKetThuc, provinceId, districtId, wardId, roleId);
     }
 }
