@@ -6,25 +6,72 @@ package quanlynganhang.GUI.adminUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import quanlynganhang.BUS.MaHoaMatKhauBUS;
+import quanlynganhang.BUS.TaiKhoanNVBUS;
+import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 /**
  *
  * @author THAI
  */
 public class JDialogThemTKNV extends javax.swing.JDialog {
+    
+    private int maNhanVien;
+    private TaiKhoanNVBUS taiKhoanNVBUS;
 
     /** Creates new form JDialogThemNV */
-    public JDialogThemTKNV(java.awt.Frame parent, boolean modal) {
+    public JDialogThemTKNV(java.awt.Frame parent, boolean modal, int maNhanVien) {
         super(parent, modal);
+        this.maNhanVien = maNhanVien;
+        taiKhoanNVBUS = new TaiKhoanNVBUS();
         initComponents();
         initCustomUI();
+        
+        txtMaNV.setText("" + maNhanVien);
     }
-
+    
     private void initCustomUI() {
         pwfMatKhau.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
         pwfMaPIN.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
+    }
+    
+    private boolean dienThongTin() {
+        FormatDate fDate = new FormatDate();
+        StringBuilder error = new StringBuilder();
+        error.append("");
+        
+        TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
+        taiKhoanNV.setTenDangNhap(txtTenTK.getText());
+        
+        String password = String.valueOf(pwfMatKhau.getPassword());
+        if (InputValidation.kiemTraMatKhau(password)) {
+            taiKhoanNV.setMatKhau(MaHoaMatKhauBUS.encryptPassword(password));
+        } else {
+            error.append("\nMật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
+        }
+        
+        String pinCode = String.valueOf(pwfMaPIN.getPassword());
+        if (InputValidation.kiemTraMaPIN(pinCode)) {
+            taiKhoanNV.setMaPIN(MaHoaMatKhauBUS.encryptPassword(pinCode));
+        } else {
+            error.append("\nMã PIN có độ dài 6 ký tự, chỉ chứa các ký tự số!");
+        }
+        
+        taiKhoanNV.setNgayTaoTK(fDate.getToday());
+        taiKhoanNV.setMaNhanVien(maNhanVien);
+        if (error.isEmpty()) {
+            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV);
+        } else {
+            MessageBox.showErrorMessage(null, "Lỗi: " + error);
+            return false;
+        }
     }
 
     /** This method is called from within the constructor to
@@ -43,13 +90,13 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnClose = new javax.swing.JButton();
+        btnThemTKNV = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jPCardNum = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        txtHo = new javax.swing.JTextField();
+        txtMaNV = new javax.swing.JTextField();
         jPCardNum3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         txtTenTK = new javax.swing.JTextField();
@@ -93,15 +140,20 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
-        jButton1.setText("Hủy");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnClose.setText("Hủy");
+        btnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCloseActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Thêm");
+        btnThemTKNV.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnThemTKNV.setText("Thêm");
+        btnThemTKNV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemTKNVActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -109,9 +161,9 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(274, 274, 274)
-                .addComponent(jButton1)
+                .addComponent(btnClose)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(280, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -119,8 +171,8 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnClose)
+                    .addComponent(btnThemTKNV))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -135,8 +187,8 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         );
         jLabel3.setText("Mã nhân viên");
 
-        txtHo.setEditable(false);
-        txtHo.setEnabled(false);
+        txtMaNV.setEditable(false);
+        txtMaNV.setEnabled(false);
 
         javax.swing.GroupLayout jPCardNumLayout = new javax.swing.GroupLayout(jPCardNum);
         jPCardNum.setLayout(jPCardNumLayout);
@@ -145,7 +197,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
             .addGroup(jPCardNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPCardNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtHo)
+                    .addComponent(txtMaNV)
                     .addGroup(jPCardNumLayout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -157,7 +209,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtHo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtMaNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -188,7 +240,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         );
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel7.setIcon(new FlatSVGIcon("quanlynganhang/icon/email_label.svg")
+        jLabel7.setIcon(new FlatSVGIcon("quanlynganhang/icon/password_label.svg")
         );
         jLabel7.setText("Mật khẩu");
 
@@ -216,7 +268,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         );
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel8.setIcon(new FlatSVGIcon("quanlynganhang/icon/phone_label.svg")
+        jLabel8.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
         );
         jLabel8.setText("Mã PIN đăng nhập");
 
@@ -290,9 +342,17 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
         this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCloseActionPerformed
+
+    private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
+        if (dienThongTin()) {
+            MessageBox.showInformationMessage(null, "", "Thêm tài khoản nhân viên thành công!");
+        } else {
+            MessageBox.showErrorMessage(null, "Thêm tài khoản nhân viên thất bại!");
+        }
+    }//GEN-LAST:event_btnThemTKNVActionPerformed
 
     /**
      * @param args the command line arguments
@@ -325,22 +385,15 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                JDialogThemTKNV dialog = new JDialogThemTKNV(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                System.out.println("This JDialog just running in FormDSNhanVien and FormDSTaiKkhoanNV");
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClose;
     private javax.swing.ButtonGroup btnGroupGender;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnThemTKNV;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
@@ -359,7 +412,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPasswordField pwfMaPIN;
     private javax.swing.JPasswordField pwfMatKhau;
-    private javax.swing.JTextField txtHo;
+    private javax.swing.JTextField txtMaNV;
     private javax.swing.JTextField txtTenTK;
     // End of variables declaration//GEN-END:variables
 }

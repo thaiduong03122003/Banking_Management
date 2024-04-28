@@ -165,16 +165,36 @@ public class NhanVienDAO {
     }
 
     public NhanVienDTO selectById(int maNhanVien, int biXoa) throws Exception {
-        String sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu FROM tbl_nhan_vien nv LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu WHERE nv.ma_nhan_vien = ? AND nv.bi_xoa = ?";
-
+        String diaChi = "";
+        String sql;
+        if (biXoa == 2) {
+            sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_nhan_vien nv "
+            + "LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu "
+            + "LEFT JOIN tbl_phuong_xa wa ON nv.ma_phuong_xa = wa.wardId "
+            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+            + " WHERE ma_nhan_vien = ?";
+        } else {
+            sql = "SELECT nv.*, cv.ma_chuc_vu, cv.ten_chuc_vu, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_nhan_vien nv "
+            + "LEFT JOIN tbl_chuc_vu cv ON nv.ma_chuc_vu = cv.ma_chuc_vu "
+            + "LEFT JOIN tbl_phuong_xa wa ON nv.ma_phuong_xa = wa.wardId "
+            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+            + " WHERE nv.ma_nhan_vien = ? AND nv.bi_xoa = ?";
+        }
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-            pstmt.setInt(1, maNhanVien);
-            pstmt.setInt(2, biXoa);
+
+            if (biXoa == 2) {
+                pstmt.setInt(1, maNhanVien);
+            } else {
+                pstmt.setInt(1, maNhanVien);
+                pstmt.setInt(2, biXoa);
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     NhanVienDTO nhanVien = new NhanVienDTO();
-                    nhanVien.setMaNV(rs.getInt("ma_nhan_vien"));
+                    nhanVien.setMaNV(rs.getInt("nv.ma_nhan_vien"));
                     nhanVien.setHoDem(rs.getString("ho_dem"));
                     nhanVien.setTen(rs.getString("ten"));
                     nhanVien.setGioiTinh(rs.getString("gioi_tinh"));
@@ -188,7 +208,12 @@ public class NhanVienDAO {
                     nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
                     nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
                     nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
-                    nhanVien.setBiXoa(biXoa);
+                    
+                    diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
+
+                    nhanVien.setDiaChi(diaChi);
+                    
+                    nhanVien.setBiXoa(rs.getInt("nv.bi_xoa"));
 
                     return nhanVien;
                 }
@@ -208,19 +233,6 @@ public class NhanVienDAO {
                 while (rs.next()) {
                     NhanVienDTO nhanVien = new NhanVienDTO();
                     nhanVien.setMaNV(rs.getInt("ma_nhan_vien"));
-//                    nhanVien.setHoDem(rs.getString("ho_dem"));
-//                    nhanVien.setTen(rs.getString("ten"));
-//                    nhanVien.setGioiTinh(rs.getString("gioi_tinh"));
-//                    nhanVien.setNgaySinh(rs.getDate("ngay_sinh"));
-//                    nhanVien.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
-//                    nhanVien.setSoNha(rs.getString("so_nha"));
-//                    nhanVien.setEmail(rs.getString("email"));
-//                    nhanVien.setSdt(rs.getString("so_dien_thoai"));
-//                    nhanVien.setCccd(rs.getString("cccd"));
-//                    nhanVien.setAnhDaiDien(rs.getString("anh_dai_dien"));
-//                    nhanVien.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
-//                    nhanVien.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
-//                    nhanVien.setNgayVaoLam(rs.getDate("ngay_vao_lam"));
                     nhanVien.setBiXoa(biXoa);
 
                     return nhanVien;
@@ -268,7 +280,7 @@ public class NhanVienDAO {
             conditionalClause.append(" AND wa.wardId = ?");
             params.add(wardId);
         }
-        
+
         if (roleId != 0) {
             conditionalClause.append(" AND nv.ma_chuc_vu = ?");
             params.add(roleId);
@@ -321,7 +333,6 @@ public class NhanVienDAO {
                 list = null;
             }
             return list;
-
         }
     }
 }

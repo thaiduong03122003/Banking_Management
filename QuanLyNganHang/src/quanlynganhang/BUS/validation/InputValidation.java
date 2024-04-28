@@ -84,11 +84,31 @@ public class InputValidation {
             return false;
         }
     }
-    
+
     public static boolean kiemTraTrinhTuNhapNgay(java.util.Date dateFrom, java.util.Date dateTo) {
         if (dateFrom.compareTo(dateTo) > 0) {
             return false;
         }
         return true;
+    }
+
+    public static boolean kiemTraMatKhau(String password) {
+        if (password == null || password.isEmpty()) {
+            return false;
+        }
+
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,12}$";
+
+        return password.matches(pattern);
+    }
+
+    public static boolean kiemTraMaPIN(String pin) {
+        if (pin == null || pin.isEmpty()) {
+            return false;
+        }
+
+        String pattern = "^\\d{6}$";
+
+        return pin.matches(pattern);
     }
 }

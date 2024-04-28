@@ -6,6 +6,7 @@ package quanlynganhang.GUI.adminUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.ChucVuDTO;
@@ -1366,15 +1367,19 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         int maChucVu = 0;
         if (InputValidation.kiemTraTen(tenChucVu)) {
             if (btnThemChucVu.getText().equals("Cập nhật")) {
+                if (MessageBox.showConfirmMessage(null, "Bạn có muốn sửa chức vụ này?") == JOptionPane.YES_OPTION) {
+                    maChucVu = Integer.parseInt(txtMaChucVu.getText());
 
-                maChucVu = Integer.parseInt(txtMaChucVu.getText());
-
-                if (kiemTraQuyen(maChucVu, tenChucVu, moTa, true)) {
-                    MessageBox.showInformationMessage(null, "", "Cập nhật chức vụ thành công");
-                    btnHuyActionPerformed(null);
+                    if (kiemTraQuyen(maChucVu, tenChucVu, moTa, true)) {
+                        MessageBox.showInformationMessage(null, "", "Cập nhật chức vụ thành công");
+                        btnHuyActionPerformed(null);
+                    } else {
+                        MessageBox.showErrorMessage(null, "Chức vụ này đã tồn tại!");
+                    }
                 } else {
-                    MessageBox.showErrorMessage(null, "Chức vụ này đã tồn tại!");
+                    return;
                 }
+
             } else {
                 if (kiemTraQuyen(maChucVu, tenChucVu, moTa, false)) {
                     MessageBox.showInformationMessage(null, "", "Thêm chức vụ mới thành công");

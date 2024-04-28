@@ -5,16 +5,23 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
@@ -27,7 +34,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private NhanVienBUS nhanVienBUS;
     private int biXoa;
     private boolean isFiltered;
-    private List<NhanVienDTO> listLocNV;
+    private List<NhanVienDTO> listLocNV, currentList;
 
     public FormDSNhanVien() throws Exception {
         nhanVienBUS = new NhanVienBUS();
@@ -46,7 +53,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         model.setRowCount(0);
 
         Object[][] dataModel = isFiltered ? nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, list) : nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, null);
-
+        currentList = isFiltered ? list : nhanVienBUS.getDSNhanVien(biXoa);
         String[] title = {"Mã nhân viên", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã Căn cước công dân", "Chức vụ"};
         model.setDataVector(dataModel, title);
 
@@ -64,6 +71,40 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         sorter.sort();
     }
 
+    private boolean xuatFile() {
+        try {
+            JFileChooser jFileChooser = new JFileChooser("Lưu file");
+            jFileChooser.showSaveDialog(this);
+            File saveFile = jFileChooser.getSelectedFile();
+
+            if (saveFile != null) {
+                saveFile = new File(saveFile.toString() + ".xlsx");
+                nhanVienBUS.xuatExcel(saveFile, "Thái Dương", currentList);
+
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private List<NhanVienDTO> nhapExcel(File file) {
+
+        try {
+            return nhanVienBUS.nhapExcel(file);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -75,6 +116,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
         popupDSNV = new javax.swing.JPopupMenu();
         ppmChiTiet = new javax.swing.JMenuItem();
+        ppmTaoTK = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         ppmSua = new javax.swing.JMenuItem();
         ppmXoa = new javax.swing.JMenuItem();
@@ -87,11 +129,11 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         cbxSapXep = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnXuatFile = new javax.swing.JButton();
+        btnNhapFile = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         btnThemNV = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnThemTKNV = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
         btnDoiBang = new javax.swing.JButton();
@@ -107,6 +149,14 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             }
         });
         popupDSNV.add(ppmChiTiet);
+
+        ppmTaoTK.setText("Tạo tài khoản");
+        ppmTaoTK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ppmTaoTKActionPerformed(evt);
+            }
+        });
+        popupDSNV.add(ppmTaoTK);
         popupDSNV.add(jSeparator2);
 
         ppmSua.setText("Sửa");
@@ -217,12 +267,22 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jButton1.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
-        jButton1.setText("Xuất file");
+        btnXuatFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
+        btnXuatFile.setText("Xuất file");
+        btnXuatFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXuatFileActionPerformed(evt);
+            }
+        });
 
-        jButton2.setIcon(new FlatSVGIcon("quanlynganhang/icon/nhap_excel_btn.svg")
+        btnNhapFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/nhap_excel_btn.svg")
         );
-        jButton2.setText("Nhập file");
+        btnNhapFile.setText("Nhập file");
+        btnNhapFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNhapFileActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -231,17 +291,17 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnXuatFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnNhapFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnXuatFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnNhapFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -252,10 +312,10 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             }
         });
 
-        jButton4.setText("Thêm tài khoản");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnThemTKNV.setText("Thêm tài khoản");
+        btnThemTKNV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnThemTKNVActionPerformed(evt);
             }
         });
 
@@ -283,7 +343,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnThemNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnThemTKNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDoiBang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -295,7 +355,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(btnThemNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -379,7 +439,18 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         try {
-            loadDSNhanVien(biXoa, false, null);
+            if (boloc != null) {
+                listLocNV = boloc.listNVBoLoc();
+                if (listLocNV == null) {
+                    MessageBox.showErrorMessage(null, "Không có nhân viên nào!");
+                    boloc = null;
+                    loadDSNhanVien(biXoa, false, null);
+                } else {
+                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                }
+            } else {
+                loadDSNhanVien(biXoa, false, null);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -396,12 +467,9 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnThemNVActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        JDialogThemTKNV themTKNV = new JDialogThemTKNV(null, true);
-        themTKNV.setDefaultCloseOperation(JDialogThemTKNV.DISPOSE_ON_CLOSE);
-        themTKNV.setVisible(true);
-
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
+        ppmTaoTKActionPerformed(null);
+    }//GEN-LAST:event_btnThemTKNVActionPerformed
 
     private void btnDoiBangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiBangActionPerformed
         if (biXoa == 0) {
@@ -484,19 +552,21 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 } else {
 
                     if (biXoa == 1) {
-                        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục nhân viên này?") == JOptionPane.NO_OPTION) {
-                            return;
-                        }
-                        if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
-                            MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
-                            try {
-                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục nhân viên này?") == JOptionPane.YES_OPTION) {
+                            if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
+                                MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
+                                try {
+                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            } else {
+                                MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
                             }
                         } else {
-                            MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
+                            return;
                         }
+
                     } else {
                         JFrameChiTietNV formSua = new JFrameChiTietNV(nhanVien, true);
                         formSua.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
@@ -530,23 +600,23 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             } else {
                 Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
                 if (idObj != null) {
-                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.NO_OPTION) {
-                        return;
-                    }
+                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.YES_OPTION) {
+                        int maNhanVien = Integer.parseInt(idObj.toString());
+                        boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
+                        if (isDelete == false) {
+                            MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
+                            return;
+                        } else {
+                            MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
 
-                    int maNhanVien = Integer.parseInt(idObj.toString());
-                    boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
-                    if (isDelete == false) {
-                        MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
-                        return;
-                    } else {
-                        MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
-
-                        try {
-                            loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                            try {
+                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
+                    } else {
+                        return;
                     }
                 }
             }
@@ -588,16 +658,81 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_cbxSapXepItemStateChanged
 
+    private void btnXuatFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatFileActionPerformed
+        if (xuatFile()) {
+            MessageBox.showInformationMessage(null, "Xuất file", "Xuất file thành công!");
+        } else {
+            MessageBox.showErrorMessage(null, "Xuất file thất bại!");
+        }
+    }//GEN-LAST:event_btnXuatFileActionPerformed
+
+    private void btnNhapFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhapFileActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn file");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel files", "xlsx", "xlsm", "xltx", "xlsb", "xltm", "xla", "xlam", "xll", "xlw");
+        fileChooser.setFileFilter(filter);
+
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            List<NhanVienDTO> listNV = nhapExcel(selectedFile);
+            if (listNV != null) {
+                MessageBox.showInformationMessage(null, "Nhập file", "Lấy dữ liệu thành công!");
+                try {
+                    loadDSNhanVien(biXoa, true, listNV);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                MessageBox.showErrorMessage(null, "Lấy dữ liệu nhập thất bại!");
+            }
+        } else {
+            return;
+        }
+
+    }//GEN-LAST:event_btnNhapFileActionPerformed
+
+    private void ppmTaoTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmTaoTKActionPerformed
+        int selectedRow = jTableDSNV.getSelectedRow();
+        if (selectedRow == -1) {
+            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi thêm tài khoản!");
+            return;
+
+        } else {
+            Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
+            if (idObj != null) {
+                int maNhanVien = Integer.parseInt(idObj.toString());
+                NhanVienDTO nhanVien = new NhanVienDTO();
+                nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
+                if (nhanVien == null) {
+                    MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
+                    return;
+                } else {
+
+                    if (biXoa == 1) {
+                        MessageBox.showErrorMessage(null, "Không thể thêm tài khoản cho nhân viên bị xóa!");
+                        return;
+
+                    } else {
+                        JDialogThemTKNV themTK = new JDialogThemTKNV(null, true, maNhanVien);
+                        themTK.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
+                        themTK.setVisible(true);
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_ppmTaoTKActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBoLoc;
     private javax.swing.JButton btnDoiBang;
+    private javax.swing.JButton btnNhapFile;
     private javax.swing.JButton btnReload;
     private javax.swing.JButton btnThemNV;
+    private javax.swing.JButton btnThemTKNV;
+    private javax.swing.JButton btnXuatFile;
     private javax.swing.JComboBox<String> cbxSapXep;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
     private javax.swing.JPanel jPanel1;
@@ -614,6 +749,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private javax.swing.JPopupMenu popupDSNV;
     private javax.swing.JMenuItem ppmChiTiet;
     private javax.swing.JMenuItem ppmSua;
+    private javax.swing.JMenuItem ppmTaoTK;
     private javax.swing.JMenuItem ppmXoa;
     private javax.swing.JTextField txtSearchNV;
     // End of variables declaration//GEN-END:variables

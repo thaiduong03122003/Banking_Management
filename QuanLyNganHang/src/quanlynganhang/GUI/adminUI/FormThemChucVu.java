@@ -340,20 +340,20 @@ public class FormThemChucVu extends javax.swing.JPanel {
             } else {
                 Object idObj = jTableDSChucVu.getValueAt(selectedRow, 0);
                 if (idObj != null) {
-                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa chức vụ này?") == JOptionPane.NO_OPTION) {
-                        return;
-                    }
+                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa chức vụ này?") == JOptionPane.YES_OPTION) {
+                        int maChucVu = Integer.parseInt(idObj.toString());
+                        boolean isDelete = chucVuBUS.deleteChucVu(maChucVu);
+                        if (isDelete == false) {
+                            MessageBox.showErrorMessage(null, "Xóa chức vụ thất bại!");
+                            return;
+                        } else {
+                            MessageBox.showInformationMessage(null, "", "Xóa chức vụ thành công");
 
-                    int maChucVu = Integer.parseInt(idObj.toString());
-                    boolean isDelete = chucVuBUS.deleteChucVu(maChucVu);
-                    if (isDelete == false) {
-                        MessageBox.showErrorMessage(null, "Xóa chức vụ thất bại!");
-                        return;
+                            biXoa = 1;
+                            btnDoiBangActionPerformed(null);
+                        }
                     } else {
-                        MessageBox.showInformationMessage(null, "", "Xóa chức vụ thành công");
-
-                        biXoa = 1;
-                        btnDoiBangActionPerformed(null);
+                        return;
                     }
                 }
             }

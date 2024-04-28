@@ -189,7 +189,10 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         }
 
         return nhanVienBUS.locNhanVien(gender, dateFrom, dateTo, idTinh, idHuyen, idXa, idChucVu);
-
+    }
+    
+    public List<NhanVienDTO> listNVBoLoc() throws Exception {
+        return chonTieuChiLoc();
     }
 
     /** This method is called from within the constructor to
@@ -709,9 +712,7 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         } else {
             maChucVu = chucVuBUS.getIdFromTenChucVu(tenChucVu);
 
-            if (maChucVu != 0) {
-                System.out.println("Lay ma chuc vu thanh cong!");
-            } else {
+            if (maChucVu == 0) {
                 MessageBox.showErrorMessage(null, "Lấy id của chức vụ thất bại!");
             }
         }

@@ -57,7 +57,11 @@ public class DieuHuongMenuBUS {
                 } else if (index == 4) {
                     ApplicationAdmin.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
                 } else if (index == 5) {
-                    ApplicationAdmin.showForm(new FormDSTaiKhoanNV(), "Danh sách tài khoản khách hàng");
+                    try {
+                        ApplicationAdmin.showForm(new FormDSTaiKhoanNV(), "Danh sách tài khoản nhân viên");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 6) {
                     ApplicationAdmin.showForm(new FormDSThe(), "Danh sách thẻ");
                 } else if (index == 7) {

@@ -116,6 +116,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
         if (InputValidation.kiemTraNgay(txtNgaySinh.getText())) {
             if (InputValidation.kiemTratuoi(txtNgaySinh.getText())) {
                 nhanVien.setNgaySinh(fDate.toDate(txtNgaySinh.getText()));
+                System.out.println("Ngay sinh: " + nhanVien.getNgaySinh());
             } else {
                 error.append("\nKhông thể thêm nhân viên với độ tuổi này");
             }
