@@ -31,10 +31,10 @@ public class TaiKhoanNVDAO {
                 pstmt.setString(1, taiKhoanNV.getTenDangNhap());
                 pstmt.setString(2, taiKhoanNV.getMatKhau());
                 pstmt.setString(3, taiKhoanNV.getMaPIN());
-                
+
                 java.sql.Date dateNgaySinh = new Date(taiKhoanNV.getNgayTaoTK().getTime());
                 pstmt.setDate(4, dateNgaySinh);
-                
+
                 pstmt.setInt(5, taiKhoanNV.getMaNhanVien());
                 pstmt.setInt(6, 7);
 
@@ -158,8 +158,8 @@ public class TaiKhoanNVDAO {
             return null;
         }
     }
-    
-     public List<TaiKhoanNVDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maNhanVien, int maTrangThai) throws Exception {
+
+    public List<TaiKhoanNVDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maNhanVien, int maTrangThai) throws Exception {
         String sql = "SELECT tknv.*, nv.ho_dem, nv.ten, tt.ten_trang_thai FROM tbl_tai_khoan_nhan_vien tknv"
             + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
             + " LEFT JOIN tbl_trang_thai tt ON tknv.ma_trang_thai = tt.ma_trang_thai WHERE tknv.ma_tk_nhan_vien != ?";
@@ -173,12 +173,12 @@ public class TaiKhoanNVDAO {
             params.add(dateFrom);
             params.add(dateTo);
         }
-        
+
         if (maNhanVien != 0) {
             conditionalClause.append(" AND tknv.ma_nhan_vien = ?");
             params.add(maNhanVien);
         }
-        
+
         if (maTrangThai != 0) {
             conditionalClause.append(" AND tknv.ma_trang_thai = ?");
             params.add(maTrangThai);
@@ -207,7 +207,7 @@ public class TaiKhoanNVDAO {
                         taiKhoanNV.setNgayTaoTK(rs.getDate("ngay_tao_tk"));
                         taiKhoanNV.setMaTrangThai(rs.getInt("ma_trang_thai"));
                         taiKhoanNV.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                       
+
                         list.add(taiKhoanNV);
                     } while (rs.next());
                 }
@@ -218,5 +218,27 @@ public class TaiKhoanNVDAO {
             return list;
         }
     }
-}
 
+    public boolean changePassword(TaiKhoanNVDTO taiKhoanNV) throws Exception {
+        String sql = "UPDATE tbl_tai_khoan_nhan_vien SET mat_khau = ? WHERE ma_tk_nhan_vien = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setString(1, taiKhoanNV.getMatKhau());
+            pstmt.setInt(2, taiKhoanNV.getMaTKNV());
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+    
+    public boolean changePINCode(TaiKhoanNVDTO taiKhoanNV) throws Exception {
+        String sql = "UPDATE tbl_tai_khoan_nhan_vien SET ma_PIN_dang_nhap = ? WHERE ma_tk_nhan_vien = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setString(1, taiKhoanNV.getMaPIN());
+            pstmt.setInt(2, taiKhoanNV.getMaTKNV());
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+}

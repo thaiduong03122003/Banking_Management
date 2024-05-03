@@ -1,13 +1,13 @@
 package quanlynganhang.DTO;
 
 public class ChucVuDTO {
-    private int maChucVu, isAdmin, qLThongKe, qLGiaoDich, qLGuiTietKiem, qLVayVon, qLVayTinDung, biXoa;
+    private int maChucVu, isAdmin, qLThongKe, qLGiaoDich, qLGuiTietKiem, qLVayVon, qLVayTinDung, biXoa, soChucVu;
     private String tenChucVu, moTa, qLKhachHang, qLNhanVien, qLTKKhachHang,qLTKNhanVien, qLThe;
 
     public ChucVuDTO() {
     }
 
-    public ChucVuDTO(int maChucVu, int isAdmin, int qLThongKe, int qLGiaoDich, int qLGuiTietKiem, int qLVayVon, int qLVayTinDung, int biXoa, String tenChucVu, String moTa, String qLKhachHang, String qLNhanVien, String qLTKKhachHang, String qLTKNhanVien, String qLThe) {
+    public ChucVuDTO(int maChucVu, int isAdmin, int qLThongKe, int qLGiaoDich, int qLGuiTietKiem, int qLVayVon, int qLVayTinDung, int biXoa, String tenChucVu, String moTa, String qLKhachHang, String qLNhanVien, String qLTKKhachHang, String qLTKNhanVien, String qLThe, int soChucVu) {
         this.maChucVu = maChucVu;
         this.isAdmin = isAdmin;
         this.qLThongKe = qLThongKe;
@@ -23,6 +23,7 @@ public class ChucVuDTO {
         this.qLTKKhachHang = qLTKKhachHang;
         this.qLTKNhanVien = qLTKNhanVien;
         this.qLThe = qLThe;
+        this.soChucVu = soChucVu;
     }
 
     public int getMaChucVu() {
@@ -143,6 +144,14 @@ public class ChucVuDTO {
 
     public void setqLThe(String qLThe) {
         this.qLThe = qLThe;
+    }
+
+    public int getSoChucVu() {
+        return soChucVu;
+    }
+
+    public void setSoChucVu(int soChucVu) {
+        this.soChucVu = soChucVu;
     }
 
     

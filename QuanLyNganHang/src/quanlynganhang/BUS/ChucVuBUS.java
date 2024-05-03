@@ -116,4 +116,28 @@ public class ChucVuBUS {
         }
         return null;
     }
+    
+    private List<ChucVuDTO> getSoLuongChucVu() {
+        try {
+            return chucVuDAO.getNORole();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public Object[][] doiSangObjectSoLuongChucVu() {
+        List<ChucVuDTO> list = getSoLuongChucVu();
+
+        Object[][] data = new Object[list.size()][3];
+        int rowIndex = 0;
+        for (ChucVuDTO chucVu : list) {
+            data[rowIndex][0] = chucVu.getMaChucVu();
+            data[rowIndex][1] = chucVu.getTenChucVu();
+            data[rowIndex][2] = chucVu.getSoChucVu();
+ 
+            rowIndex++;
+        }
+        return data;
+    }
 }

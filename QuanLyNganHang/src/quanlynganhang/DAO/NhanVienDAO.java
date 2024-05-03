@@ -335,4 +335,15 @@ public class NhanVienDAO {
             return list;
         }
     }
+    
+    public boolean changeRole(int maNhanVien, int maChucVu) throws Exception {
+        String sql = "UPDATE tbl_nhan_vien SET ma_chuc_vu = ? WHERE ma_nhan_vien = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setInt(1, maChucVu);
+            pstmt.setInt(2, maNhanVien);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
 }

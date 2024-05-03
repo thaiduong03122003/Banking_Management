@@ -6,7 +6,13 @@ package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import quanlynganhang.BUS.KhachHangBUS;
+import quanlynganhang.BUS.TaiKhoanKHBUS;
+import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.DTO.KhachHangDTO;
+import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 /**
  *
@@ -14,8 +20,15 @@ import quanlynganhang.GUI.model.menubar.Menu;
  */
 public class FormNapTien extends javax.swing.JPanel {
 
-    /** Creates new form FormThongKe */
+    private FormatDate fDate;
+    private TaiKhoanKHBUS taiKhoanBUS;
+    private KhachHangBUS khachHangBUS;
+
     public FormNapTien() {
+        fDate = new FormatDate();
+        taiKhoanBUS = new TaiKhoanKHBUS();
+        khachHangBUS = new KhachHangBUS();
+
         initComponents();
         initCustomUI();
     }
@@ -53,18 +66,53 @@ public class FormNapTien extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPPhoneNum.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        
-        txtSoDu.putClientProperty(FlatClientProperties.STYLE, ""
+
+        pwfSoDu.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
-        
-        txtAccNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccName.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtDateCreate.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccType.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusYOB.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusAddress.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtPhoneNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+
+        txtSoTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTenTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtCCCD.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtLoaiTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtNgaySinh.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtDiaChi.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtSDT.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
     }
+
+    public void dienThongTinTKKH(int maTaiKhoanKH) {
+        TaiKhoanKHDTO taiKhoanKH = taiKhoanBUS.getTaiKhoanKHById(maTaiKhoanKH);
+
+        if (taiKhoanKH != null) {
+            lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
+            lbMaTKKH.setText("" + taiKhoanKH.getMaTKKH());
+            txtSoTaiKhoan.setText(taiKhoanKH.getSoTaiKhoan());
+            txtTenTaiKhoan.setText(taiKhoanKH.getTenTaiKhoan());
+            txtLoaiTaiKhoan.setText(taiKhoanKH.getTenLoaiTaiKhoan());
+            pwfSoDu.setText("" + taiKhoanKH.getSoDu());
+            lbTenKhachHang.setText(taiKhoanKH.getTenKhachHang());
+
+            KhachHangDTO khachHang = khachHangBUS.getKhachHangById(taiKhoanKH.getMaKhachHang(), 0);
+            if (khachHang != null) {
+                txtCCCD.setText(khachHang.getCccd());
+                txtNgaySinh.setText(fDate.toString(khachHang.getNgaySinh()));
+                txtDiaChi.setText(khachHang.getDiaChi());
+                txtSDT.setText(khachHang.getSdt());
+
+                String gioiTinh = khachHang.getGioiTinh();
+                if (gioiTinh.equals("Nam")) {
+                    rdbNam.setSelected(true);
+                } else if (gioiTinh.equals("Nữ")) {
+                    rdbNu.setSelected(true);
+                } else {
+                    rdbKhac.setSelected(true);
+                }
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản khách hàng!");
+        }
+
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -81,7 +129,7 @@ public class FormNapTien extends javax.swing.JPanel {
         jPSoDu = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txtSoDu = new javax.swing.JPasswordField();
+        pwfSoDu = new javax.swing.JPasswordField();
         jPSoTienNap = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         txtSoTienNap = new javax.swing.JTextField();
@@ -94,13 +142,13 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
-        jLabel27 = new javax.swing.JLabel();
+        lbTenKhachHang = new javax.swing.JLabel();
         lbSoTienNap = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnChonTKKH = new javax.swing.JButton();
         jPPINCode = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         txtPINCode1 = new javax.swing.JTextField();
@@ -109,34 +157,34 @@ public class FormNapTien extends javax.swing.JPanel {
         jSeparator2 = new javax.swing.JSeparator();
         jPCusNameInfo = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lbHoTenKH = new javax.swing.JLabel();
         jPAccNum = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        txtAccNum = new javax.swing.JTextField();
+        txtSoTaiKhoan = new javax.swing.JTextField();
         jPAccType = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        txtAccName = new javax.swing.JTextField();
+        txtTenTaiKhoan = new javax.swing.JTextField();
         jPIdCentizenCard = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        txtDateCreate = new javax.swing.JTextField();
+        txtCCCD = new javax.swing.JTextField();
         jPCusYOB = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
-        txtCusYOB = new javax.swing.JTextField();
+        txtNgaySinh = new javax.swing.JTextField();
         jPAddress = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
-        txtCusAddress = new javax.swing.JTextField();
+        txtDiaChi = new javax.swing.JTextField();
         jPAccName = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
-        txtAccType = new javax.swing.JTextField();
+        txtLoaiTaiKhoan = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        lbMaTKKH = new javax.swing.JLabel();
         jPPhoneNum = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
-        txtPhoneNum = new javax.swing.JTextField();
+        txtSDT = new javax.swing.JTextField();
         jPGender = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        rdbNam = new javax.swing.JRadioButton();
+        rdbNu = new javax.swing.JRadioButton();
+        rdbKhac = new javax.swing.JRadioButton();
         jLabel21 = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(1132, 511));
@@ -152,8 +200,8 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel1.setText("VND");
 
-        txtSoDu.setEditable(false);
-        txtSoDu.setText("130.000.000");
+        pwfSoDu.setEditable(false);
+        pwfSoDu.setText("130.000.000");
 
         javax.swing.GroupLayout jPSoDuLayout = new javax.swing.GroupLayout(jPSoDu);
         jPSoDu.setLayout(jPSoDuLayout);
@@ -163,7 +211,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPSoDuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPSoDuLayout.createSequentialGroup()
-                        .addComponent(txtSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pwfSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -176,7 +224,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPSoDuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtSoDu, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(pwfSoDu, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                     .addGroup(jPSoDuLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel1)))
@@ -245,8 +293,8 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel26.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel26.setText("Loại giao dịch:");
 
-        jLabel27.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel27.setText("Nguyễn Văn A");
+        lbTenKhachHang.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbTenKhachHang.setText("Nguyễn Văn A");
 
         lbSoTienNap.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         lbSoTienNap.setText("12.354.111 VND");
@@ -269,7 +317,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbSoTienNap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbTenKhachHang, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -289,7 +337,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel24)
-                    .addComponent(jLabel27))
+                    .addComponent(lbTenKhachHang))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel25)
@@ -332,7 +380,12 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jButton5.setText("Chọn tài khoản khách hàng");
+        btnChonTKKH.setText("Chọn tài khoản khách hàng");
+        btnChonTKKH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChonTKKHActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
@@ -371,7 +424,7 @@ public class FormNapTien extends javax.swing.JPanel {
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnChonTKKH, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -388,7 +441,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbTitle)
-                    .addComponent(jButton5))
+                    .addComponent(btnChonTKKH))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -410,8 +463,8 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel9.setText("Họ tên khách hàng: ");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("(Chưa chọn)");
+        lbHoTenKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbHoTenKH.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPCusNameInfoLayout = new javax.swing.GroupLayout(jPCusNameInfo);
         jPCusNameInfo.setLayout(jPCusNameInfoLayout);
@@ -419,10 +472,10 @@ public class FormNapTien extends javax.swing.JPanel {
             jPCusNameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPCusNameInfoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbHoTenKH, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPCusNameInfoLayout.setVerticalGroup(
             jPCusNameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -430,7 +483,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusNameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addComponent(lbHoTenKH))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -439,8 +492,8 @@ public class FormNapTien extends javax.swing.JPanel {
         );
         jLabel11.setText("Số tài khoản khách hàng");
 
-        txtAccNum.setEditable(false);
-        txtAccNum.setEnabled(false);
+        txtSoTaiKhoan.setEditable(false);
+        txtSoTaiKhoan.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNumLayout = new javax.swing.GroupLayout(jPAccNum);
         jPAccNum.setLayout(jPAccNumLayout);
@@ -449,7 +502,7 @@ public class FormNapTien extends javax.swing.JPanel {
             .addGroup(jPAccNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSoTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -459,7 +512,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSoTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -468,8 +521,8 @@ public class FormNapTien extends javax.swing.JPanel {
         );
         jLabel12.setText("Tên tài khoản");
 
-        txtAccName.setEditable(false);
-        txtAccName.setEnabled(false);
+        txtTenTaiKhoan.setEditable(false);
+        txtTenTaiKhoan.setEnabled(false);
 
         javax.swing.GroupLayout jPAccTypeLayout = new javax.swing.GroupLayout(jPAccType);
         jPAccType.setLayout(jPAccTypeLayout);
@@ -481,7 +534,7 @@ public class FormNapTien extends javax.swing.JPanel {
                     .addGroup(jPAccTypeLayout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtAccName))
+                    .addComponent(txtTenTaiKhoan))
                 .addContainerGap())
         );
         jPAccTypeLayout.setVerticalGroup(
@@ -490,7 +543,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccName, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTenTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -499,8 +552,8 @@ public class FormNapTien extends javax.swing.JPanel {
         );
         jLabel13.setText("Mã căn cước công dân");
 
-        txtDateCreate.setEditable(false);
-        txtDateCreate.setEnabled(false);
+        txtCCCD.setEditable(false);
+        txtCCCD.setEnabled(false);
 
         javax.swing.GroupLayout jPIdCentizenCardLayout = new javax.swing.GroupLayout(jPIdCentizenCard);
         jPIdCentizenCard.setLayout(jPIdCentizenCardLayout);
@@ -509,7 +562,7 @@ public class FormNapTien extends javax.swing.JPanel {
             .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -519,7 +572,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -528,8 +581,8 @@ public class FormNapTien extends javax.swing.JPanel {
         );
         jLabel14.setText("Ngày sinh");
 
-        txtCusYOB.setEditable(false);
-        txtCusYOB.setEnabled(false);
+        txtNgaySinh.setEditable(false);
+        txtNgaySinh.setEnabled(false);
 
         javax.swing.GroupLayout jPCusYOBLayout = new javax.swing.GroupLayout(jPCusYOB);
         jPCusYOB.setLayout(jPCusYOBLayout);
@@ -539,7 +592,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusYOBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPCusYOBLayout.setVerticalGroup(
@@ -548,7 +601,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -557,8 +610,8 @@ public class FormNapTien extends javax.swing.JPanel {
         );
         jLabel16.setText("Địa chỉ của khách hàng");
 
-        txtCusAddress.setEditable(false);
-        txtCusAddress.setEnabled(false);
+        txtDiaChi.setEditable(false);
+        txtDiaChi.setEnabled(false);
 
         javax.swing.GroupLayout jPAddressLayout = new javax.swing.GroupLayout(jPAddress);
         jPAddress.setLayout(jPAddressLayout);
@@ -570,7 +623,7 @@ public class FormNapTien extends javax.swing.JPanel {
                     .addGroup(jPAddressLayout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtCusAddress))
+                    .addComponent(txtDiaChi))
                 .addContainerGap())
         );
         jPAddressLayout.setVerticalGroup(
@@ -579,15 +632,15 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCusAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(26, Short.MAX_VALUE))
         );
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel17.setText("Loại tài khoản");
 
-        txtAccType.setEditable(false);
-        txtAccType.setEnabled(false);
+        txtLoaiTaiKhoan.setEditable(false);
+        txtLoaiTaiKhoan.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNameLayout = new javax.swing.GroupLayout(jPAccName);
         jPAccName.setLayout(jPAccNameLayout);
@@ -599,7 +652,7 @@ public class FormNapTien extends javax.swing.JPanel {
                     .addGroup(jPAccNameLayout.createSequentialGroup()
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 70, Short.MAX_VALUE))
-                    .addComponent(txtAccType))
+                    .addComponent(txtLoaiTaiKhoan))
                 .addContainerGap())
         );
         jPAccNameLayout.setVerticalGroup(
@@ -608,23 +661,23 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccType, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtLoaiTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jLabel18.setText("Mã khách hàng: ");
+        jLabel18.setText("Mã tài khoản: ");
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel19.setText("(Chưa chọn)");
+        lbMaTKKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaTKKH.setText("(Chưa chọn)");
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel20.setIcon(new FlatSVGIcon("quanlynganhang/icon/phone_label.svg")
         );
         jLabel20.setText("Số điện thoại");
 
-        txtPhoneNum.setEditable(false);
-        txtPhoneNum.setEnabled(false);
+        txtSDT.setEditable(false);
+        txtSDT.setEnabled(false);
 
         javax.swing.GroupLayout jPPhoneNumLayout = new javax.swing.GroupLayout(jPPhoneNum);
         jPPhoneNum.setLayout(jPPhoneNumLayout);
@@ -633,7 +686,7 @@ public class FormNapTien extends javax.swing.JPanel {
             .addGroup(jPPhoneNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPPhoneNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPhoneNum)
+                    .addComponent(txtSDT)
                     .addGroup(jPPhoneNumLayout.createSequentialGroup()
                         .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 36, Short.MAX_VALUE)))
@@ -645,22 +698,22 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel20)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSDT, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(26, Short.MAX_VALUE))
         );
 
-        btnGroupGender.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Nam");
-        jRadioButton1.setEnabled(false);
+        btnGroupGender.add(rdbNam);
+        rdbNam.setSelected(true);
+        rdbNam.setText("Nam");
+        rdbNam.setEnabled(false);
 
-        btnGroupGender.add(jRadioButton2);
-        jRadioButton2.setText("Nữ");
-        jRadioButton2.setEnabled(false);
+        btnGroupGender.add(rdbNu);
+        rdbNu.setText("Nữ");
+        rdbNu.setEnabled(false);
 
-        btnGroupGender.add(jRadioButton3);
-        jRadioButton3.setText("Khác");
-        jRadioButton3.setEnabled(false);
+        btnGroupGender.add(rdbKhac);
+        rdbKhac.setText("Khác");
+        rdbKhac.setEnabled(false);
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel21.setIcon(new FlatSVGIcon("quanlynganhang/icon/gender_label.svg")
@@ -676,11 +729,11 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addGroup(jPGenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPGenderLayout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
+                        .addComponent(rdbNam)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton2)
+                        .addComponent(rdbNu)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton3)))
+                        .addComponent(rdbKhac)))
                 .addContainerGap(61, Short.MAX_VALUE))
         );
         jPGenderLayout.setVerticalGroup(
@@ -690,9 +743,9 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPGenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton3))
+                    .addComponent(rdbNam)
+                    .addComponent(rdbNu)
+                    .addComponent(rdbKhac))
                 .addContainerGap(46, Short.MAX_VALUE))
         );
 
@@ -704,7 +757,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addGap(12, 12, 12)
                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbMaTKKH, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPAccountInfoLayout.createSequentialGroup()
                 .addContainerGap()
@@ -747,7 +800,7 @@ public class FormNapTien extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel18)
-                            .addComponent(jLabel19))
+                            .addComponent(lbMaTKKH))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPAccountInfoLayout.createSequentialGroup()
@@ -798,14 +851,20 @@ public class FormNapTien extends javax.swing.JPanel {
         lbSoTienNap.setText("" + txtSoTienNap.getText() + " VND");
     }//GEN-LAST:event_txtSoTienNapFocusLost
 
+    private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH");
+        chonTKKH.setResizable(false);
+        chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonTKKH.setVisible(true);
+    }//GEN-LAST:event_btnChonTKKHActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChonTKKH;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -814,7 +873,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -823,7 +881,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -847,22 +904,25 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JPanel jPSoDu;
     private javax.swing.JPanel jPSoTienNap;
     private javax.swing.JPanel jPThongTinGD;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel lbHoTenKH;
+    private javax.swing.JLabel lbMaTKKH;
     private javax.swing.JLabel lbSoTienNap;
+    private javax.swing.JLabel lbTenKhachHang;
     private javax.swing.JLabel lbTitle;
-    private javax.swing.JTextField txtAccName;
-    private javax.swing.JTextField txtAccNum;
-    private javax.swing.JTextField txtAccType;
-    private javax.swing.JTextField txtCusAddress;
-    private javax.swing.JTextField txtCusYOB;
-    private javax.swing.JTextField txtDateCreate;
+    private javax.swing.JPasswordField pwfSoDu;
+    private javax.swing.JRadioButton rdbKhac;
+    private javax.swing.JRadioButton rdbNam;
+    private javax.swing.JRadioButton rdbNu;
+    private javax.swing.JTextField txtCCCD;
+    private javax.swing.JTextField txtDiaChi;
+    private javax.swing.JTextField txtLoaiTaiKhoan;
+    private javax.swing.JTextField txtNgaySinh;
     private javax.swing.JTextField txtPINCode1;
-    private javax.swing.JTextField txtPhoneNum;
-    private javax.swing.JPasswordField txtSoDu;
+    private javax.swing.JTextField txtSDT;
+    private javax.swing.JTextField txtSoTaiKhoan;
     private javax.swing.JTextField txtSoTienNap;
+    private javax.swing.JTextField txtTenTaiKhoan;
     // End of variables declaration//GEN-END:variables
 }

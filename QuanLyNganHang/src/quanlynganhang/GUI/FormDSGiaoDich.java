@@ -261,9 +261,9 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jPPItemChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPPItemChiTietActionPerformed
-        JFrameChiTietKH chitiet = new JFrameChiTietKH();
-        chitiet.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
-        chitiet.setVisible(true);
+        //JFrameChiTietKH chitiet = new JFrameChiTietKH();
+        //chitiet.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
+        //chitiet.setVisible(true);
     }//GEN-LAST:event_jPPItemChiTietActionPerformed
 
     private void jPPItemChiTietMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPPItemChiTietMouseClicked

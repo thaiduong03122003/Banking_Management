@@ -195,4 +195,30 @@ public class ChucVuDAO {
             return null;
         }
     }
+
+    public List<ChucVuDTO> getNORole() throws Exception {
+        String sql = "SELECT cv.ma_chuc_vu, cv.ten_chuc_vu, COUNT(nv.ma_chuc_vu) AS so_chuc_vu FROM tbl_chuc_vu cv"
+            + " LEFT JOIN tbl_nhan_vien nv ON cv.ma_chuc_vu = nv.ma_chuc_vu"
+            + " WHERE cv.bi_xoa = ?"
+            + " GROUP BY cv.ma_chuc_vu, cv.ten_chuc_vu";
+        
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            pstmt.setInt(1, 0);
+
+            List<ChucVuDTO> list = new ArrayList<>();
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ChucVuDTO chucVu = new ChucVuDTO();
+                    chucVu.setMaChucVu(rs.getInt("cv.ma_chuc_vu"));
+                    chucVu.setTenChucVu(rs.getString("cv.ten_chuc_vu"));
+                    chucVu.setSoChucVu(rs.getInt("so_chuc_vu"));
+                    chucVu.setBiXoa(0);
+
+                    list.add(chucVu);
+                }
+            }
+            return list;
+        }
+    }
 }

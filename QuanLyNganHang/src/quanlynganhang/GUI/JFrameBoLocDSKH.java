@@ -9,18 +9,41 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.UIManager;
+import quanlynganhang.BUS.DiaChiBUS;
+import quanlynganhang.BUS.KhachHangBUS;
+import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.KhachHangDTO;
+import quanlynganhang.DTO.NhanVienDTO;
+import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JFrameBoLocDSKH extends javax.swing.JFrame {
 
-    /** Creates new form JFrameBoLocDS */
-    public JFrameBoLocDSKH() {
+    private FormDSKhachHang formDSKhachHang;
+    private DiaChiBUS diaChiBUS;
+    private KhachHangBUS khachHangBUS;
+    private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
+    private boolean isFiltered;
+
+    public JFrameBoLocDSKH(FormDSKhachHang formDSKhachHang) {
+        this.formDSKhachHang = formDSKhachHang;
+        diaChiBUS = new DiaChiBUS();
+        khachHangBUS = new KhachHangBUS();
+        maTinhThanh = 0;
+        maQuanHuyen = 0;
+        maPhuongXa = 0;
+        isFiltered = false;
+
         initComponents();
         customUI();
+        loadTinhThanh();
     }
 
     private void customUI() {
@@ -33,6 +56,116 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         cbxTinh.setEnabled(false);
         cbxHuyen.setEnabled(false);
         cbxXa.setEnabled(false);
+    }
+
+    private void loadTinhThanh() {
+        Map<Integer, String> map = new HashMap<>();
+        map = diaChiBUS.convertListTinhThanhToMap();
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Chọn thành phố/tỉnh");
+
+        for (String tenTinhThanh : map.values()) {
+            model.addElement(tenTinhThanh);
+        }
+
+        cbxTinh.setModel(model);
+    }
+
+    private void loadQuanHuyen(int maTinhThanh) {
+        Map<Integer, String> map = new HashMap<>();
+        map = diaChiBUS.convertListQuanHuyenToMap(maTinhThanh);
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Chọn quận/huyện");
+
+        for (String tenQuanHuyen : map.values()) {
+            model.addElement(tenQuanHuyen);
+        }
+
+        cbxHuyen.setModel(model);
+    }
+
+    private void loadPhuongXa(int maQuanHuyen) {
+        Map<Integer, String> map = new HashMap<>();
+        map = diaChiBUS.convertListPhuongXaToMap(maQuanHuyen);
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Chọn phường/xã");
+
+        for (String tenPhuongXa : map.values()) {
+            model.addElement(tenPhuongXa);
+        }
+
+        cbxXa.setModel(model);
+    }
+    
+    private void checkFilterStatus() {
+        if (rdbAllGender.isSelected() && rdbAllNgaySinh.isSelected() && rdbAllDiaChi.isSelected() && rdbAllKH.isSelected()) {
+            isFiltered = false;
+        } else {
+            isFiltered = true;
+        }
+    }
+    
+    private List<KhachHangDTO> chonTieuChiLoc() throws ParseException, Exception {
+        FormatDate fDate = new FormatDate();
+
+        String gender;
+        if (rdbAllGender.isSelected()) {
+            gender = "All";
+        } else if (rdbNam.isSelected()) {
+            gender = "Nam";
+        } else if (rdbNu.isSelected()) {
+            gender = "Nữ";
+        } else {
+            gender = "Khác";
+        }
+
+        Date dateFrom, dateTo;
+        if (rdbAllNgaySinh.isSelected()) {
+            dateFrom = null;
+            dateTo = null;
+        } else {
+            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
+            } else {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+                
+                if (!InputValidation.kiemTraTrinhTuNhapNgay(dateFrom, dateTo)) {
+                    MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
+                    return null;
+                }
+            }
+        }
+
+        int idTinh, idHuyen, idXa;
+        if (rdbAllDiaChi.isSelected()) {
+            idTinh = 0;
+            idHuyen = 0;
+            idXa = 0;
+        } else {
+            idTinh = maTinhThanh;
+            idHuyen = maQuanHuyen;
+            idXa = maPhuongXa;
+        }
+
+        int noXau;
+        if (rdbAllKH.isSelected()) {
+            noXau = 2;
+        } else if (rdbCoNo.isSelected()) {
+            noXau = 0;
+        } else {
+            noXau = 1;
+        }
+
+        return khachHangBUS.locKhachHang(gender, dateFrom, dateTo, idTinh, idHuyen, idXa, noXau);
+    }
+    
+    public List<KhachHangDTO> listNVBoLoc() throws Exception {
+        return chonTieuChiLoc();
     }
 
     /** This method is called from within the constructor to
@@ -53,10 +186,10 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
+        rdbAllGender = new javax.swing.JRadioButton();
+        rdbNam = new javax.swing.JRadioButton();
+        rdbNu = new javax.swing.JRadioButton();
+        rdbKhac = new javax.swing.JRadioButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -76,11 +209,12 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
-        jRadioButton9 = new javax.swing.JRadioButton();
-        jRadioButton10 = new javax.swing.JRadioButton();
-        jRadioButton11 = new javax.swing.JRadioButton();
+        rdbAllKH = new javax.swing.JRadioButton();
+        rdbCoNo = new javax.swing.JRadioButton();
+        rdbKhongNo = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnLoc = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,23 +224,23 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Giới tính");
 
-        btnGroupGender.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Tất cả");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnGroupGender.add(rdbAllGender);
+        rdbAllGender.setSelected(true);
+        rdbAllGender.setText("Tất cả");
+        rdbAllGender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                rdbAllGenderActionPerformed(evt);
             }
         });
 
-        btnGroupGender.add(jRadioButton2);
-        jRadioButton2.setText("Nam");
+        btnGroupGender.add(rdbNam);
+        rdbNam.setText("Nam");
 
-        btnGroupGender.add(jRadioButton3);
-        jRadioButton3.setText("Nữ");
+        btnGroupGender.add(rdbNu);
+        rdbNu.setText("Nữ");
 
-        btnGroupGender.add(jRadioButton4);
-        jRadioButton4.setText("Khác");
+        btnGroupGender.add(rdbKhac);
+        rdbKhac.setText("Khác");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -119,10 +253,10 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton1)
-                            .addComponent(jRadioButton2)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton4))
+                            .addComponent(rdbAllGender)
+                            .addComponent(rdbNam)
+                            .addComponent(rdbNu)
+                            .addComponent(rdbKhac))
                         .addGap(0, 10, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -134,13 +268,13 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1)
+                .addComponent(rdbAllGender)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
+                .addComponent(rdbNam)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton3)
+                .addComponent(rdbNu)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton4)
+                .addComponent(rdbKhac)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -220,11 +354,26 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
             }
         });
 
-        cbxTinh.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn thành phố/tỉnh", "Item 2", "Item 3", "Item 4" }));
+        cbxTinh.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn thành phố/tỉnh" }));
+        cbxTinh.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxTinhItemStateChanged(evt);
+            }
+        });
 
-        cbxHuyen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn quận/huyện", "Item 2", "Item 3", "Item 4" }));
+        cbxHuyen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn quận/huyện" }));
+        cbxHuyen.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxHuyenItemStateChanged(evt);
+            }
+        });
 
-        cbxXa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn phường/xã", "Item 2", "Item 3", "Item 4" }));
+        cbxXa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Chọn phường/xã" }));
+        cbxXa.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxXaItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -272,15 +421,15 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Bị nợ xấu");
 
-        btnGroupNoXau.add(jRadioButton9);
-        jRadioButton9.setSelected(true);
-        jRadioButton9.setText("Tất cả");
+        btnGroupNoXau.add(rdbAllKH);
+        rdbAllKH.setSelected(true);
+        rdbAllKH.setText("Tất cả");
 
-        btnGroupNoXau.add(jRadioButton10);
-        jRadioButton10.setText("Có nợ xấu");
+        btnGroupNoXau.add(rdbCoNo);
+        rdbCoNo.setText("Có nợ xấu");
 
-        btnGroupNoXau.add(jRadioButton11);
-        jRadioButton11.setText("Không nợ xấu");
+        btnGroupNoXau.add(rdbKhongNo);
+        rdbKhongNo.setText("Không nợ xấu");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -290,14 +439,14 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jRadioButton11, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                        .addComponent(rdbKhongNo, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
                         .addContainerGap())
                     .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton9)
-                            .addComponent(jRadioButton10))
+                            .addComponent(rdbAllKH)
+                            .addComponent(rdbCoNo))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel5Layout.setVerticalGroup(
@@ -308,11 +457,11 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton9)
+                .addComponent(rdbAllKH)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton10)
+                .addComponent(rdbCoNo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton11)
+                .addComponent(rdbKhongNo)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -323,8 +472,20 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Lọc");
+        btnLoc.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnLoc.setText("Lọc");
+        btnLoc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLocActionPerformed(evt);
+            }
+        });
+
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -343,14 +504,16 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addGap(132, 132, 132))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(158, 158, 158))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton1)
-                                .addGap(18, 18, 18)))
-                        .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnReset)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addComponent(btnLoc)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -369,7 +532,8 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnLoc)
+                    .addComponent(btnReset))
                 .addContainerGap())
         );
 
@@ -388,9 +552,9 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void rdbAllGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbAllGenderActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    }//GEN-LAST:event_rdbAllGenderActionPerformed
 
     private void rdbChonNgaySinhActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbChonNgaySinhActionPerformed
         if (rdbChonNgaySinh.isSelected()) {
@@ -428,6 +592,93 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1MouseClicked
 
+    private void cbxTinhItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTinhItemStateChanged
+        String tenTinhThanh = (String) cbxTinh.getSelectedItem();
+        if (tenTinhThanh.equals("Chọn thành phố/tỉnh")) {
+            cbxHuyen.setSelectedIndex(0);
+            cbxXa.setSelectedIndex(0);
+
+            cbxHuyen.setEnabled(false);
+            cbxXa.setEnabled(false);
+            maTinhThanh = 0;
+        } else {
+            maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
+
+            if (maTinhThanh != 0) {
+                loadQuanHuyen(maTinhThanh.intValue());
+                cbxHuyen.setEnabled(true);
+                cbxXa.setEnabled(false);
+                cbxHuyen.setSelectedIndex(0);
+                cbxXa.setSelectedIndex(0);
+            } else {
+                MessageBox.showErrorMessage(null, "Lấy id của tỉnh thành thất bại!");
+            }
+        }
+    }//GEN-LAST:event_cbxTinhItemStateChanged
+
+    private void cbxHuyenItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxHuyenItemStateChanged
+        String tenQuanHuyen = (String) cbxHuyen.getSelectedItem();
+        if (tenQuanHuyen.equals("Chọn quận/huyện")) {
+            cbxXa.setSelectedIndex(0);
+
+            cbxXa.setEnabled(false);
+            maQuanHuyen = 0;
+        } else {
+            maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
+
+            if (maQuanHuyen != 0) {
+                loadPhuongXa(maQuanHuyen.intValue());
+                cbxXa.setEnabled(true);
+                cbxXa.setSelectedIndex(0);
+            } else {
+                MessageBox.showErrorMessage(null, "Lấy id của quận huyện thất bại!");
+            }
+        }
+    }//GEN-LAST:event_cbxHuyenItemStateChanged
+
+    private void cbxXaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxXaItemStateChanged
+        String tenPhuongXa = (String) cbxXa.getSelectedItem();
+        if (tenPhuongXa.equals("Chọn phường/xã")) {
+            maPhuongXa = 0;
+        } else {
+            maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
+
+            if (maPhuongXa != 0) {
+                System.out.println("Id xã: " + maPhuongXa + " - Id huyện: " + maQuanHuyen + " - Id tỉnh: " + maTinhThanh);
+            } else {
+                MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
+            }
+        }
+    }//GEN-LAST:event_cbxXaItemStateChanged
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        rdbAllGender.setSelected(true);
+        rdbAllNgaySinh.setSelected(true);
+        rdbAllDiaChi.setSelected(true);
+        rdbAllKH.setSelected(true);
+
+        btnLocActionPerformed(null);
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
+        try {
+            if (chonTieuChiLoc() != null) {
+                checkFilterStatus();
+
+                formDSKhachHang.loadDSKhachHang(0, isFiltered, chonTieuChiLoc());
+                this.dispose();
+            } else {
+                MessageBox.showInformationMessage(null, "Lọc khách hàng", "Không có thông tin khách hàng nào phù hợp");
+                return;
+            }
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnLocActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -441,7 +692,7 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JFrameBoLocDSKH().setVisible(true);
+                
             }
         });
     }
@@ -451,11 +702,12 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupNgaySinh;
     private javax.swing.ButtonGroup btnGroupNoXau;
+    private javax.swing.JButton btnLoc;
+    private javax.swing.JButton btnReset;
     private javax.swing.JComboBox<String> cbxHuyen;
     private javax.swing.JComboBox<String> cbxTinh;
     private javax.swing.JComboBox<String> cbxXa;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -467,21 +719,21 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton10;
-    private javax.swing.JRadioButton jRadioButton11;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
-    private javax.swing.JRadioButton jRadioButton9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JRadioButton rdbAllDiaChi;
+    private javax.swing.JRadioButton rdbAllGender;
+    private javax.swing.JRadioButton rdbAllKH;
     private javax.swing.JRadioButton rdbAllNgaySinh;
     private javax.swing.JRadioButton rdbChonDiaChi;
     private javax.swing.JRadioButton rdbChonNgaySinh;
+    private javax.swing.JRadioButton rdbCoNo;
+    private javax.swing.JRadioButton rdbKhac;
+    private javax.swing.JRadioButton rdbKhongNo;
+    private javax.swing.JRadioButton rdbNam;
+    private javax.swing.JRadioButton rdbNu;
     private javax.swing.JTextField txtNgayBatDau;
     private javax.swing.JTextField txtNgayKetThuc;
     // End of variables declaration//GEN-END:variables

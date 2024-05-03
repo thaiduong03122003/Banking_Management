@@ -36,6 +36,7 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private boolean isFiltered;
     private List<TaiKhoanNVDTO> listLocTaiKhoanNV, currentList;
+    private JFrameThemTKNV2 jFrameThemTKNV;
 
     public FormDSTaiKhoanNV() throws Exception {
         taiKhoanNVBUS = new TaiKhoanNVBUS();
@@ -204,7 +205,7 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
             }
         });
 
-        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã tài khoản tăng dần", "Mã tài khoản giảm dần", "Ngày tạo tăng dần", "Ngày tạo giảm dần" }));
         cbxSapXep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxSapXepItemStateChanged(evt);
@@ -314,18 +315,18 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnThemTKNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnThemTKNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(53, 53, 53)
+                .addContainerGap(150, Short.MAX_VALUE)
                 .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59)
+                .addGap(18, 18, 18)
                 .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -436,7 +437,7 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
                         MessageBox.showErrorMessage(null, "Mã tài khoản nhân viên không tồn tại!");
                         return;
                     } else {
-                        formChiTiet = new JFrameChiTietTKNV(taiKhoanNV, false);
+                        formChiTiet = new JFrameChiTietTKNV(maTaiKhoanNV, false);
                         formChiTiet.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
@@ -477,7 +478,7 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
                     return;
                 } else {
 
-                    JFrameChiTietTKNV formSua = new JFrameChiTietTKNV(taiKhoanNV, true);
+                    JFrameChiTietTKNV formSua = new JFrameChiTietTKNV(maTaiKhoanNV, true);
                     formSua.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
                     formSua.setVisible(true);
 
@@ -548,17 +549,17 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
         String selectedSortOption = (String) cbxSapXep.getSelectedItem();
 
         switch (selectedSortOption) {
-            case "Mã nhân viên tăng dần":
+            case "Mã tài khoản tăng dần":
                 sapXep(0, true);
                 break;
-            case "Mã nhân viên giảm dần":
+            case "Mã tài khoản giảm dần":
                 sapXep(0, false);
                 break;
-            case "Tên theo thứ tự A -> Z":
-                sapXep(2, true);
+            case "Ngày tạo tăng dần":
+                sapXep(3, true);
                 break;
-            case "Tên theo thứ tự Z -> A":
-                sapXep(2, false);
+            case "Ngày tạo giảm dần":
+                sapXep(3, false);
                 break;
             default:
                 TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSTaiKhoanNV.getModel());
@@ -602,7 +603,21 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNhapFileActionPerformed
 
     private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
-//        ppmTaoTKActionPerformed(null);
+        if (jFrameThemTKNV == null) {
+            jFrameThemTKNV = new JFrameThemTKNV2();
+            jFrameThemTKNV.setResizable(false);
+            jFrameThemTKNV.setDefaultCloseOperation(JFrameThemTKNV2.DISPOSE_ON_CLOSE);
+
+            jFrameThemTKNV.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    jFrameThemTKNV = null;
+                }
+            });
+        }
+
+        jFrameThemTKNV.setExtendedState(JFrameThemTKNV2.NORMAL);
+        jFrameThemTKNV.setVisible(true);
     }//GEN-LAST:event_btnThemTKNVActionPerformed
 
 

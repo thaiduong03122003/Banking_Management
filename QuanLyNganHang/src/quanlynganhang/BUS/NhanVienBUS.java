@@ -140,6 +140,15 @@ public class NhanVienBUS {
         this.roleId = roleId;
         return nhanVienDAO.filter(0, gender, dateBatDau, dateKetThuc, provinceId, districtId, wardId, roleId);
     }
+    
+    public boolean doiChucVu(int maNhanVien, int maChucVu) {
+        try {
+            return nhanVienDAO.changeRole(maNhanVien, maChucVu);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     public void xuatExcel(File file, String userName, List<NhanVienDTO> list) throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook();

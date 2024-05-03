@@ -3,17 +3,18 @@ package quanlynganhang.DTO;
 import java.util.Date;
 
 public class KhoaTaiKhoanDTO {
-    private int maKhoaTK, maTaiKhoanNV, maTaiKhoanKH;
+    private int maKhoaTK, maTaiKhoanNV, maTaiKhoanKH, moKhoa;
     private String lyDoKhoa, loaiTaiKhoan;
     private Date ngayMoKhoa;
 
     public KhoaTaiKhoanDTO() {
     }
-    
-    public KhoaTaiKhoanDTO(int maKhoaTK, int maTaiKhoanNV, int maTaiKhoanKH, String lyDoKhoa, String loaiTaiKhoan, Date ngayMoKhoa) {
+
+    public KhoaTaiKhoanDTO(int maKhoaTK, int maTaiKhoanNV, int maTaiKhoanKH, int moKhoa, String lyDoKhoa, String loaiTaiKhoan, Date ngayMoKhoa) {
         this.maKhoaTK = maKhoaTK;
         this.maTaiKhoanNV = maTaiKhoanNV;
         this.maTaiKhoanKH = maTaiKhoanKH;
+        this.moKhoa = moKhoa;
         this.lyDoKhoa = lyDoKhoa;
         this.loaiTaiKhoan = loaiTaiKhoan;
         this.ngayMoKhoa = ngayMoKhoa;
@@ -43,6 +44,14 @@ public class KhoaTaiKhoanDTO {
         this.maTaiKhoanKH = maTaiKhoanKH;
     }
 
+    public int getMoKhoa() {
+        return moKhoa;
+    }
+
+    public void setMoKhoa(int moKhoa) {
+        this.moKhoa = moKhoa;
+    }
+
     public String getLyDoKhoa() {
         return lyDoKhoa;
     }
@@ -66,7 +75,6 @@ public class KhoaTaiKhoanDTO {
     public void setNgayMoKhoa(Date ngayMoKhoa) {
         this.ngayMoKhoa = ngayMoKhoa;
     }
-    
     
     
 }

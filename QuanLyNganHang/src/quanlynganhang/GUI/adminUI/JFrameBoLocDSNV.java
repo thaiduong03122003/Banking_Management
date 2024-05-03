@@ -40,7 +40,6 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa, maChucVu;
     private boolean isFiltered;
 
-    /** Creates new form JFrameBoLocDS */
     public JFrameBoLocDSNV(FormDSNhanVien formDSNhanVien) {
         this.formDSNhanVien = formDSNhanVien;
         diaChiBUS = new DiaChiBUS();

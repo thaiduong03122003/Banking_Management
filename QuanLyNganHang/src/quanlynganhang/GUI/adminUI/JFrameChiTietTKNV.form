@@ -1019,16 +1019,25 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="C&#x1ea5;p l&#x1ea1;i m&#x1ead;t kh&#x1ea9;u"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnResetPasswordActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnResetPIN">
               <Properties>
                 <Property name="text" type="java.lang.String" value="C&#x1ea5;p l&#x1ea1;i m&#xe3; PIN"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnResetPINActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnDoiTrangThai">
               <Properties>
                 <Property name="text" type="java.lang.String" value="&#x110;&#x1ed5;i tr&#x1ea1;ng th&#xe1;i t&#xe0;i kho&#x1ea3;n"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDoiTrangThaiActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

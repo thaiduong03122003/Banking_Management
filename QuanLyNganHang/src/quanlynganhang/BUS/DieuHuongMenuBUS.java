@@ -47,7 +47,11 @@ public class DieuHuongMenuBUS {
                 } else if (index == 1) {
                     ApplicationAdmin.showForm(new FormThongKe(), "Thống kê - Biến động");
                 } else if (index == 2) {
-                    ApplicationAdmin.showForm(new FormDSKhachHang(), "Danh sách khách hàng");
+                    try {
+                        ApplicationAdmin.showForm(new FormDSKhachHang(), "Danh sách khách hàng");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 3) {
                     try {
                         ApplicationAdmin.showForm(new FormDSNhanVien(), "Danh sách nhân viên");
@@ -55,7 +59,11 @@ public class DieuHuongMenuBUS {
                         ex.printStackTrace();
                     }
                 } else if (index == 4) {
-                    ApplicationAdmin.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
+                    try {
+                        ApplicationAdmin.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 5) {
                     try {
                         ApplicationAdmin.showForm(new FormDSTaiKhoanNV(), "Danh sách tài khoản nhân viên");
@@ -79,9 +87,17 @@ public class DieuHuongMenuBUS {
                 } else if (index == 1) {
                     Application.showForm(new FormTongQuan(), "Thống kê");
                 } else if (index == 2) {
-                    Application.showForm(new FormDSKhachHang(), "Danh sách khách hàng");
+                    try {
+                        Application.showForm(new FormDSKhachHang(), "Danh sách khách hàng");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 3) {
-                    Application.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
+                    try {
+                        Application.showForm(new FormDSTaiKhoanKH(), "Danh sách tài khoản khách hàng");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 } else if (index == 4) {
                     Application.showForm(new FormDSThe(), "Danh sách thẻ");
                 } else if (index == 5) {

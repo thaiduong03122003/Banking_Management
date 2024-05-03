@@ -709,7 +709,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
         if (tenAnh.equals("null") || tenAnh.equals("(Chưa có)")) {
             return;
         } else {
-            JDialogXemAnh xemAnh = new JDialogXemAnh(null, rootPaneCheckingEnabled, tenAnh);
+            JDialogXemAnh xemAnh = new JDialogXemAnh(null, true, tenAnh);
             xemAnh.setDefaultCloseOperation(JDialogXemAnh.DISPOSE_ON_CLOSE);
             xemAnh.setVisible(true);
         }

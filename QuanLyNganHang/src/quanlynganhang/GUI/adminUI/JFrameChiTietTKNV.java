@@ -19,24 +19,27 @@ import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
+import quanlynganhang.GUI.adminUI.JDiaLogDoiTrangThai;
+import quanlynganhang.GUI.adminUI.JFrameBoLocDSTKNV;
 import quanlynganhang.GUI.model.message.MessageBox;
-
 
 public class JFrameChiTietTKNV extends javax.swing.JFrame {
 
     private NhanVienBUS nhanVienBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
-    private TaiKhoanNVDTO taiKhoanNV;
     private String fileName;
+    private int maTaiKhoanNV;
+    private TaiKhoanNVDTO taiKhoanNV;
+    private JDialogDoiMatKhau capLaiMatKhau;
 
-    public JFrameChiTietTKNV(TaiKhoanNVDTO taiKhoanNV, boolean isEdit) {
+    public JFrameChiTietTKNV(int maTaiKhoanNV, boolean isEdit) {
         nhanVienBUS = new NhanVienBUS();
         taiKhoanNVBUS = new TaiKhoanNVBUS();
-        this.taiKhoanNV = new TaiKhoanNVDTO();
-        this.taiKhoanNV = taiKhoanNV;
+        this.maTaiKhoanNV = maTaiKhoanNV;
+        taiKhoanNV = new TaiKhoanNVDTO();
 
         initComponents();
-        dienThongTin(taiKhoanNV);
+        dienThongTin();
         editInfo(isEdit);
     }
 
@@ -66,56 +69,64 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         revalidate();
     }
 
-    private void dienThongTin(TaiKhoanNVDTO taiKhoanNV) {
+    private void dienThongTin() {
         FormatDate fDate = new FormatDate();
-        
-        NhanVienDTO nhanVien = new NhanVienDTO();
-        nhanVien = nhanVienBUS.getNhanVienById(taiKhoanNV.getMaNhanVien(), 2);
-        
-        txtMaTKNV.setText("" + taiKhoanNV.getMaTKNV());
-        txtTenDangNhap.setText(taiKhoanNV.getTenDangNhap());
-        txtNgayTaoTK.setText(fDate.toString(taiKhoanNV.getNgayTaoTK()));
-        txtTrangThaiTK.setText(taiKhoanNV.getTenTrangThai());
-        
-        lbGhiChu.setText(nhanVien.getBiXoa() == 0 ? "" : "Nhân viên này đã bị xóa!");
-        
-        txtMaNV.setText("" + nhanVien.getMaNV());
-        txtHoDem.setText(nhanVien.getHoDem());
-        txtTen.setText(nhanVien.getTen());
-        txtDiaChi.setText(nhanVien.getDiaChi());
-        txtEmail.setText(nhanVien.getEmail());
-        txtSdt.setText(nhanVien.getSdt());
-        txtCCCD.setText(nhanVien.getCccd());
-        txtMaChucVu.setText("" + nhanVien.getMaChucVu());
-        txtTenChucVu.setText(nhanVien.getTenChucVu());
 
-        if (nhanVien.getNgaySinh() == null) {
-            txtNgaySinh.setText("");
-        } else {
-            txtNgaySinh.setText(fDate.toString(nhanVien.getNgaySinh()));
-        }
+        TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
+        taiKhoanNV = taiKhoanNVBUS.getTaiKhoanNVById(maTaiKhoanNV);
+        if (taiKhoanNV != null) {
+            this.taiKhoanNV = taiKhoanNV;
 
-        if (nhanVien.getNgayVaoLam() == null) {
-            txtNgayVaoLam2.setText("");
-        } else {
-            txtNgayVaoLam2.setText(fDate.toString(nhanVien.getNgayVaoLam()));
-        }
+            NhanVienDTO nhanVien = new NhanVienDTO();
+            nhanVien = nhanVienBUS.getNhanVienById(taiKhoanNV.getMaNhanVien(), 2);
 
-        String gioiTinh = nhanVien.getGioiTinh();
-        if (gioiTinh.equals("Nam")) {
-            rdbNam.setSelected(true);
-        } else if (gioiTinh.equals("Nữ")) {
-            rdbNu.setSelected(true);
-        } else {
-            rdbKhac.setSelected(true);
-        }
+            txtMaTKNV.setText("" + taiKhoanNV.getMaTKNV());
+            txtTenDangNhap.setText(taiKhoanNV.getTenDangNhap());
+            txtNgayTaoTK.setText(fDate.toString(taiKhoanNV.getNgayTaoTK()));
+            txtTrangThaiTK.setText(taiKhoanNV.getTenTrangThai());
 
-        fileName = nhanVien.getAnhDaiDien();
-        if (fileName != null) {
-            loadAnh(fileName);
+            lbGhiChu.setText(nhanVien.getBiXoa() == 0 ? "" : "Nhân viên này đã bị xóa!");
+
+            txtMaNV.setText("" + nhanVien.getMaNV());
+            txtHoDem.setText(nhanVien.getHoDem());
+            txtTen.setText(nhanVien.getTen());
+            txtDiaChi.setText(nhanVien.getDiaChi());
+            txtEmail.setText(nhanVien.getEmail());
+            txtSdt.setText(nhanVien.getSdt());
+            txtCCCD.setText(nhanVien.getCccd());
+            txtMaChucVu.setText("" + nhanVien.getMaChucVu());
+            txtTenChucVu.setText(nhanVien.getTenChucVu());
+
+            if (nhanVien.getNgaySinh() == null) {
+                txtNgaySinh.setText("");
+            } else {
+                txtNgaySinh.setText(fDate.toString(nhanVien.getNgaySinh()));
+            }
+
+            if (nhanVien.getNgayVaoLam() == null) {
+                txtNgayVaoLam2.setText("");
+            } else {
+                txtNgayVaoLam2.setText(fDate.toString(nhanVien.getNgayVaoLam()));
+            }
+
+            String gioiTinh = nhanVien.getGioiTinh();
+            if (gioiTinh.equals("Nam")) {
+                rdbNam.setSelected(true);
+            } else if (gioiTinh.equals("Nữ")) {
+                rdbNu.setSelected(true);
+            } else {
+                rdbKhac.setSelected(true);
+            }
+
+            fileName = nhanVien.getAnhDaiDien();
+            if (fileName != null) {
+                loadAnh(fileName);
+            } else {
+                fileName = "no_image.png";
+                loadAnh(fileName);
+            }
         } else {
-            fileName = "no_image.png";
-            loadAnh(fileName);
+            MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản nhân viên!");
         }
 
     }
@@ -132,20 +143,20 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
 
         taiKhoanNV.setTenDangNhap(txtTenDangNhap.getText());
 
-
         if (InputValidation.kiemTraNgay(txtNgayTaoTK.getText())) {
             taiKhoanNV.setNgayTaoTK(fDate.toDate(txtNgayTaoTK.getText()));
         } else {
             error.append("\nNgày tạo không hợp lệ");
         }
 
-
         if (error.isEmpty()) {
             if (taiKhoanNVBUS.updateTaiKhoanNV(taiKhoanNV)) {
                 this.taiKhoanNV = taiKhoanNV;
                 return true;
+            } else {
+                return false;
             }
-            return false;
+
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -824,10 +835,25 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         jButton2.setText("Xem lịch sử thao tác");
 
         btnResetPassword.setText("Cấp lại mật khẩu");
+        btnResetPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetPasswordActionPerformed(evt);
+            }
+        });
 
         btnResetPIN.setText("Cấp lại mã PIN");
+        btnResetPIN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetPINActionPerformed(evt);
+            }
+        });
 
         btnDoiTrangThai.setText("Đổi trạng thái tài khoản");
+        btnDoiTrangThai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDoiTrangThaiActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel21Layout = new javax.swing.GroupLayout(jPanel21);
         jPanel21.setLayout(jPanel21Layout);
@@ -969,27 +995,29 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
                 btnSuaThongTin.setText("Hủy sửa");
             }
         } else {
-            dienThongTin(taiKhoanNV);
+            dienThongTin();
             doiTrangThaiNhap(false);
             btnSuaThongTin.setText("Sửa thông tin");
         }
     }//GEN-LAST:event_btnSuaThongTinActionPerformed
 
     private void btnCapNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCapNhatActionPerformed
-        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn cập nhật thông tin?") == JOptionPane.NO_OPTION) {
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn cập nhật thông tin?") == JOptionPane.YES_OPTION) {
+            try {
+                if (capNhatTaiKhoanNhanVien()) {
+                    MessageBox.showInformationMessage(null, "", "Cập nhật thông tin tài khoản nhân viên thành công!");
+                    btnSuaThongTinActionPerformed(null);
+                } else {
+                    MessageBox.showErrorMessage(null, "Cập nhật thông tin tài khoản nhân viên thất bại!");
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        } else {
             return;
         }
 
-        try {
-            if (capNhatTaiKhoanNhanVien()) {
-                MessageBox.showInformationMessage(null, "", "Cập nhật thông tin tài khoản nhân viên thành công!");
-                btnSuaThongTinActionPerformed(null);
-            } else {
-                MessageBox.showErrorMessage(null, "Cập nhật thông tin tài khoản nhân viên thất bại!");
-            }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
+
     }//GEN-LAST:event_btnCapNhatActionPerformed
 
     private void txtNgayVaoLamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNgayVaoLamActionPerformed
@@ -1012,21 +1040,42 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtTrangThaiTKtxtNgayVaoLamActionPerformed
 
+    private void btnDoiTrangThaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiTrangThaiActionPerformed
+        JDiaLogDoiTrangThai doiTrangThai = new JDiaLogDoiTrangThai(null, true, "Mã tài khoản", "Account and Card", taiKhoanNV.getMaTKNV(), taiKhoanNV.getTenTrangThai(), "TKNV");
+        doiTrangThai.setResizable(false);
+        doiTrangThai.setDefaultCloseOperation(JDiaLogDoiTrangThai.DISPOSE_ON_CLOSE);
+        doiTrangThai.setVisible(true);
+
+        dienThongTin();
+    }//GEN-LAST:event_btnDoiTrangThaiActionPerformed
+
+    private void btnResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPasswordActionPerformed
+        capLaiMatKhau = new JDialogDoiMatKhau(null, true, true, maTaiKhoanNV);
+        capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhau.DISPOSE_ON_CLOSE);
+        capLaiMatKhau.setVisible(true);
+    }//GEN-LAST:event_btnResetPasswordActionPerformed
+
+    private void btnResetPINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPINActionPerformed
+        capLaiMatKhau = new JDialogDoiMatKhau(null, true, false, maTaiKhoanNV);
+        capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhau.DISPOSE_ON_CLOSE);
+        capLaiMatKhau.setVisible(true);
+    }//GEN-LAST:event_btnResetPINActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    FlatRobotoFont.install();
-    FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-    UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-    FlatMacLightLaf.setup();
+        FlatRobotoFont.install();
+        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
+        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
+        FlatMacLightLaf.setup();
 
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            System.out.println("The form will be executed if there are arguments passed in!");
-        }
-    });
-}
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                System.out.println("The form will be executed if there are arguments passed in!");
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCapNhat;

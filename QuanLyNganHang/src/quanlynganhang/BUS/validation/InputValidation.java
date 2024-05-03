@@ -111,4 +111,25 @@ public class InputValidation {
 
         return pin.matches(pattern);
     }
+
+    public static boolean kiemTraNgayKhoa(String dateString) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate ngayKhoa = LocalDate.parse(dateString, formatter);
+            LocalDate today = LocalDate.now();
+            return ngayKhoa.isAfter(today);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static String catNganString(String originalString) {
+        int maxLength = 20;
+        if (originalString.length() > maxLength) {
+            return originalString.substring(0, maxLength - 3) + "...";
+        } else {
+            return originalString;
+        }
+    }
 }

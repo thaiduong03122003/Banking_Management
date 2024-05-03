@@ -114,6 +114,19 @@ public class TaiKhoanNVBUS {
 
         return taiKhoanNVDAO.filter(dateBatDau, dateKetThuc, maNhanVien, maTrangThai);
     }
+    
+    public boolean doiMatKhau(TaiKhoanNVDTO taiKhoanNV, boolean doiMatKhau) {
+        try {
+            if (doiMatKhau) {
+                return taiKhoanNVDAO.changePassword(taiKhoanNV);
+            } else {
+                return taiKhoanNVDAO.changePINCode(taiKhoanNV);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     public void xuatExcel(File file, String userName, List<TaiKhoanNVDTO> list) throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook();

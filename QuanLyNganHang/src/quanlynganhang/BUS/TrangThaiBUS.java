@@ -28,8 +28,8 @@ public class TrangThaiBUS {
         }
 
         Map<Integer, String> map = new HashMap<>();
-        for (TrangThaiDTO diaChi : list) {
-            map.put(diaChi.getMaTrangThai(), diaChi.getTenTrangThai());
+        for (TrangThaiDTO trangThai : list) {
+            map.put(trangThai.getMaTrangThai(), trangThai.getTenTrangThai());
         }
 
         return map;
