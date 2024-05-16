@@ -1,34 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import javax.swing.JButton;
-import javax.swing.UIManager;
+import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.slider.Slide1;
 import quanlynganhang.GUI.model.slider.Slide2;
 import quanlynganhang.GUI.model.slider.Slide3;
 import quanlynganhang.GUI.model.slider.Slideshow;
 
-
-/**
- *
- * @author THAI
- */
 public class FormTrangChu extends javax.swing.JPanel {
 
-    /** Creates new form FormTrangChu */
-    public FormTrangChu() {
+    public FormTrangChu(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
         initComponents();
         jPBody.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-//        jPTodo.putClientProperty(FlatClientProperties.STYLE, ""
-//            + "background:$BodyPanel.background;");
         slideshow1.initSlideshow(new Slide1(), new Slide2(), new Slide3());
         
     }
@@ -44,9 +29,6 @@ public class FormTrangChu extends javax.swing.JPanel {
 
         jPBody = new javax.swing.JPanel();
         jPSubMenu = new javax.swing.JPanel();
-        lbThuNgay = new javax.swing.JLabel();
-        lbNgay = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
         jPTodo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -75,21 +57,6 @@ public class FormTrangChu extends javax.swing.JPanel {
         jPBody.setBackground(new java.awt.Color(102, 102, 102));
 
         jPSubMenu.setBackground(new java.awt.Color(51, 204, 255));
-
-        lbThuNgay.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        lbThuNgay.setForeground(new java.awt.Color(255, 255, 255));
-        lbThuNgay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbThuNgay.setText("Thứ sáu");
-
-        lbNgay.setFont(new java.awt.Font("Segoe UI", 1, 46)); // NOI18N
-        lbNgay.setForeground(new java.awt.Color(255, 255, 255));
-        lbNgay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lbNgay.setText("12");
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Tháng 4, 2024");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Việc cần làm ");
@@ -124,7 +91,7 @@ public class FormTrangChu extends javax.swing.JPanel {
                 .addComponent(jCheckBox2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPSubMenuLayout = new javax.swing.GroupLayout(jPSubMenu);
@@ -133,23 +100,13 @@ public class FormTrangChu extends javax.swing.JPanel {
             jPSubMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPSubMenuLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPSubMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbThuNgay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbNgay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPTodo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPTodo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPSubMenuLayout.setVerticalGroup(
             jPSubMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPSubMenuLayout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(lbThuNgay)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbNgay, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(192, 192, 192)
                 .addComponent(jPTodo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -356,7 +313,6 @@ public class FormTrangChu extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -374,8 +330,6 @@ public class FormTrangChu extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JLabel lbNgay;
-    private javax.swing.JLabel lbThuNgay;
     private quanlynganhang.GUI.model.slider.Slideshow slideshow1;
     // End of variables declaration//GEN-END:variables
 }

@@ -22,8 +22,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
@@ -32,18 +35,28 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private JFrameBoLocDSNV boloc;
     private JFrameChiTietNV formChiTiet;
     private NhanVienBUS nhanVienBUS;
-    private int biXoa;
+    private int quyenThem1, quyenThem2, quyenSua, quyenXoa, biXoa;
     private boolean isFiltered;
     private List<NhanVienDTO> listLocNV, currentList;
+    private ChucVuDTO chucVu;
 
-    public FormDSNhanVien() throws Exception {
+    public FormDSNhanVien(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
+        this.chucVu = chucVu;
         nhanVienBUS = new NhanVienBUS();
         listLocNV = new ArrayList<>();
         initComponents();
+        thietLapChucVu();
         txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / họ tên / mã căn cước của nhân viên cần tìm...");
         biXoa = 0;
         loadDSNhanVien(biXoa, false, null);
         jTableDSNV.getTableHeader().setReorderingAllowed(false);
+    }
+
+    private void thietLapChucVu() {
+        quyenThem1 = ChiaQuyenBUS.splitQuyen(chucVu.getqLNhanVien(), 2);
+        quyenThem2 = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKNhanVien(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLNhanVien(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLNhanVien(), 4);
     }
 
     public void loadDSNhanVien(int biXoa, boolean isFiltered, List<NhanVienDTO> list) throws Exception {
@@ -134,7 +147,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         jPanel7 = new javax.swing.JPanel();
         btnThemNV = new javax.swing.JButton();
         btnThemTKNV = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
         btnDoiBang = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -319,8 +331,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             }
         });
 
-        jButton7.setText("Thêm chức vụ");
-
         btnReload.setText("Tải lại DS");
         btnReload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -344,7 +354,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnThemNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnThemTKNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDoiBang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -356,9 +365,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                 .addComponent(btnThemNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(59, 59, 59)
                 .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnDoiBang, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -457,13 +464,18 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     }//GEN-LAST:event_btnReloadActionPerformed
 
     private void btnThemNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemNVActionPerformed
-        JDialogThemNV themNV = new JDialogThemNV(null, true);
-        themNV.setDefaultCloseOperation(JDialogThemNV.DISPOSE_ON_CLOSE);
-        themNV.setVisible(true);
-        try {
-            loadDSNhanVien(0, false, null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (quyenThem1 == 1) {
+            JDialogThemNV themNV = new JDialogThemNV(null, true);
+            themNV.setDefaultCloseOperation(JDialogThemNV.DISPOSE_ON_CLOSE);
+            themNV.setVisible(true);
+            try {
+                loadDSNhanVien(0, false, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_btnThemNVActionPerformed
 
@@ -535,91 +547,101 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmChiTietActionPerformed
 
     private void ppmSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmSuaActionPerformed
-        int selectedRow = jTableDSNV.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi sửa!");
-            return;
+        if (quyenSua == 1) {
+            int selectedRow = jTableDSNV.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi sửa!");
+                return;
 
-        } else {
-            Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
-            if (idObj != null) {
-                int maNhanVien = Integer.parseInt(idObj.toString());
-                NhanVienDTO nhanVien = new NhanVienDTO();
-                nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
-                if (nhanVien == null) {
-                    MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
-                    return;
-                } else {
+            } else {
+                Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    int maNhanVien = Integer.parseInt(idObj.toString());
+                    NhanVienDTO nhanVien = new NhanVienDTO();
+                    nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
+                    if (nhanVien == null) {
+                        MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
+                        return;
+                    } else {
 
-                    if (biXoa == 1) {
-                        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục nhân viên này?") == JOptionPane.YES_OPTION) {
-                            if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
-                                MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
-                                try {
-                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                        if (biXoa == 1) {
+                            if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục nhân viên này?") == JOptionPane.YES_OPTION) {
+                                if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
+                                    MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
+                                    try {
+                                        loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                } else {
+                                    MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
                                 }
                             } else {
-                                MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
+                                return;
                             }
+
                         } else {
-                            return;
-                        }
+                            JFrameChiTietNV formSua = new JFrameChiTietNV(nhanVien, true);
+                            formSua.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
+                            formSua.setVisible(true);
 
-                    } else {
-                        JFrameChiTietNV formSua = new JFrameChiTietNV(nhanVien, true);
-                        formSua.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
-                        formSua.setVisible(true);
-
-                        formSua.addWindowListener(new WindowAdapter() {
-                            @Override
-                            public void windowClosed(WindowEvent e) {
-                                try {
-                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                            formSua.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    try {
+                                        loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmSuaActionPerformed
 
     private void ppmXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmXoaActionPerformed
-        int selectedRow = jTableDSNV.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi xóa!");
-            return;
-        } else {
-            if (biXoa == 1) {
-                MessageBox.showErrorMessage(null, "Tính năng đang cập nhật");
+        if (quyenXoa == 1) {
+            int selectedRow = jTableDSNV.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi xóa!");
                 return;
             } else {
-                Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
-                if (idObj != null) {
-                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.YES_OPTION) {
-                        int maNhanVien = Integer.parseInt(idObj.toString());
-                        boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
-                        if (isDelete == false) {
-                            MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
-                            return;
-                        } else {
-                            MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
+                if (biXoa == 1) {
+                    MessageBox.showErrorMessage(null, "Tính năng đang cập nhật");
+                    return;
+                } else {
+                    Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
+                    if (idObj != null) {
+                        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.YES_OPTION) {
+                            int maNhanVien = Integer.parseInt(idObj.toString());
+                            boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
+                            if (isDelete == false) {
+                                MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
+                                return;
+                            } else {
+                                MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
 
-                            try {
-                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                                try {
+                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
+                        } else {
+                            return;
                         }
-                    } else {
-                        return;
                     }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmXoaActionPerformed
 
@@ -693,33 +715,38 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNhapFileActionPerformed
 
     private void ppmTaoTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmTaoTKActionPerformed
-        int selectedRow = jTableDSNV.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi thêm tài khoản!");
-            return;
+        if (quyenThem2 == 1) {
+            int selectedRow = jTableDSNV.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi thêm tài khoản!");
+                return;
 
-        } else {
-            Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
-            if (idObj != null) {
-                int maNhanVien = Integer.parseInt(idObj.toString());
-                NhanVienDTO nhanVien = new NhanVienDTO();
-                nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
-                if (nhanVien == null) {
-                    MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
-                    return;
-                } else {
-
-                    if (biXoa == 1) {
-                        MessageBox.showErrorMessage(null, "Không thể thêm tài khoản cho nhân viên bị xóa!");
+            } else {
+                Object idObj = jTableDSNV.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    int maNhanVien = Integer.parseInt(idObj.toString());
+                    NhanVienDTO nhanVien = new NhanVienDTO();
+                    nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
+                    if (nhanVien == null) {
+                        MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
                         return;
-
                     } else {
-                        JDialogThemTKNV themTK = new JDialogThemTKNV(null, true, maNhanVien);
-                        themTK.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
-                        themTK.setVisible(true);
+
+                        if (biXoa == 1) {
+                            MessageBox.showErrorMessage(null, "Không thể thêm tài khoản cho nhân viên bị xóa!");
+                            return;
+
+                        } else {
+                            JDialogThemTKNV themTK = new JDialogThemTKNV(null, true, maNhanVien);
+                            themTK.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
+                            themTK.setVisible(true);
+                        }
                     }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmTaoTKActionPerformed
 
@@ -734,7 +761,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private javax.swing.JButton btnXuatFile;
     private javax.swing.JComboBox<String> cbxSapXep;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

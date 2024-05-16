@@ -7,15 +7,23 @@ package quanlynganhang.GUI.model.headerbar;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
+import quanlynganhang.GUI.Application;
 import quanlynganhang.GUI.FormPopupProfile;
 import quanlynganhang.GUI.JFrameThongBao;
+import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.glasspanepopup.DefaultOption;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 
 public class HeaderBar extends javax.swing.JPanel {
-
-    /** Creates new form SearchBar */
-    public HeaderBar() {
+    private Application app;
+    private ApplicationAdmin appAdmin;
+    private TaiKhoanNVDTO taiKhoanNV;
+    
+    public HeaderBar(TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin) {
+        this.app = app;
+        this.appAdmin = appAdmin;
+        this.taiKhoanNV = taiKhoanNV;
         initComponents();
         
         putClientProperty(FlatClientProperties.STYLE, ""
@@ -233,7 +241,7 @@ public class HeaderBar extends javax.swing.JPanel {
     }//GEN-LAST:event_formAncestorAdded
 
     private void btnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProfileMouseClicked
-        GlassPanePopup.showPopup(new FormPopupProfile());
+        GlassPanePopup.showPopup(new FormPopupProfile(taiKhoanNV, app, appAdmin, 1, 0));
     }//GEN-LAST:event_btnProfileMouseClicked
 
     private void btnNotifiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotifiActionPerformed

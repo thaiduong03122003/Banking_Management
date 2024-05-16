@@ -23,10 +23,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.NhanVienDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
@@ -35,18 +38,29 @@ public class FormDSKhachHang extends javax.swing.JPanel {
     private JFrameBoLocDSKH boloc;
     private JFrameChiTietKH formChiTiet;
     private KhachHangBUS khachHangBUS;
-    private int biXoa;
+    private int quyenThem, quyenSua, quyenXoa, biXoa;
     private boolean isFiltered;
     private List<KhachHangDTO> listLocKH, currentList;
+    private TaiKhoanNVDTO taiKhoanNV;
+    private ChucVuDTO chucVu;
 
-    public FormDSKhachHang() throws Exception {
+    public FormDSKhachHang(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
+        this.taiKhoanNV = taiKhoanNV;
+        this.chucVu = chucVu;
         khachHangBUS = new KhachHangBUS();
         listLocKH = new ArrayList<>();
         initComponents();
+        thietLapChucVu();
         txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / họ tên / mã căn cước của khách hàng cần tìm...");
         biXoa = 0;
         loadDSKhachHang(biXoa, false, null);
         jTableDSKH.getTableHeader().setReorderingAllowed(false);
+    }
+
+    private void thietLapChucVu() {
+        quyenThem = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 4);
     }
 
     public void loadDSKhachHang(int biXoa, boolean isFiltered, List<KhachHangDTO> list) throws Exception {
@@ -461,7 +475,7 @@ public class FormDSKhachHang extends javax.swing.JPanel {
                         MessageBox.showErrorMessage(null, "Mã khách hàng không tồn tại!");
                         return;
                     } else {
-                        formChiTiet = new JFrameChiTietKH(khachHang, false);
+                        formChiTiet = new JFrameChiTietKH(khachHang, false, quyenSua, quyenXoa);
                         formChiTiet.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
@@ -486,61 +500,67 @@ public class FormDSKhachHang extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmChiTietActionPerformed
 
     private void ppmSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmSuaActionPerformed
-        int selectedRow = jTableDSKH.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng trước khi sửa!");
-            return;
+        if (quyenSua == 1) {
+            int selectedRow = jTableDSKH.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng trước khi sửa!");
+                return;
 
-        } else {
-            Object idObj = jTableDSKH.getValueAt(selectedRow, 0);
-            if (idObj != null) {
-                int maKhachHang = Integer.parseInt(idObj.toString());
-                KhachHangDTO khachHang = new KhachHangDTO();
-                khachHang = khachHangBUS.getKhachHangById(maKhachHang, biXoa);
-                if (khachHang == null) {
-                    MessageBox.showErrorMessage(null, "Mã khách hàng không tồn tại!");
-                    return;
-                } else {
+            } else {
+                Object idObj = jTableDSKH.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    int maKhachHang = Integer.parseInt(idObj.toString());
+                    KhachHangDTO khachHang = new KhachHangDTO();
+                    khachHang = khachHangBUS.getKhachHangById(maKhachHang, biXoa);
+                    if (khachHang == null) {
+                        MessageBox.showErrorMessage(null, "Mã khách hàng không tồn tại!");
+                        return;
+                    } else {
 
-                    if (biXoa == 1) {
-                        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục khách hàng này?") == JOptionPane.YES_OPTION) {
-                            if (khachHangBUS.restoreKhachHang(maKhachHang)) {
-                                MessageBox.showInformationMessage(null, "", "Đã khôi phục lại khách hàng!");
-                                try {
-                                    loadDSKhachHang(biXoa, isFiltered, listLocKH);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                        if (biXoa == 1) {
+                            if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục khách hàng này?") == JOptionPane.YES_OPTION) {
+                                if (khachHangBUS.restoreKhachHang(maKhachHang)) {
+                                    MessageBox.showInformationMessage(null, "", "Đã khôi phục lại khách hàng!");
+                                    try {
+                                        loadDSKhachHang(biXoa, isFiltered, listLocKH);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                } else {
+                                    MessageBox.showErrorMessage(null, "Khôi phục khách hàng thất bại");
                                 }
                             } else {
-                                MessageBox.showErrorMessage(null, "Khôi phục khách hàng thất bại");
+                                return;
                             }
+
                         } else {
-                            return;
-                        }
+                            JFrameChiTietKH formSua = new JFrameChiTietKH(khachHang, true, quyenSua, quyenXoa);
+                            formSua.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
+                            formSua.setVisible(true);
 
-                    } else {
-                        JFrameChiTietKH formSua = new JFrameChiTietKH(khachHang, true);
-                        formSua.setDefaultCloseOperation(JFrameChiTietKH.DISPOSE_ON_CLOSE);
-                        formSua.setVisible(true);
-
-                        formSua.addWindowListener(new WindowAdapter() {
-                            @Override
-                            public void windowClosed(WindowEvent e) {
-                                try {
-                                    loadDSKhachHang(biXoa, isFiltered, listLocKH);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                            formSua.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    try {
+                                        loadDSKhachHang(biXoa, isFiltered, listLocKH);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmSuaActionPerformed
 
     private void ppmXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmXoaActionPerformed
-        int selectedRow = jTableDSKH.getSelectedRow();
+        if (quyenXoa == 1) {
+            int selectedRow = jTableDSKH.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng trước khi xóa!");
             return;
@@ -571,6 +591,10 @@ public class FormDSKhachHang extends javax.swing.JPanel {
                     }
                 }
             }
+        }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmXoaActionPerformed
 

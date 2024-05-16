@@ -1,23 +1,39 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.ItemEvent;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
+import quanlynganhang.BUS.TaiKhoanKHBUS;
+import quanlynganhang.BUS.VayVonBUS;
+import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormTraKhoanVay extends javax.swing.JPanel {
 
-    /** Creates new form FormThongKe */
-    public FormTraKhoanVay() {
+    private int maTaiKhoanKHVay, maKhachHang;
+    private TaiKhoanKHDTO taiKhoanKHVay, taiKhoanKHNguon;
+    private TaiKhoanKHBUS taiKhoanKHBUS;
+    private VayVonBUS vayVonBUS;
+    private Integer maTaiKhoanKHNguon;
+    
+    public FormTraKhoanVay(TaiKhoanNVDTO taiKhoanNV) {
+        taiKhoanKHBUS = new TaiKhoanKHBUS();
+        vayVonBUS = new VayVonBUS();
+        maTaiKhoanKHNguon = 0;
+        
         initComponents();
         initCustomUI();
+    }
+    
+    public void getMaTaiKhoanVay(int maTaiKhoanKH) {
+        maTaiKhoanKHVay = maTaiKhoanKH;
+        
+        loadThongTinTKVay();
     }
 
     private void initCustomUI() {
@@ -50,14 +66,50 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jPAddress.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
 
-        txtAccNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccName.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtDateCreate.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccType.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusYOB.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusAddress.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtSTK.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTenTK.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTienPhaiTra.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtDuNo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTienLai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtLaiPhat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+    }
+    
+    private void loadThongTinTKVay() {
+        TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKHVay);
+        
+        if (taiKhoanKH != null) {
+            taiKhoanKHVay = taiKhoanKH;
+            maKhachHang = taiKhoanKH.getMaKhachHang();
+            
+            loadTKNguon();
+            
+            
+            lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
+            lbMaTK.setText("" + taiKhoanKH.getMaTKKH());
+            txtSTK.setText(taiKhoanKH.getSoTaiKhoan());
+            txtTenTK.setText(taiKhoanKH.getTenTaiKhoan());
+            
+        } else {
+            MessageBox.showErrorMessage(null, "Không tìm thấy thông tin tài khoản vay!");
+        }
     }
 
+    private void loadTKNguon() {
+        Map<Integer, String> map = new HashMap<>();
+        map = taiKhoanKHBUS.convertListTKNguonToMap(taiKhoanKHVay.getMaKhachHang());
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("-Chọn tài khoản nguồn-");
+
+        if (map != null) {
+            for (String tenNganHang : map.values()) {
+                model.addElement(tenNganHang);
+            }
+        }
+
+        cbxTKNguon.setModel(model);
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -92,43 +144,43 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jLabel29 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnChonTKVay = new javax.swing.JButton();
         jPPINCode = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
         txtPINCode1 = new javax.swing.JTextField();
         jPTKNguon = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxTKNguon = new javax.swing.JComboBox<>();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPCusNameInfo = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lbHoTenKH = new javax.swing.JLabel();
         jPAccNum = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        txtAccNum = new javax.swing.JTextField();
+        txtSTK = new javax.swing.JTextField();
         jPAccType = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        txtAccName = new javax.swing.JTextField();
+        txtTenTK = new javax.swing.JTextField();
         jPIdCentizenCard = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        txtDateCreate = new javax.swing.JTextField();
+        txtTienPhaiTra = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jPCusYOB = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
-        txtCusYOB = new javax.swing.JTextField();
+        txtTienLai = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         jPAddress = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
-        txtCusAddress = new javax.swing.JTextField();
+        txtLaiPhat = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
         jPAccName = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
-        txtAccType = new javax.swing.JTextField();
+        txtDuNo = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        lbMaTK = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -312,7 +364,12 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jButton5.setText("Chọn tài khoản vay");
+        btnChonTKVay.setText("Chọn tài khoản vay");
+        btnChonTKVay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChonTKVayActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
@@ -345,7 +402,12 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         );
         jLabel5.setText("Tài khoản nguồn");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxTKNguon.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Chọn tài khoản nguồn-" }));
+        cbxTKNguon.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxTKNguonItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPTKNguonLayout = new javax.swing.GroupLayout(jPTKNguon);
         jPTKNguon.setLayout(jPTKNguonLayout);
@@ -355,7 +417,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPTKNguonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cbxTKNguon, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPTKNguonLayout.setVerticalGroup(
@@ -364,7 +426,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxTKNguon, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -379,7 +441,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnChonTKVay, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -399,7 +461,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbTitle)
-                    .addComponent(jButton5))
+                    .addComponent(btnChonTKVay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -423,8 +485,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel9.setText("Họ tên khách hàng: ");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("(Chưa chọn)");
+        lbHoTenKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbHoTenKH.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPCusNameInfoLayout = new javax.swing.GroupLayout(jPCusNameInfo);
         jPCusNameInfo.setLayout(jPCusNameInfoLayout);
@@ -434,7 +496,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbHoTenKH, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(52, Short.MAX_VALUE))
         );
         jPCusNameInfoLayout.setVerticalGroup(
@@ -443,7 +505,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusNameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addComponent(lbHoTenKH))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -452,8 +514,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         );
         jLabel11.setText("Số tài khoản vay vốn");
 
-        txtAccNum.setEditable(false);
-        txtAccNum.setEnabled(false);
+        txtSTK.setEditable(false);
+        txtSTK.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNumLayout = new javax.swing.GroupLayout(jPAccNum);
         jPAccNum.setLayout(jPAccNumLayout);
@@ -462,7 +524,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
             .addGroup(jPAccNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSTK, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -472,7 +534,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSTK, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -481,8 +543,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         );
         jLabel12.setText("Tên tài khoản vay vốn");
 
-        txtAccName.setEditable(false);
-        txtAccName.setEnabled(false);
+        txtTenTK.setEditable(false);
+        txtTenTK.setEnabled(false);
 
         javax.swing.GroupLayout jPAccTypeLayout = new javax.swing.GroupLayout(jPAccType);
         jPAccType.setLayout(jPAccTypeLayout);
@@ -491,7 +553,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
             .addGroup(jPAccTypeLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAccName, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                    .addComponent(txtTenTK, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
                     .addGroup(jPAccTypeLayout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -503,17 +565,17 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccName, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTenTK, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel13.setIcon(new FlatSVGIcon("quanlynganhang/icon/id_card_label.svg")
         );
-        jLabel13.setText("Số tiền đã vay");
+        jLabel13.setText("Tổng số tiền cần trả cho kỳ này");
 
-        txtDateCreate.setEditable(false);
-        txtDateCreate.setEnabled(false);
+        txtTienPhaiTra.setEditable(false);
+        txtTienPhaiTra.setEnabled(false);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("VND");
@@ -522,26 +584,25 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jPIdCentizenCard.setLayout(jPIdCentizenCardLayout);
         jPIdCentizenCardLayout.setHorizontalGroup(
             jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPIdCentizenCardLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
-                        .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTienPhaiTra, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)))
                 .addGap(12, 12, 12))
         );
         jPIdCentizenCardLayout.setVerticalGroup(
             jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
-                    .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txtTienPhaiTra, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -550,8 +611,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         );
         jLabel14.setText("Số tiền lãi phải đóng kỳ này");
 
-        txtCusYOB.setEditable(false);
-        txtCusYOB.setEnabled(false);
+        txtTienLai.setEditable(false);
+        txtTienLai.setEnabled(false);
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel21.setText("VND");
@@ -565,7 +626,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addGroup(jPCusYOBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPCusYOBLayout.createSequentialGroup()
-                        .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTienLai, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -578,7 +639,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPCusYOBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel21)
-                    .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTienLai, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -587,8 +648,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         );
         jLabel16.setText("Số tiền lãi phạt");
 
-        txtCusAddress.setEditable(false);
-        txtCusAddress.setEnabled(false);
+        txtLaiPhat.setEditable(false);
+        txtLaiPhat.setEnabled(false);
 
         jLabel28.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel28.setText("VND");
@@ -604,7 +665,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPAddressLayout.createSequentialGroup()
-                        .addComponent(txtCusAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtLaiPhat, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel28)
                         .addGap(0, 38, Short.MAX_VALUE))))
@@ -618,15 +679,15 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                     .addGroup(jPAddressLayout.createSequentialGroup()
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCusAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtLaiPhat, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel17.setText("Số tiền vay cần trả cho kỳ này");
+        jLabel17.setText("Dư nợ");
 
-        txtAccType.setEditable(false);
-        txtAccType.setEnabled(false);
+        txtDuNo.setEditable(false);
+        txtDuNo.setEnabled(false);
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel20.setText("VND");
@@ -639,7 +700,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPAccNameLayout.createSequentialGroup()
-                        .addComponent(txtAccType, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtDuNo, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPAccNameLayout.createSequentialGroup()
@@ -655,15 +716,15 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel20)
-                    .addComponent(txtAccType, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDuNo, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jLabel18.setText("Mã khách hàng: ");
+        jLabel18.setText("Mã tài khoản: ");
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel19.setText("(Chưa chọn)");
+        lbMaTK.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaTK.setText("(Chưa chọn)");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -729,7 +790,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                         .addGap(12, 12, 12)
                         .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbMaTK, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -747,7 +808,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel18)
-                            .addComponent(jLabel19))
+                            .addComponent(lbMaTK))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                         .addComponent(jPAccNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPAccountInfoLayout.createSequentialGroup()
@@ -792,14 +853,36 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         lbSoTienRut.setText("" + txtSoTienRut.getText() + " VND");
     }//GEN-LAST:event_txtSoTienRutFocusLost
 
+    private void btnChonTKVayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKVayActionPerformed
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản vay", "DSTKV");
+        chonTKKH.setResizable(false);
+        chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonTKKH.setVisible(true);
+    }//GEN-LAST:event_btnChonTKVayActionPerformed
+
+    private void cbxTKNguonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTKNguonItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenTKNguon = (String) cbxTKNguon.getSelectedItem();
+            if (tenTKNguon.equals("-Chọn tài khoản nguồn-")) {
+                maTaiKhoanKHNguon = 0;
+            } else {
+                maTaiKhoanKHNguon = taiKhoanKHBUS.getIdFromSTKNguon(tenTKNguon, maKhachHang);
+
+                if (maTaiKhoanKHNguon == null) {
+                    MessageBox.showErrorMessage(null, "Lấy id của tài khoản nguồn thất bại!");
+                    return;
+                }
+            }
+        }
+    }//GEN-LAST:event_cbxTKNguonItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChonTKVay;
     private javax.swing.ButtonGroup btnGroupNguonTien;
+    private javax.swing.JComboBox<String> cbxTKNguon;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -808,7 +891,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -847,17 +929,19 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lbHoTenKH;
+    private javax.swing.JLabel lbMaTK;
     private javax.swing.JLabel lbSoTienRut;
     private javax.swing.JLabel lbTitle;
     private javax.swing.JRadioButton rdbTienMat;
     private javax.swing.JRadioButton rdbTienTaiKhoan;
-    private javax.swing.JTextField txtAccName;
-    private javax.swing.JTextField txtAccNum;
-    private javax.swing.JTextField txtAccType;
-    private javax.swing.JTextField txtCusAddress;
-    private javax.swing.JTextField txtCusYOB;
-    private javax.swing.JTextField txtDateCreate;
+    private javax.swing.JTextField txtDuNo;
+    private javax.swing.JTextField txtLaiPhat;
     private javax.swing.JTextField txtPINCode1;
+    private javax.swing.JTextField txtSTK;
     private javax.swing.JTextField txtSoTienRut;
+    private javax.swing.JTextField txtTenTK;
+    private javax.swing.JTextField txtTienLai;
+    private javax.swing.JTextField txtTienPhaiTra;
     // End of variables declaration//GEN-END:variables
 }

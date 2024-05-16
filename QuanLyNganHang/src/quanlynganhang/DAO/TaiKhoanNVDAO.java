@@ -127,8 +127,10 @@ public class TaiKhoanNVDAO {
                     taiKhoan.setMaPIN(rs.getString("ma_PIN_dang_nhap"));
                     taiKhoan.setNgayTaoTK(rs.getDate("ngay_tao_tk"));
                     taiKhoan.setMaNhanVien(rs.getInt("ma_nhan_vien"));
+                    taiKhoan.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
                     taiKhoan.setMaTrangThai(rs.getInt("ma_trang_thai"));
                     taiKhoan.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+
                     return taiKhoan;
                 }
             }
@@ -137,7 +139,11 @@ public class TaiKhoanNVDAO {
     }
 
     public TaiKhoanNVDTO selectByUserName(String tenTaiKhoan) throws Exception {
-        String sql = "SELECT * FROM tbl_tai_khoan_nhan_vien WHERE ten_dang_nhap = ? ORDER BY ma_tk_nhan_vien DESC LIMIT 1";
+
+        String sql = "SELECT tknv.*, nv.ho_dem, nv.ten, tt.ten_trang_thai FROM tbl_tai_khoan_nhan_vien tknv"
+            + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
+            + " LEFT JOIN tbl_trang_thai tt ON tknv.ma_trang_thai = tt.ma_trang_thai"
+            + " WHERE ten_dang_nhap = ? ORDER BY ma_tk_nhan_vien DESC LIMIT 1";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
             pstmt.setString(1, tenTaiKhoan);
@@ -149,8 +155,11 @@ public class TaiKhoanNVDAO {
                     taiKhoan.setTenDangNhap(rs.getString("ten_dang_nhap"));
                     taiKhoan.setMatKhau(rs.getString("mat_khau"));
                     taiKhoan.setMaPIN(rs.getString("ma_PIN_dang_nhap"));
+                    taiKhoan.setNgayTaoTK(rs.getDate("ngay_tao_tk"));
                     taiKhoan.setMaNhanVien(rs.getInt("ma_nhan_vien"));
+                    taiKhoan.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
                     taiKhoan.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoan.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
 
                     return taiKhoan;
                 }
@@ -219,7 +228,7 @@ public class TaiKhoanNVDAO {
         }
     }
 
-    public boolean changePassword(TaiKhoanNVDTO taiKhoanNV) throws Exception {
+    public boolean changePassword(TaiKhoanNVDTO taiKhoanNV) {
         String sql = "UPDATE tbl_tai_khoan_nhan_vien SET mat_khau = ? WHERE ma_tk_nhan_vien = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -228,9 +237,12 @@ public class TaiKhoanNVDAO {
             pstmt.setInt(2, taiKhoanNV.getMaTKNV());
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
-    
+
     public boolean changePINCode(TaiKhoanNVDTO taiKhoanNV) throws Exception {
         String sql = "UPDATE tbl_tai_khoan_nhan_vien SET ma_PIN_dang_nhap = ? WHERE ma_tk_nhan_vien = ?";
 

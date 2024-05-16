@@ -22,8 +22,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
@@ -37,14 +39,24 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     private boolean isFiltered;
     private List<TaiKhoanNVDTO> listLocTaiKhoanNV, currentList;
     private JFrameThemTKNV2 jFrameThemTKNV;
+    private ChucVuDTO chucVu;
+    private int quyenThem, quyenSua, quyenXoa;
 
-    public FormDSTaiKhoanNV() throws Exception {
+    public FormDSTaiKhoanNV(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
+        this.chucVu = chucVu;
         taiKhoanNVBUS = new TaiKhoanNVBUS();
         listLocTaiKhoanNV = new ArrayList<>();
         initComponents();
+        thietLapChucVu();
         txtSearchTaiKhoanNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã tài khoản/ mã nhân viên cần tìm...");
         loadDSTaiKhoanNV(false, null);
         jTableDSTaiKhoanNV.getTableHeader().setReorderingAllowed(false);
+    }
+
+    private void thietLapChucVu() {
+        quyenThem = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKNhanVien(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKNhanVien(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKNhanVien(), 4);
     }
 
     public void loadDSTaiKhoanNV(boolean isFiltered, List<TaiKhoanNVDTO> list) throws Exception {
@@ -437,7 +449,7 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
                         MessageBox.showErrorMessage(null, "Mã tài khoản nhân viên không tồn tại!");
                         return;
                     } else {
-                        formChiTiet = new JFrameChiTietTKNV(maTaiKhoanNV, false);
+                        formChiTiet = new JFrameChiTietTKNV(maTaiKhoanNV, false, quyenSua, quyenXoa);
                         formChiTiet.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
@@ -462,75 +474,74 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmChiTietActionPerformed
 
     private void ppmSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmSuaActionPerformed
-        int selectedRow = jTableDSTaiKhoanNV.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản nhân viên trước khi sửa!");
-            return;
+        if (quyenSua == 1) {
+            int selectedRow = jTableDSTaiKhoanNV.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản nhân viên trước khi sửa!");
+                return;
 
-        } else {
-            Object idObj = jTableDSTaiKhoanNV.getValueAt(selectedRow, 0);
-            if (idObj != null) {
-                int maTaiKhoanNV = Integer.parseInt(idObj.toString());
-                TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
-                taiKhoanNV = taiKhoanNVBUS.getTaiKhoanNVById(maTaiKhoanNV);
-                if (taiKhoanNV == null) {
-                    MessageBox.showErrorMessage(null, "Mã tài khoản nhân viên không tồn tại!");
-                    return;
-                } else {
+            } else {
+                Object idObj = jTableDSTaiKhoanNV.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    int maTaiKhoanNV = Integer.parseInt(idObj.toString());
+                    TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
+                    taiKhoanNV = taiKhoanNVBUS.getTaiKhoanNVById(maTaiKhoanNV);
+                    if (taiKhoanNV == null) {
+                        MessageBox.showErrorMessage(null, "Mã tài khoản nhân viên không tồn tại!");
+                        return;
+                    } else {
 
-                    JFrameChiTietTKNV formSua = new JFrameChiTietTKNV(maTaiKhoanNV, true);
-                    formSua.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
-                    formSua.setVisible(true);
+                        JFrameChiTietTKNV formSua = new JFrameChiTietTKNV(maTaiKhoanNV, true, quyenSua, quyenXoa);
+                        formSua.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
+                        formSua.setVisible(true);
 
-                    formSua.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            try {
-                                loadDSTaiKhoanNV(isFiltered, listLocTaiKhoanNV);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                        formSua.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                try {
+                                    loadDSTaiKhoanNV(isFiltered, listLocTaiKhoanNV);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
-                        }
-                    });
+                        });
 
+                    }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_ppmSuaActionPerformed
 
     private void ppmXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmXoaActionPerformed
-////        int selectedRow = jTableDSTaiKhoanNV.getSelectedRow();
-////        if (selectedRow == -1) {
-////            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi xóa!");
-////            return;
-////        } else {
-////            if (biXoa == 1) {
-////                MessageBox.showErrorMessage(null, "Tính năng đang cập nhật");
-////                return;
-////            } else {
-////                Object idObj = jTableDSTaiKhoanNV.getValueAt(selectedRow, 0);
-////                if (idObj != null) {
-////                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.YES_OPTION) {
-////                        int maNhanVien = Integer.parseInt(idObj.toString());
-////                        boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
-////                        if (isDelete == false) {
-////                            MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
-////                            return;
-////                        } else {
-////                            MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
-////
-////                            try {
-////                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
-////                            } catch (Exception ex) {
-////                                ex.printStackTrace();
-////                            }
-////                        }
-////                    } else {
-////                        return;
-////                    }
-////                }
-////            }
-////        }
+        if (quyenXoa == 1) {
+            int selectedRow = jTableDSTaiKhoanNV.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên trước khi đóng!");
+                return;
+            } else {
+
+                Object idObj = jTableDSTaiKhoanNV.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đóng tài khoản nhân viên này?") == JOptionPane.YES_OPTION) {
+                        int maNhanVien = Integer.parseInt(idObj.toString());
+
+                        if (taiKhoanNVBUS.doiTrangThai(maNhanVien, 1)) {
+                            MessageBox.showInformationMessage(null, "", "Đóng tài khoản thành công!");
+                        } else {
+                            MessageBox.showErrorMessage(null, "Đóng tài khoản thất bại!");
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
+        }
     }//GEN-LAST:event_ppmXoaActionPerformed
 
     private void txtSearchTaiKhoanNVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchTaiKhoanNVKeyReleased
@@ -603,21 +614,26 @@ public class FormDSTaiKhoanNV extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNhapFileActionPerformed
 
     private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
-        if (jFrameThemTKNV == null) {
-            jFrameThemTKNV = new JFrameThemTKNV2();
-            jFrameThemTKNV.setResizable(false);
-            jFrameThemTKNV.setDefaultCloseOperation(JFrameThemTKNV2.DISPOSE_ON_CLOSE);
+        if (quyenThem == 1) {
+            if (jFrameThemTKNV == null) {
+                jFrameThemTKNV = new JFrameThemTKNV2();
+                jFrameThemTKNV.setResizable(false);
+                jFrameThemTKNV.setDefaultCloseOperation(JFrameThemTKNV2.DISPOSE_ON_CLOSE);
 
-            jFrameThemTKNV.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    jFrameThemTKNV = null;
-                }
-            });
+                jFrameThemTKNV.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        jFrameThemTKNV = null;
+                    }
+                });
+            }
+
+            jFrameThemTKNV.setExtendedState(JFrameThemTKNV2.NORMAL);
+            jFrameThemTKNV.setVisible(true);
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
-
-        jFrameThemTKNV.setExtendedState(JFrameThemTKNV2.NORMAL);
-        jFrameThemTKNV.setVisible(true);
     }//GEN-LAST:event_btnThemTKNVActionPerformed
 
 

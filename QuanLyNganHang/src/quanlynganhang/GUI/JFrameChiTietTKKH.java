@@ -30,12 +30,12 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     private String fileName;
     private int maTaiKhoanKH;
     private TaiKhoanKHDTO taiKhoanKH;
-    private JDialogDoiMatKhau capLaiMatKhau;
+    private JDialogDoiMatKhauKH capLaiMatKhau;
 
-    public JFrameChiTietTKKH(int maTaiKhoanNV, boolean isEdit) {
+    public JFrameChiTietTKKH(int maTaiKhoanKH, boolean isEdit) {
         khachHangBUS = new KhachHangBUS();
         taiKhoanKHBUS = new TaiKhoanKHBUS();
-        this.maTaiKhoanKH = maTaiKhoanNV;
+        this.maTaiKhoanKH = maTaiKhoanKH;
         taiKhoanKH = new TaiKhoanKHDTO();
 
         initComponents();
@@ -159,7 +159,7 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
         }
 
         if (error.isEmpty()) {
-            if (taiKhoanKHBUS.updateTaiKhoanNV(taiKhoanKH)) {
+            if (taiKhoanKHBUS.updateTaiKhoanKH(taiKhoanKH)) {
                 this.taiKhoanKH = taiKhoanKH;
                 return true;
             } else {
@@ -245,7 +245,6 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         txtTenLoaiTaiKhoan = new javax.swing.JTextField();
         jPanel21 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
         btnResetPassword = new javax.swing.JButton();
         btnDoiTrangThai = new javax.swing.JButton();
 
@@ -877,8 +876,6 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton1.setText("Xem lịch sử thực hiện giao dịch");
-
         btnResetPassword.setText("Cấp lại mật khẩu");
         btnResetPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -900,17 +897,14 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
                     .addComponent(btnResetPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDoiTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnDoiTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel21Layout.setVerticalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel21Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap(41, Short.MAX_VALUE)
                 .addComponent(btnResetPassword)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnDoiTrangThai)
@@ -1063,8 +1057,8 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDoiTrangThaiActionPerformed
 
     private void btnResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPasswordActionPerformed
-        capLaiMatKhau = new JDialogDoiMatKhau(null, true, true, maTaiKhoanKH);
-        capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhau.DISPOSE_ON_CLOSE);
+        capLaiMatKhau = new JDialogDoiMatKhauKH(null, true, true, maTaiKhoanKH, 0);
+        capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhauKH.DISPOSE_ON_CLOSE);
         capLaiMatKhau.setVisible(true);
     }//GEN-LAST:event_btnResetPasswordActionPerformed
 
@@ -1103,7 +1097,6 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     private javax.swing.ButtonGroup btnGroupNoXau;
     private javax.swing.JButton btnResetPassword;
     private javax.swing.JButton btnSuaThongTin;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;

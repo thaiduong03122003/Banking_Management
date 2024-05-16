@@ -7,6 +7,7 @@ package quanlynganhang.GUI;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.io.File;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +17,22 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.DiaChiBUS;
+import quanlynganhang.BUS.GiaoDichBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.XuLyAnhBUS;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.DiaChiDTO;
+import quanlynganhang.DTO.GiaoDichDTO;
 import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.adminUI.JDialogXemAnh;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
@@ -38,22 +44,40 @@ import quanlynganhang.GUI.model.message.MessageBox;
 public class FormMoTaiKhoan extends javax.swing.JPanel {
 
     FormatDate fDate = new FormatDate();
+    private TaiKhoanNVDTO taiKhoanNV;
     private KhachHangBUS khachHangBUS;
     private TaiKhoanKHBUS taiKhoanKHBUS;
+    private GiaoDichBUS giaoDichBUS;
     private DiaChiBUS diaChiBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private String fileName;
+    private BigInteger minSoDu;
+    private String soTienGD;
+    private ChucVuDTO chucVu;
+    private int quyenThem1, quyenThem2, quyenSua, quyenXoa;
 
-    public FormMoTaiKhoan() {
+    public FormMoTaiKhoan(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
+        this.taiKhoanNV = taiKhoanNV;
+        this.chucVu = chucVu;
         fDate = new FormatDate();
         khachHangBUS = new KhachHangBUS();
         taiKhoanKHBUS = new TaiKhoanKHBUS();
+        giaoDichBUS = new GiaoDichBUS();
         diaChiBUS = new DiaChiBUS();
         fileName = "no_image.png";
+        minSoDu = new BigInteger("100000");
 
         initComponents();
         initCustomUI();
+        thietLapChucVu();
         loadTinhThanh("");
+    }
+
+    private void thietLapChucVu() {
+        quyenThem1 = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 2);
+        quyenThem2 = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKKhachHang(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLKhachHang(), 4);
     }
 
     private void initCustomUI() {
@@ -404,7 +428,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         }
 
         taiKhoanKH.setTenTaiKhoan(txtTenTaiKhoan.getText());
-        
+
         if (cbxLoaiTaiKhoan.getSelectedIndex() == 0) {
             taiKhoanKH.setMaLoaiTaiKhoan(1);
         } else {
@@ -419,11 +443,13 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         }
 
         try {
-            int soTien = Integer.parseInt(txtTien.getText());
-            if (soTien >= 100000) {
-                taiKhoanKH.setSoDu(soTien);
+            BigInteger soTien = new BigInteger(txtTien.getText());
+
+            if (soTien.compareTo(minSoDu) >= 0) {
+                soTienGD = txtTien.getText();
+                taiKhoanKH.setSoDu("0");
             } else {
-                error.append("\nSố tiền phải lớn hơn 100.000 VND");
+                error.append("\nSố tiền phải lớn hơn hoặc bằng 100.000 VND");
             }
         } catch (NumberFormatException pe) {
             error.append("\nSố tiền nhập không đúng");
@@ -432,7 +458,24 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         taiKhoanKH.setNgayTao(fDate.getToday());
 
         if (error.isEmpty()) {
-            return taiKhoanKHBUS.addTaiKhoanKH(taiKhoanKH);
+            int maTKKH = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanKH);
+
+            if (maTKKH != 0) {
+                GiaoDichDTO giaoDich = new GiaoDichDTO();
+
+                giaoDich.setMaTaiKhoanKH(maTKKH);
+                giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
+                giaoDich.setNgayGiaoDich(fDate.getToday());
+                giaoDich.setNoiDungGiaoDich("Chuyển tiền vào tài khoản lần đầu cho tài khoản " + txtSoTaiKhoan.getText());
+                giaoDich.setMaLoaiGiaoDich(4);
+                giaoDich.setSoTien(soTienGD);
+                giaoDich.setMaTrangThai(4);
+
+                return giaoDichBUS.napTien(giaoDich);
+
+            } else {
+                return false;
+            }
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -1286,16 +1329,21 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     }//GEN-LAST:event_btnXemAnhActionPerformed
 
     private void btnLuuKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLuuKHActionPerformed
-        try {
-            int maKhachHang = themKhachHang();
-            if (maKhachHang != 0) {
-                MessageBox.showInformationMessage(null, "", "Thêm khách hàng thành công");
-                dienThongTinKH(maKhachHang);
-            } else {
-                MessageBox.showInformationMessage(null, "", "Thêm khách hàng thất bại!");
+        if (quyenThem1 == 1) {
+            try {
+                int maKhachHang = themKhachHang();
+                if (maKhachHang != 0) {
+                    MessageBox.showInformationMessage(null, "", "Thêm khách hàng thành công");
+                    dienThongTinKH(maKhachHang);
+                } else {
+                    MessageBox.showInformationMessage(null, "", "Thêm khách hàng thất bại!");
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
             }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_btnLuuKHActionPerformed
 
@@ -1307,17 +1355,20 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     }//GEN-LAST:event_btnChonKHActionPerformed
 
     private void btnTaoTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoTKActionPerformed
-        if (MessageBox.showConfirmMessage(this, "Xác nhận tạo tài khoản?") == JOptionPane.YES_OPTION) {
-            if (themTaiKhoanKH()) {
-                MessageBox.showInformationMessage(null, "", "Tạo tài khoản khách hàng thành công!");
+        if (quyenThem2 == 1) {
+            if (MessageBox.showConfirmMessage(this, "Xác nhận tạo tài khoản?") == JOptionPane.YES_OPTION) {
+                if (themTaiKhoanKH()) {
+                    MessageBox.showInformationMessage(null, "", "Tạo tài khoản khách hàng thành công!");
+                } else {
+                    MessageBox.showErrorMessage(null, "Tạo tài khoản khách hàng thất bại!");
+                }
             } else {
-                MessageBox.showErrorMessage(null, "Tạo tài khoản khách hàng thất bại!");
+                return;
             }
         } else {
+            ChiaQuyenBUS.showError();
             return;
         }
-
-
     }//GEN-LAST:event_btnTaoTKActionPerformed
 
 

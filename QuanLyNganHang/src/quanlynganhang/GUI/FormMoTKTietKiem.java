@@ -6,18 +6,57 @@ package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.ItemEvent;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import quanlynganhang.BUS.GiaoDichBUS;
+import quanlynganhang.BUS.KhachHangBUS;
+import quanlynganhang.BUS.MaHoaMatKhauBUS;
+import quanlynganhang.BUS.TaiKhoanKHBUS;
+import quanlynganhang.BUS.TietKiemBUS;
+import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.GiaoDichDTO;
+import quanlynganhang.DTO.KhachHangDTO;
+import quanlynganhang.DTO.KyHanGuiTKDTO;
+import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
+import quanlynganhang.DTO.TietKiemDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormMoTKTietKiem extends javax.swing.JPanel {
 
-    /** Creates new form FormThongKe */
-    public FormMoTKTietKiem() {
+    private KhachHangBUS khachHangBUS;
+    private TaiKhoanKHBUS taiKhoanKHBUS;
+    private GiaoDichBUS giaoDichBUS;
+    private TietKiemBUS tietKiemBUS;
+    private FormatDate fDate;
+    private int maKhachHang;
+    private Integer maTaiKhoanKH, maKyHan;
+    private BigInteger soDu, soTien, minSoTienGD, maxSoTienGD;
+    private TaiKhoanNVDTO taiKhoanNV;
+    private TaiKhoanKHDTO taiKhoanNguon;
+
+    public FormMoTKTietKiem(TaiKhoanNVDTO taiKhoanNV) {
+        this.taiKhoanNV = taiKhoanNV;
+        fDate = new FormatDate();
+        khachHangBUS = new KhachHangBUS();
+        taiKhoanKHBUS = new TaiKhoanKHBUS();
+        giaoDichBUS = new GiaoDichBUS();
+        tietKiemBUS = new TietKiemBUS();
+        minSoTienGD = new BigInteger("1000000");
+        maxSoTienGD = new BigInteger("2000000000");
+        maKhachHang = 0;
+        maTaiKhoanKH = 0;
+        maKyHan = 0;
+
         initComponents();
         initCustomUI();
+        loadKyHan();
     }
 
     private void initCustomUI() {
@@ -59,16 +98,192 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPPhoneNum.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        
+
         txtTienTietKiem.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu 1.000.000");
-        txtDateCreate.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccType.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusYOB.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtCusAddress.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtPhoneNum.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        
+        txtCCCD.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtNgaySinh.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtDiaChi.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtSdt.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+
         jPTKNguon.setVisible(false);
     }
+
+    public void dienThongTinKH(int maKhachHang) {
+        KhachHangDTO khachHang = khachHangBUS.getKhachHangById(maKhachHang, 0);
+        if (khachHang != null) {
+            this.maKhachHang = maKhachHang;
+            lbHotenKH.setText(khachHang.getHoDem() + " " + khachHang.getTen());
+            lbMaKH.setText("" + khachHang.getMaKH());
+            txtCCCD.setText(khachHang.getCccd());
+            txtNgaySinh.setText(fDate.toString(khachHang.getNgaySinh()));
+            txtEmail.setText(khachHang.getEmail());
+            txtSdt.setText(khachHang.getSdt());
+            txtDiaChi.setText(khachHang.getDiaChi());
+
+            if (khachHang.getGioiTinh().equals("Nam")) {
+                rdbNam.setSelected(true);
+            } else if (khachHang.getGioiTinh().equals("Nữ")) {
+                rdbNu.setSelected(true);
+            } else {
+                rdbKhac.setSelected(true);
+            }
+
+            loadTKNguon();
+        }
+    }
+
+    private void reSetThongTinTKNguon() {
+        lbSTK.setText("(chưa chọn)");
+        lbLoaiTK.setText("(chưa chọn)");
+        lbTenTK.setText("(chưa chọn)");
+    }
+
+    private void loadTKNguon() {
+        Map<Integer, String> map = new HashMap<>();
+        map = taiKhoanKHBUS.convertListTKNguonToMap(maKhachHang);
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("-Chọn tài khoản nguồn-");
+
+        if (map != null) {
+            for (String tenNganHang : map.values()) {
+                model.addElement(tenNganHang);
+            }
+        }
+
+        cbxTKNguon.setModel(model);
+
+        reSetThongTinTKNguon();
+    }
+
+    private void loadKyHan() {
+        Map<Integer, String> map = new HashMap<>();
+        map = tietKiemBUS.convertListKyHanToMap();
+
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("-Chọn kỳ hạn-");
+
+        for (String tenKyHan : map.values()) {
+            model.addElement(tenKyHan);
+        }
+
+        cbxKyHan.setModel(model);
+    }
+
+    private void dienThongTinTKNguon(int maTaiKhoanKH) {
+        TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKH);
+
+        if (taiKhoanKH != null) {
+            taiKhoanNguon = taiKhoanKH;
+
+            this.soDu = new BigInteger(taiKhoanKH.getSoDu());
+
+            lbSTK.setText(taiKhoanKH.getSoTaiKhoan());
+            lbLoaiTK.setText(InputValidation.catNganString(taiKhoanKH.getTenLoaiTaiKhoan()));
+            lbTenTK.setText(taiKhoanKH.getTenTaiKhoan());
+
+        }
+    }
+
+    private void taoTaiKhoanTK() {
+        StringBuilder error = new StringBuilder();
+        error.append("");
+
+        boolean isTienTK = rdbTaiKhoan.isSelected() ? true : false;
+
+        if (rdbTaiKhoan.isSelected() && maTaiKhoanKH == 0) {
+            error.append("Vui lòng chọn tài khoản nguồn!");
+        }
+
+        if (txtTienTietKiem.getText().isEmpty() || cbxKyHan.getSelectedIndex() == 0 || cbxGiaHan.getSelectedIndex() == 0 || cbxNhanLai.getSelectedIndex() == 0 || txtSTKTietKiem.getText().isEmpty() || txtTenTKTietKiem.getText().isEmpty()) {
+            error.append("Vui lòng nhập đầu đủ thông tin");
+        } else {
+            try {
+                soTien = new BigInteger(txtTienTietKiem.getText());
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
+                    error.append("\nSố tiền tiết kiệm nằm trong khoảng 1 triệu VND và 2 tỷ VND cho một lần gửi!");
+                }
+
+                if (rdbTaiKhoan.isSelected() && cbxTKNguon.getSelectedIndex() != 0 && soTien.compareTo(soDu) > 0) {
+                    error.append("\nSố dư không đủ để thực hiện giao dịch!");
+                }
+            } catch (NumberFormatException ne) {
+                error.append("\nVui lòng nhập đúng số tiền giao dịch!");
+            }
+
+        }
+
+        GiaoDichDTO giaoDich = new GiaoDichDTO();
+        TaiKhoanKHDTO taiKhoanGTK = new TaiKhoanKHDTO();
+        TietKiemDTO tietKiem = new TietKiemDTO();
+        if (InputValidation.kiemTraCCCD(txtSTKTietKiem.getText())) {
+            taiKhoanGTK.setSoTaiKhoan(txtSTKTietKiem.getText());
+        } else {
+            error.append("\nSố tài khoản không hợp lệ");
+        }
+
+        if (error.isEmpty()) {
+            taiKhoanGTK.setTenTaiKhoan(txtTenTKTietKiem.getText());
+            taiKhoanGTK.setMaKhachHang(maKhachHang);
+            taiKhoanGTK.setSoDu("0");
+            taiKhoanGTK.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
+            taiKhoanGTK.setMaLoaiTaiKhoan(3);
+            taiKhoanGTK.setMaNganHang(1);
+            taiKhoanGTK.setMaTrangThai(6);
+            taiKhoanGTK.setNgayTao(fDate.getToday());
+            
+            if (isTienTK) {
+                giaoDich.setMaTaiKhoanKH(taiKhoanNguon.getMaTKKH());
+                tietKiem.setMaTaiKhoanNguonTien(taiKhoanNguon.getMaTKKH());
+            } else {
+                giaoDich.setMaTaiKhoanKH(0);
+                tietKiem.setMaTaiKhoanNguonTien(0);
+            }
+
+            giaoDich.setNgayGiaoDich(fDate.getToday());
+            giaoDich.setSoTien(txtTienTietKiem.getText());
+            giaoDich.setNoiDungGiaoDich("Khách hàng " + lbHotenKH.getText() + " gửi tiết kiệm");
+            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
+            giaoDich.setMaLoaiGiaoDich(5);
+            giaoDich.setMaTrangThai(4);
+
+            KyHanGuiTKDTO kyHanGui = tietKiemBUS.getKyHanById(maKyHan);
+            if (kyHanGui != null) {
+                tietKiem.setNgayNhanLai(fDate.addMonth(kyHanGui.getSoKyHan()));
+                System.out.println("So ngay den nhan lai: " + tietKiem.getNgayNhanLai());
+            } else {
+                MessageBox.showErrorMessage(null, "Lấy thông tin kỳ hạn thất bại!");
+            }
+
+            tietKiem.setMaKyHan(maKyHan);
+            tietKiem.setHinhThucGiaHan(cbxGiaHan.getSelectedItem().toString());
+            tietKiem.setHinhThucNhanLai(cbxNhanLai.getSelectedItem().toString());
+            tietKiem.setNgayMoTK(fDate.getToday());
+            tietKiem.setSoTienGoc(txtTienTietKiem.getText());
+            tietKiem.setMaTrangThai(10);
+
+            int maTaiKhoanGTK = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanGTK);
+            if (maTaiKhoanGTK != 0) {
+                tietKiem.setMaTaiKhoanTK(maTaiKhoanGTK);
+                taiKhoanGTK.setMaTKKH(maTaiKhoanGTK);
+
+                if (giaoDichBUS.chuyenTien(giaoDich, isTienTK, taiKhoanGTK, 1)) {
+                    if (tietKiemBUS.addGuiTietKiem(tietKiem) != 0) {
+                        MessageBox.showInformationMessage(null, "", "Tạo tài khoản gửi tiết kiệm thành công!");
+                    } else {
+                        MessageBox.showErrorMessage(null, "Gửi tiết kiệm thất bại");
+                    }
+                }
+            } else {
+                MessageBox.showErrorMessage(null, "Tạo tài khoản tiết kiệm thất bại!");
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Lỗi: " + error);
+        }
+
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -92,55 +307,55 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         txtTienTietKiem = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btnTaoTKTK = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnChonKH = new javax.swing.JButton();
         jPTKNguon = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxTKNguon = new javax.swing.JComboBox<>();
         jPKyHan = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cbxKyHan = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         jPGiaHan = new javax.swing.JPanel();
         jLabel27 = new javax.swing.JLabel();
         cbxGiaHan = new javax.swing.JComboBox<>();
         jPNhanLai = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        cbxNhanLai = new javax.swing.JComboBox<>();
         jPStkTietKiem = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        txtPINCode1 = new javax.swing.JTextField();
+        txtSTKTietKiem = new javax.swing.JTextField();
         jPTenTKTietKiem = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        txtPINCode2 = new javax.swing.JTextField();
+        txtTenTKTietKiem = new javax.swing.JTextField();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPCusNameInfo = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lbHotenKH = new javax.swing.JLabel();
         jPIdCentizenCard = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        txtDateCreate = new javax.swing.JTextField();
+        txtCCCD = new javax.swing.JTextField();
         jPCusYOB = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
-        txtCusYOB = new javax.swing.JTextField();
+        txtNgaySinh = new javax.swing.JTextField();
         jPAddress = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
-        txtCusAddress = new javax.swing.JTextField();
+        txtDiaChi = new javax.swing.JTextField();
         jPAccName = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
-        txtAccType = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        lbMaKH = new javax.swing.JLabel();
         jPPhoneNum = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
-        txtPhoneNum = new javax.swing.JTextField();
+        txtSdt = new javax.swing.JTextField();
         jPGender = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        rdbNam = new javax.swing.JRadioButton();
+        rdbNu = new javax.swing.JRadioButton();
+        rdbKhac = new javax.swing.JRadioButton();
         jLabel21 = new javax.swing.JLabel();
         jPTKInfo = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -148,9 +363,9 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jLabel15 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
-        jLabel26 = new javax.swing.JLabel();
+        lbSTK = new javax.swing.JLabel();
+        lbTenTK = new javax.swing.JLabel();
+        lbLoaiTK = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(1132, 511));
 
@@ -239,8 +454,13 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Tạo tài khoản tiết kiệm");
+        btnTaoTKTK.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnTaoTKTK.setText("Tạo tài khoản tiết kiệm");
+        btnTaoTKTK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoTKTKActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Đặt lại");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -257,7 +477,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnTaoTKTK, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPFooterCusLayout.setVerticalGroup(
@@ -265,19 +485,29 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
+                    .addComponent(btnTaoTKTK)
                     .addComponent(jButton3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton5.setText("Chọn khách hàng");
+        btnChonKH.setText("Chọn khách hàng");
+        btnChonKH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChonKHActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel6.setIcon(new FlatSVGIcon("quanlynganhang/icon/account_num_label.svg")
         );
         jLabel6.setText("Tài khoản nguồn");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxTKNguon.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Chọn tài khoản nguồn-" }));
+        cbxTKNguon.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxTKNguonItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPTKNguonLayout = new javax.swing.GroupLayout(jPTKNguon);
         jPTKNguon.setLayout(jPTKNguonLayout);
@@ -286,7 +516,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPTKNguonLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPTKNguonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbxTKNguon, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPTKNguonLayout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -298,7 +528,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxTKNguon, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -307,7 +537,11 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel5.setText("Kỳ hạn gửi");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxKyHan.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxKyHanItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPKyHanLayout = new javax.swing.GroupLayout(jPKyHan);
         jPKyHan.setLayout(jPKyHanLayout);
@@ -316,7 +550,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPKyHanLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPKyHanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbxKyHan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPKyHanLayout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 58, Short.MAX_VALUE)))
@@ -328,7 +562,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxKyHan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -337,7 +571,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel27.setText("Hình thức gia hạn");
 
-        cbxGiaHan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Không gia hạn", "Item 2", "Item 3", "Item 4" }));
+        cbxGiaHan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Chọn hình thức-", "Không gia hạn", "Gia hạn với số tiền gốc", "Gia hạn với cả gốc và lãi" }));
         cbxGiaHan.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxGiaHanItemStateChanged(evt);
@@ -372,7 +606,17 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel28.setText("Hình thức nhận lãi");
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxNhanLai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Chọn hình thức-", "Chuyển về tài khoản tiết kiệm", "Chuyển về tài khoản nguồn" }));
+        cbxNhanLai.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbxNhanLaiItemStateChanged(evt);
+            }
+        });
+        cbxNhanLai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxNhanLaiActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPNhanLaiLayout = new javax.swing.GroupLayout(jPNhanLai);
         jPNhanLai.setLayout(jPNhanLaiLayout);
@@ -381,7 +625,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPNhanLaiLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPNhanLaiLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox4, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbxNhanLai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPNhanLaiLayout.createSequentialGroup()
                         .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 46, Short.MAX_VALUE)))
@@ -393,7 +637,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel28)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cbxNhanLai, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -409,7 +653,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPStkTietKiemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPStkTietKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -419,7 +663,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -435,7 +679,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPTenTKTietKiemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPTenTKTietKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPINCode2)
+                    .addComponent(txtTenTKTietKiem)
                     .addGroup(jPTenTKTietKiemLayout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 47, Short.MAX_VALUE)))
@@ -447,7 +691,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPINCode2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTenTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
@@ -462,7 +706,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnChonKH, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(jPNguonTien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -494,7 +738,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbTitle)
-                    .addComponent(jButton5))
+                    .addComponent(btnChonKH))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16)
@@ -530,8 +774,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel9.setText("Họ tên khách hàng: ");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("(Chưa chọn)");
+        lbHotenKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbHotenKH.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPCusNameInfoLayout = new javax.swing.GroupLayout(jPCusNameInfo);
         jPCusNameInfo.setLayout(jPCusNameInfoLayout);
@@ -541,7 +785,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbHotenKH, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(52, Short.MAX_VALUE))
         );
         jPCusNameInfoLayout.setVerticalGroup(
@@ -550,7 +794,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusNameInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addComponent(lbHotenKH))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -559,8 +803,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel13.setText("Mã căn cước công dân");
 
-        txtDateCreate.setEditable(false);
-        txtDateCreate.setEnabled(false);
+        txtCCCD.setEditable(false);
+        txtCCCD.setEnabled(false);
 
         javax.swing.GroupLayout jPIdCentizenCardLayout = new javax.swing.GroupLayout(jPIdCentizenCard);
         jPIdCentizenCard.setLayout(jPIdCentizenCardLayout);
@@ -569,7 +813,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPIdCentizenCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPIdCentizenCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -579,7 +823,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtDateCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -588,8 +832,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel14.setText("Ngày sinh");
 
-        txtCusYOB.setEditable(false);
-        txtCusYOB.setEnabled(false);
+        txtNgaySinh.setEditable(false);
+        txtNgaySinh.setEnabled(false);
 
         javax.swing.GroupLayout jPCusYOBLayout = new javax.swing.GroupLayout(jPCusYOB);
         jPCusYOB.setLayout(jPCusYOBLayout);
@@ -599,7 +843,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusYOBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPCusYOBLayout.setVerticalGroup(
@@ -608,7 +852,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCusYOB, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNgaySinh, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -617,8 +861,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel16.setText("Địa chỉ của khách hàng");
 
-        txtCusAddress.setEditable(false);
-        txtCusAddress.setEnabled(false);
+        txtDiaChi.setEditable(false);
+        txtDiaChi.setEnabled(false);
 
         javax.swing.GroupLayout jPAddressLayout = new javax.swing.GroupLayout(jPAddress);
         jPAddress.setLayout(jPAddressLayout);
@@ -630,7 +874,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                     .addGroup(jPAddressLayout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtCusAddress))
+                    .addComponent(txtDiaChi))
                 .addContainerGap())
         );
         jPAddressLayout.setVerticalGroup(
@@ -639,15 +883,15 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCusAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtDiaChi, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel17.setText("Loại tài khoản");
+        jLabel17.setText("Email");
 
-        txtAccType.setEditable(false);
-        txtAccType.setEnabled(false);
+        txtEmail.setEditable(false);
+        txtEmail.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNameLayout = new javax.swing.GroupLayout(jPAccName);
         jPAccName.setLayout(jPAccNameLayout);
@@ -659,7 +903,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                     .addGroup(jPAccNameLayout.createSequentialGroup()
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 70, Short.MAX_VALUE))
-                    .addComponent(txtAccType))
+                    .addComponent(txtEmail))
                 .addContainerGap())
         );
         jPAccNameLayout.setVerticalGroup(
@@ -668,23 +912,23 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccType, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel18.setText("Mã khách hàng: ");
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel19.setText("(Chưa chọn)");
+        lbMaKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaKH.setText("(Chưa chọn)");
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel20.setIcon(new FlatSVGIcon("quanlynganhang/icon/phone_label.svg")
         );
         jLabel20.setText("Số điện thoại");
 
-        txtPhoneNum.setEditable(false);
-        txtPhoneNum.setEnabled(false);
+        txtSdt.setEditable(false);
+        txtSdt.setEnabled(false);
 
         javax.swing.GroupLayout jPPhoneNumLayout = new javax.swing.GroupLayout(jPPhoneNum);
         jPPhoneNum.setLayout(jPPhoneNumLayout);
@@ -693,7 +937,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPPhoneNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPPhoneNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPhoneNum)
+                    .addComponent(txtSdt)
                     .addGroup(jPPhoneNumLayout.createSequentialGroup()
                         .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 36, Short.MAX_VALUE)))
@@ -705,22 +949,22 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel20)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSdt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        btnGroupGender.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Nam");
-        jRadioButton1.setEnabled(false);
+        btnGroupGender.add(rdbNam);
+        rdbNam.setSelected(true);
+        rdbNam.setText("Nam");
+        rdbNam.setEnabled(false);
 
-        btnGroupGender.add(jRadioButton2);
-        jRadioButton2.setText("Nữ");
-        jRadioButton2.setEnabled(false);
+        btnGroupGender.add(rdbNu);
+        rdbNu.setText("Nữ");
+        rdbNu.setEnabled(false);
 
-        btnGroupGender.add(jRadioButton3);
-        jRadioButton3.setText("Khác");
-        jRadioButton3.setEnabled(false);
+        btnGroupGender.add(rdbKhac);
+        rdbKhac.setText("Khác");
+        rdbKhac.setEnabled(false);
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel21.setIcon(new FlatSVGIcon("quanlynganhang/icon/gender_label.svg")
@@ -736,11 +980,11 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addGroup(jPGenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPGenderLayout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
+                        .addComponent(rdbNam)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton2)
+                        .addComponent(rdbNu)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton3)))
+                        .addComponent(rdbKhac)))
                 .addContainerGap(61, Short.MAX_VALUE))
         );
         jPGenderLayout.setVerticalGroup(
@@ -750,9 +994,9 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPGenderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton3))
+                    .addComponent(rdbNam)
+                    .addComponent(rdbNu)
+                    .addComponent(rdbKhac))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -764,7 +1008,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addGap(12, 12, 12)
                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbMaKH, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPAccountInfoLayout.createSequentialGroup()
                 .addContainerGap()
@@ -801,7 +1045,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
-                    .addComponent(jLabel19))
+                    .addComponent(lbMaKH))
                 .addGap(18, 18, 18)
                 .addGroup(jPAccountInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPIdCentizenCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -829,14 +1073,14 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jLabel23.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel23.setText("Loại tài khoản:");
 
-        jLabel24.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel24.setText("(chưa chọn)");
+        lbSTK.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbSTK.setText("(chưa chọn)");
 
-        jLabel25.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel25.setText("(chưa chọn)");
+        lbTenTK.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbTenTK.setText("(chưa chọn)");
 
-        jLabel26.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel26.setText("(chưa chọn)");
+        lbLoaiTK.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbLoaiTK.setText("(chưa chọn)");
 
         javax.swing.GroupLayout jPTKInfoLayout = new javax.swing.GroupLayout(jPTKInfo);
         jPTKInfo.setLayout(jPTKInfoLayout);
@@ -846,24 +1090,22 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPTKInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPTKInfoLayout.createSequentialGroup()
-                        .addGroup(jPTKInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPTKInfoLayout.createSequentialGroup()
-                                .addGap(123, 123, 123)
-                                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(lbTenTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPTKInfoLayout.createSequentialGroup()
                         .addGroup(jPTKInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPTKInfoLayout.createSequentialGroup()
-                        .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(lbSTK, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbLoaiTK, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPTKInfoLayout.setVerticalGroup(
@@ -877,12 +1119,12 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addGroup(jPTKInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
                     .addComponent(jLabel23)
-                    .addComponent(jLabel24)
-                    .addComponent(jLabel26))
+                    .addComponent(lbSTK)
+                    .addComponent(lbLoaiTK))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPTKInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel22)
-                    .addComponent(jLabel25))
+                    .addComponent(lbTenTK))
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
@@ -923,6 +1165,12 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         } else {
             jPTKNguon.setVisible(true);
         }
+
+        if (cbxNhanLai.getSelectedIndex() == 2 && rdbTienMat.isSelected()) {
+            MessageBox.showErrorMessage(null, "Không thể chọn hình thức này!");
+            rdbTaiKhoan.setSelected(true);
+            return;
+        }
     }//GEN-LAST:event_rdbTienMatActionPerformed
 
     private void rdbTaiKhoanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbTaiKhoanActionPerformed
@@ -934,26 +1182,100 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     }//GEN-LAST:event_rdbTaiKhoanActionPerformed
 
     private void cbxGiaHanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxGiaHanItemStateChanged
-        if (cbxGiaHan.getSelectedItem().equals("Không gia hạn")) {
-            jPNhanLai.setVisible(true);
-        } else {
-            jPNhanLai.setVisible(false);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            if (cbxNhanLai.getSelectedIndex() == 2 && cbxGiaHan.getSelectedIndex() == 3) {
+                MessageBox.showErrorMessage(null, "Bạn không thể gia hạn cả gốc lẫn lãi nếu tiền lãi chuyển về TK nguồn!");
+                cbxGiaHan.setSelectedIndex(0);
+                return;
+            }
         }
     }//GEN-LAST:event_cbxGiaHanItemStateChanged
 
+    private void btnTaoTKTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoTKTKActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn tạo tài khoản tiết kiệm cho khách hàng này?") == JOptionPane.YES_OPTION) {
+            taoTaiKhoanTK();
+        } else {
+            return;
+        }
+    }//GEN-LAST:event_btnTaoTKTKActionPerformed
+
+    private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
+        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        chonNV.setResizable(false);
+        chonNV.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonNV.setVisible(true);
+    }//GEN-LAST:event_btnChonKHActionPerformed
+
+    private void cbxTKNguonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTKNguonItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenTKNguon = (String) cbxTKNguon.getSelectedItem();
+            if (tenTKNguon.equals("-Chọn tài khoản nguồn-")) {
+                maTaiKhoanKH = 0;
+                reSetThongTinTKNguon();
+            } else {
+                maTaiKhoanKH = taiKhoanKHBUS.getIdFromSTKNguon(tenTKNguon, maKhachHang);
+
+                if (maTaiKhoanKH == null) {
+                    MessageBox.showErrorMessage(null, "Lấy id của tài khoản nguồn thất bại!");
+                    return;
+                }
+
+                dienThongTinTKNguon(maTaiKhoanKH);
+            }
+        }
+    }//GEN-LAST:event_cbxTKNguonItemStateChanged
+
+    private void cbxNhanLaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxNhanLaiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxNhanLaiActionPerformed
+
+    private void cbxNhanLaiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxNhanLaiItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            if (cbxNhanLai.getSelectedIndex() == 2 && cbxGiaHan.getSelectedIndex() == 3) {
+                MessageBox.showErrorMessage(null, "Bạn không thể gia hạn cả gốc lẫn lãi nếu tiền lãi chuyển về TK nguồn!");
+                cbxNhanLai.setSelectedIndex(0);
+                return;
+            }
+        }
+
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            if (cbxNhanLai.getSelectedIndex() == 2 && rdbTienMat.isSelected()) {
+                MessageBox.showErrorMessage(null, "Không thể chọn hình thức này!");
+                cbxNhanLai.setSelectedIndex(0);
+                return;
+            }
+        }
+
+    }//GEN-LAST:event_cbxNhanLaiItemStateChanged
+
+    private void cbxKyHanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxKyHanItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenKyHan = (String) cbxKyHan.getSelectedItem();
+            if (tenKyHan.equals("-Chọn kỳ hạn-")) {
+                maKyHan = 0;
+            } else {
+                maKyHan = tietKiemBUS.getIdFromTenKyHan(tenKyHan);
+
+                if (maKyHan == null) {
+                    MessageBox.showErrorMessage(null, "Lấy id của kỳ hạn thất bại!");
+                    return;
+                }
+            }
+        }
+    }//GEN-LAST:event_cbxKyHanItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChonKH;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupMoney;
+    private javax.swing.JButton btnTaoTKTK;
     private javax.swing.JComboBox<String> cbxGiaHan;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> cbxKyHan;
+    private javax.swing.JComboBox<String> cbxNhanLai;
+    private javax.swing.JComboBox<String> cbxTKNguon;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -962,15 +1284,11 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
@@ -999,22 +1317,27 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     private javax.swing.JPanel jPTKNguon;
     private javax.swing.JPanel jPTenTKTietKiem;
     private javax.swing.JPanel jPTienTietKiem;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JLabel lbHotenKH;
+    private javax.swing.JLabel lbLoaiTK;
+    private javax.swing.JLabel lbMaKH;
+    private javax.swing.JLabel lbSTK;
+    private javax.swing.JLabel lbTenTK;
     private javax.swing.JLabel lbTitle;
+    private javax.swing.JRadioButton rdbKhac;
+    private javax.swing.JRadioButton rdbNam;
+    private javax.swing.JRadioButton rdbNu;
     private javax.swing.JRadioButton rdbTaiKhoan;
     private javax.swing.JRadioButton rdbTienMat;
-    private javax.swing.JTextField txtAccType;
-    private javax.swing.JTextField txtCusAddress;
-    private javax.swing.JTextField txtCusYOB;
-    private javax.swing.JTextField txtDateCreate;
-    private javax.swing.JTextField txtPINCode1;
-    private javax.swing.JTextField txtPINCode2;
-    private javax.swing.JTextField txtPhoneNum;
+    private javax.swing.JTextField txtCCCD;
+    private javax.swing.JTextField txtDiaChi;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtNgaySinh;
+    private javax.swing.JTextField txtSTKTietKiem;
+    private javax.swing.JTextField txtSdt;
+    private javax.swing.JTextField txtTenTKTietKiem;
     private javax.swing.JTextField txtTienTietKiem;
     // End of variables declaration//GEN-END:variables
 }

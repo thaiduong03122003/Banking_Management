@@ -21,15 +21,11 @@ import javax.swing.SortOrder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
-import quanlynganhang.BUS.TaiKhoanNVBUS;
-import quanlynganhang.DTO.NhanVienDTO;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormDSTaiKhoanKH extends javax.swing.JPanel {
@@ -39,14 +35,25 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     private TaiKhoanKHBUS taiKhoanKHBUS;
     private boolean isFiltered;
     private List<TaiKhoanKHDTO> listLocTaiKhoanKH, currentList;
+    private int quyenThem, quyenSua, quyenXoa;
+    private ChucVuDTO chucVu;
 
-    public FormDSTaiKhoanKH() throws Exception {
+    public FormDSTaiKhoanKH(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
+        this.chucVu = chucVu;
         taiKhoanKHBUS = new TaiKhoanKHBUS();
         listLocTaiKhoanKH = new ArrayList<>();
+
         initComponents();
+        thietLapChucVu();
         txtSearchTaiKhoanKH.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã tài khoản/ mã khách hàng cần tìm...");
         loadDSTaiKhoanKH(false, null);
         jTableDSTaiKhoanKH.getTableHeader().setReorderingAllowed(false);
+    }
+
+    private void thietLapChucVu() {
+        quyenThem = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKKhachHang(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKKhachHang(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKKhachHang(), 4);
     }
 
     public void loadDSTaiKhoanKH(boolean isFiltered, List<TaiKhoanKHDTO> list) throws Exception {
@@ -57,7 +64,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
 
         Object[][] dataModel = isFiltered ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, list) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, null);
         currentList = isFiltered ? list : taiKhoanKHBUS.getDSTaiKhoanKH();
-        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
+        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
         model.setDataVector(dataModel, title);
 
         jTableDSTaiKhoanKH.setDefaultEditor(Object.class, null);
@@ -121,7 +128,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         ppmChiTiet = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         ppmSua = new javax.swing.JMenuItem();
-        ppmXoa = new javax.swing.JMenuItem();
+        ppmDongTK = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         txtSearchTaiKhoanKH = new javax.swing.JTextField();
@@ -157,14 +164,14 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         });
         popupDSNV.add(ppmSua);
 
-        ppmXoa.setForeground(new java.awt.Color(255, 0, 51));
-        ppmXoa.setText("Đóng tài khoản");
-        ppmXoa.addActionListener(new java.awt.event.ActionListener() {
+        ppmDongTK.setForeground(new java.awt.Color(255, 0, 51));
+        ppmDongTK.setText("Đóng tài khoản");
+        ppmDongTK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ppmXoaActionPerformed(evt);
+                ppmDongTKActionPerformed(evt);
             }
         });
-        popupDSNV.add(ppmXoa);
+        popupDSNV.add(ppmDongTK);
 
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
@@ -400,7 +407,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                     boloc = null;
                     loadDSTaiKhoanKH(false, null);
                 } else {
-                    loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
+                    loadDSTaiKhoanKH(isFiltered, currentList);
                 }
             } else {
                 loadDSTaiKhoanKH(false, null);
@@ -428,7 +435,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                         return;
                     } else {
                         formChiTiet = new JFrameChiTietTKKH(maTaiKhoanKH, false);
-                        formChiTiet.setDefaultCloseOperation(JFrameChiTietTKNV.DISPOSE_ON_CLOSE);
+                        formChiTiet.setDefaultCloseOperation(JFrameChiTietTKKH.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
                         formChiTiet.addWindowListener(new WindowAdapter() {
@@ -452,76 +459,82 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmChiTietActionPerformed
 
     private void ppmSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmSuaActionPerformed
-        int selectedRow = jTableDSTaiKhoanKH.getSelectedRow();
-        if (selectedRow == -1) {
-            MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản khách hàng trước khi sửa!");
-            return;
+        if (quyenSua == 1) {
+            int selectedRow = jTableDSTaiKhoanKH.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản khách hàng trước khi sửa!");
+                return;
 
+            } else {
+                Object idObj = jTableDSTaiKhoanKH.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    int maTaiKhoanKH = Integer.parseInt(idObj.toString());
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKH);
+                    if (taiKhoanKH == null) {
+                        MessageBox.showErrorMessage(null, "Mã tài khoản khách hàng không tồn tại!");
+                        return;
+                    } else {
+
+                        JFrameChiTietTKKH formSua = new JFrameChiTietTKKH(maTaiKhoanKH, true);
+                        formSua.setDefaultCloseOperation(JFrameChiTietTKKH.DISPOSE_ON_CLOSE);
+                        formSua.setVisible(true);
+
+                        formSua.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                try {
+                                    loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                        });
+
+                    }
+                }
+            }
         } else {
-            Object idObj = jTableDSTaiKhoanKH.getValueAt(selectedRow, 0);
-            if (idObj != null) {
-                int maTaiKhoanKH = Integer.parseInt(idObj.toString());
-                TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
-                taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKH);
-                if (taiKhoanKH == null) {
-                    MessageBox.showErrorMessage(null, "Mã tài khoản khách hàng không tồn tại!");
-                    return;
-                } else {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+    }//GEN-LAST:event_ppmSuaActionPerformed
 
-                    JFrameChiTietTKKH formSua = new JFrameChiTietTKKH(maTaiKhoanKH, true);
-                    formSua.setDefaultCloseOperation(JFrameChiTietTKKH.DISPOSE_ON_CLOSE);
-                    formSua.setVisible(true);
+    private void ppmDongTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmDongTKActionPerformed
+        if (quyenXoa == 1) {
+            int selectedRow = jTableDSTaiKhoanKH.getSelectedRow();
+            if (selectedRow == -1) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản trước khi đóng!");
+                return;
+            } else {
 
-                    formSua.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
+                Object idObj = jTableDSTaiKhoanKH.getValueAt(selectedRow, 0);
+                if (idObj != null) {
+                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đóng tài khoản này?") == JOptionPane.YES_OPTION) {
+                        int maTaiKhoanKH = Integer.parseInt(idObj.toString());
+
+                        if (!taiKhoanKHBUS.doiTrangThai(maTaiKhoanKH, 1)) {
+                            MessageBox.showErrorMessage(null, "Đóng tài khoản thất bại!");
+                            return;
+                        } else {
+                            MessageBox.showInformationMessage(null, "", "Đóng tài khoản thành công");
+
                             try {
                                 loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         }
-                    });
-
+                    } else {
+                        return;
+                    }
                 }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
-    }//GEN-LAST:event_ppmSuaActionPerformed
-
-    private void ppmXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmXoaActionPerformed
-//        int selectedRow = jTableDSTaiKhoanKH.getSelectedRow();
-//        if (selectedRow == -1) {
-//            MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng trước khi xóa!");
-//            return;
-//        } else {
-//            if (biXoa == 1) {
-//                MessageBox.showErrorMessage(null, "Tính năng đang cập nhật");
-//                return;
-//            } else {
-//                Object idObj = jTableDSTaiKhoanKH.getValueAt(selectedRow, 0);
-//                if (idObj != null) {
-//                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.YES_OPTION) {
-//                        int maNhanVien = Integer.parseInt(idObj.toString());
-//                        boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
-//                        if (isDelete == false) {
-//                            MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
-//                            return;
-//                        } else {
-//                            MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
-//
-//                            try {
-//                                loadDSNhanVien(biXoa, isFiltered, listLocNV);
-//                            } catch (Exception ex) {
-//                                ex.printStackTrace();
-//                            }
-//                        }
-//                    } else {
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-    }//GEN-LAST:event_ppmXoaActionPerformed
+    }//GEN-LAST:event_ppmDongTKActionPerformed
 
     private void txtSearchTaiKhoanKHKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchTaiKhoanKHKeyReleased
         DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
@@ -589,7 +602,6 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         } else {
             return;
         }
-
     }//GEN-LAST:event_btnNhapFileActionPerformed
 
 
@@ -613,8 +625,8 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     private javax.swing.JTable jTableDSTaiKhoanKH;
     private javax.swing.JPopupMenu popupDSNV;
     private javax.swing.JMenuItem ppmChiTiet;
+    private javax.swing.JMenuItem ppmDongTK;
     private javax.swing.JMenuItem ppmSua;
-    private javax.swing.JMenuItem ppmXoa;
     private javax.swing.JTextField txtSearchTaiKhoanKH;
     // End of variables declaration//GEN-END:variables
 }

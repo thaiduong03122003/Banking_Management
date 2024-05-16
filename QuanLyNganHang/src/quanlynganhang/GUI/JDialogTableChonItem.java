@@ -18,6 +18,7 @@ import quanlynganhang.GUI.adminUI.FormPhanQuyen;
 import quanlynganhang.GUI.adminUI.JFrameChiTietTKNV;
 import quanlynganhang.GUI.adminUI.JFrameThemTKNV2;
 import quanlynganhang.GUI.model.message.MessageBox;
+import quanlynganhang.GUI.FormMoTheTinDung;
 
 public class JDialogTableChonItem extends javax.swing.JDialog {
 
@@ -30,6 +31,17 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
     private FormPhanQuyen phanQuyen;
     private FormMoTaiKhoan moTaiKhoan;
     private FormNapTien napTien;
+    private FormRutTien rutTien;
+    private FormChuyenCungNganHang chuyenCungNganHang;
+    private FormChuyenLienNganHang chuyenLienNganHang;
+    private FormMoTKTietKiem formMoTKTietKiem;
+    private FormChoVayVon formChoVayVon;
+    private FormMoTheGhiNo formMoTheGhiNo;
+    private FormMoTheTinDung formMoTheTinDung;
+    private JFrameBoLocDSThe jFrameBoLocDSThe;
+    private JFrameBoLocGD jFrameBoLocGD;
+    private FormTraKhoanVay formTraKhoanVay;
+    private FormTongQuan formTongQuan;
 
     public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameThemTKNV2 themTKNV2, String title, String loaiDanhSach) {
         super(parent, modal);
@@ -83,6 +95,149 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         switchTable();
     }
 
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormRutTien rutTien, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.rutTien = rutTien;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenCungNganHang chuyenCungNganHang, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.chuyenCungNganHang = chuyenCungNganHang;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenLienNganHang chuyenLienNganHang, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.chuyenLienNganHang = chuyenLienNganHang;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTKTietKiem formMoTKTietKiem, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formMoTKTietKiem = formMoTKTietKiem;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChoVayVon formChoVayVon, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formChoVayVon = formChoVayVon;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheGhiNo formMoTheGhiNo, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formMoTheGhiNo = formMoTheGhiNo;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocDSThe jFrameBoLocDSThe, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.jFrameBoLocDSThe = jFrameBoLocDSThe;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheTinDung formMoTheTinDung, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formMoTheTinDung = formMoTheTinDung;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocGD jFrameBoLocGD, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.jFrameBoLocGD = jFrameBoLocGD;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTraKhoanVay formTraKhoanVay, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formTraKhoanVay = formTraKhoanVay;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+    
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTongQuan formTongQuan, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.formTongQuan = formTongQuan;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
+
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
+
     public void loadDSNhanVien() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
@@ -126,6 +281,17 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
+    
+    public void loadDSTaiKhoanVay() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = taiKhoanKHBUS.doiSangObjectTaiKhoanVay();
+        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
 
     public void switchTable() {
         try {
@@ -141,6 +307,9 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
             } else if (loaiDanhSach.equals("DSTKKH")) {
                 taiKhoanKHBUS = new TaiKhoanKHBUS();
                 loadDSTaiKhoanKH();
+            } else if (loaiDanhSach.equals("DSTKV")) {
+                taiKhoanKHBUS = new TaiKhoanKHBUS();
+                loadDSTaiKhoanVay();
             } else {
                 MessageBox.showErrorMessage(null, "Không tìm thấy danh sách được chọn!");
             }
@@ -154,6 +323,23 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         if (napTien != null) {
             napTien.dienThongTinTKKH(maTaiKhoanKH);
             this.dispose();
+        } else if (rutTien != null) {
+            rutTien.dienThongTinTKKH(maTaiKhoanKH);
+            this.dispose();
+        } else if (chuyenCungNganHang != null) {
+            chuyenCungNganHang.dienTKNguoiGui(maTaiKhoanKH);
+            this.dispose();
+        } else if (chuyenLienNganHang != null) {
+            chuyenLienNganHang.dienTKNguoiGui(maTaiKhoanKH);
+            this.dispose();
+        } else if (formMoTheGhiNo != null) {
+            formMoTheGhiNo.dienThongTinTKKH(maTaiKhoanKH);
+            this.dispose();
+        } else if (formMoTheTinDung != null) {
+            formMoTheTinDung.dienThongTinTKKH(maTaiKhoanKH);
+            this.dispose();
+        } else if (formTongQuan != null) {
+            MessageBox.showErrorMessage(null, "Bạn không thể xem chi tiết!");
         }
     }
 
@@ -308,8 +494,8 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                         themTKNV2.dienThongTinNV(id);
                     } else if (phanQuyen != null) {
                         phanQuyen.dienThongTin(id);
-                    } else {
-
+                    } else if (jFrameBoLocGD != null){
+                        jFrameBoLocGD.dienIdNV(id);
                     }
                     this.dispose();
 
@@ -327,8 +513,16 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
                     if (moTaiKhoan != null) {
                         moTaiKhoan.dienThongTinKH(id);
-                    } else {
-
+                    } else if (formMoTKTietKiem != null) {
+                        formMoTKTietKiem.dienThongTinKH(id);
+                    } else if (formChoVayVon != null) {
+                        formChoVayVon.dienThongTinKH(id);
+                    } else if(jFrameBoLocDSThe != null) {
+                        jFrameBoLocDSThe.dienIdKH(id);
+                    } else if (jFrameBoLocGD != null) {
+                        jFrameBoLocGD.dienIdKH(id);
+                    } else if (formTongQuan != null) {
+                        MessageBox.showErrorMessage(null, "Bạn không thể xem chi tiết!");
                     }
                     this.dispose();
 
@@ -336,8 +530,11 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                     JDialogXacNhanChon xacNhanChon = new JDialogXacNhanChon(null, true, this, id);
                     xacNhanChon.setDefaultCloseOperation(JDialogXacNhanChon.DISPOSE_ON_CLOSE);
                     xacNhanChon.setVisible(true);
-                } else {
-
+                } else if (loaiDanhSach.equals("DSTKV")){
+                    if (formTraKhoanVay != null) {
+                        formTraKhoanVay.getMaTaiKhoanVay(id);
+                        this.dispose();
+                    }
                 }
 
             }

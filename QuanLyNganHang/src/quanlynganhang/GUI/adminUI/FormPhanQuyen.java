@@ -17,7 +17,9 @@ import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
@@ -32,7 +34,7 @@ public class FormPhanQuyen extends javax.swing.JPanel {
     private FormatDate fDate;
     private int maChucVu, maNhanVien;
 
-    public FormPhanQuyen() {
+    public FormPhanQuyen(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
         chucVuBUS = new ChucVuBUS();
         nhanVienBUS = new NhanVienBUS();
         fDate = new FormatDate();

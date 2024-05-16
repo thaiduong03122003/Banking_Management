@@ -3,16 +3,47 @@ package quanlynganhang.GUI;
 import quanlynganhang.GUI.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+import quanlynganhang.BUS.GiaoDichBUS;
+import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.GiaoDichDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.adminUI.JFrameBoLocDSNV;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormDSGiaoDich extends javax.swing.JPanel {
 
-    private JFrameBoLocDSNV boloc;
+    private JFrameBoLocGD boloc;
+    private GiaoDichBUS giaoDichBUS;
+    private boolean isFiltered;
+    private List<GiaoDichDTO> listLocGiaoDich, currentList;
     
-    public FormDSGiaoDich() {
+    public FormDSGiaoDich(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
+        giaoDichBUS = new GiaoDichBUS();
+        listLocGiaoDich = new ArrayList<>();
         initComponents();
-        txtSearchKH.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã giao dịch hoặc mã khách hàng / nhân viên cần tìm...");
+        txtSearchDS.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã giao dịch hoặc mã khách hàng / nhân viên cần tìm...");
+        loadDSGiaoDich(false, null);
+        jTableDSGD.getTableHeader().setReorderingAllowed(false);
+    }
+    
+    public void loadDSGiaoDich(boolean isFiltered, List<GiaoDichDTO> list) {
+        this.isFiltered = isFiltered;
+        listLocGiaoDich = list;
+        DefaultTableModel model = (DefaultTableModel) jTableDSGD.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = isFiltered ? giaoDichBUS.doiSangObjectGiaoDich(isFiltered, list) : giaoDichBUS.doiSangObjectGiaoDich(isFiltered, null);
+        currentList = isFiltered ? list : giaoDichBUS.getDSGiaoDich();
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDSGD.setDefaultEditor(Object.class, null);
     }
 
     /** This method is called from within the constructor to
@@ -31,21 +62,20 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
         jPPItemXoa = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtSearchKH = new javax.swing.JTextField();
+        txtSearchDS = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         btnBoLoc = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
-        jButton8 = new javax.swing.JButton();
+        btnReload = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableDSGD = new javax.swing.JTable();
 
         jPPItemChiTiet.setText("Xem chi tiết");
         jPPItemChiTiet.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -71,6 +101,12 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
 
+        txtSearchDS.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchDSKeyReleased(evt);
+            }
+        });
+
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -78,7 +114,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(txtSearchKH, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSearchDS, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -88,7 +124,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtSearchKH, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
+                    .addComponent(txtSearchDS, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -102,16 +138,12 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(139, 139, 139)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
+                .addContainerGap(458, Short.MAX_VALUE)
                 .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -119,9 +151,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnBoLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(jComboBox1))
+                .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -176,10 +206,10 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton8.setText("Tải lại DS");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        btnReload.setText("Tải lại DS");
+        btnReload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                btnReloadActionPerformed(evt);
             }
         });
 
@@ -189,14 +219,14 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGap(165, 165, 165)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
@@ -225,7 +255,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableDSGD.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -236,7 +266,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
                 "Mã giao dịch", "Số tiền", "Ngày giao dịch", "Nội dung", "Mã khách hàng", "Nhân viên thực hiện", "Loại giao dịch"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTableDSGD);
 
         jPanel8.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -271,28 +301,54 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
     }//GEN-LAST:event_jPPItemChiTietMouseClicked
 
     private void btnBoLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoLocActionPerformed
-//        if (boloc == null) {
-//            boloc = new JFrameBoLocDSNV();
-//            boloc.setResizable(false);
-//            boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
-//        }
-//        
-//        boloc.setExtendedState(JFrameBoLocDSNV.NORMAL);
-//        boloc.setVisible(true);
+        if (boloc == null) {
+            boloc = new JFrameBoLocGD(this);
+            boloc.setResizable(false);
+            boloc.setDefaultCloseOperation(JFrameBoLocGD.DISPOSE_ON_CLOSE);
+        }
+        
+        boloc.setExtendedState(JFrameBoLocGD.NORMAL);
+        boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
+    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
+        try {
+            if (boloc != null) {
+                listLocGiaoDich = boloc.listGDBoLoc();
+                if (listLocGiaoDich == null) {
+                    MessageBox.showErrorMessage(null, "Không có giao dịch nào!");
+                    boloc = null;
+                    loadDSGiaoDich(false, null);
+                } else {
+                    loadDSGiaoDich(isFiltered, currentList);
+                }
+            } else {
+                loadDSGiaoDich(false, null);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnReloadActionPerformed
+
+    private void txtSearchDSKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchDSKeyReleased
+        DefaultTableModel obj = (DefaultTableModel) jTableDSGD.getModel();
+        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+        jTableDSGD.setRowSorter(obj1);
+
+        int[] searchColumns = {0, 1, 2, 6};
+
+        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchDS.getText(), searchColumns);
+
+        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_txtSearchDSKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBoLoc;
+    private javax.swing.JButton btnReload;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JMenuItem jPPItemChiTiet;
     private javax.swing.JMenuItem jPPItemSua;
     private javax.swing.JMenuItem jPPItemXoa;
@@ -307,7 +363,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField txtSearchKH;
+    private javax.swing.JTable jTableDSGD;
+    private javax.swing.JTextField txtSearchDS;
     // End of variables declaration//GEN-END:variables
 }

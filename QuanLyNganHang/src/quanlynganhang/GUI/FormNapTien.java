@@ -6,11 +6,18 @@ package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.math.BigInteger;
+import quanlynganhang.BUS.GiaoDichBUS;
 import quanlynganhang.BUS.KhachHangBUS;
+import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.GiaoDichDTO;
 import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
@@ -20,14 +27,23 @@ import quanlynganhang.GUI.model.message.MessageBox;
  */
 public class FormNapTien extends javax.swing.JPanel {
 
+    private TaiKhoanNVDTO taiKhoanNV;
     private FormatDate fDate;
     private TaiKhoanKHBUS taiKhoanBUS;
     private KhachHangBUS khachHangBUS;
+    private GiaoDichBUS giaoDichBUS;
+    private BigInteger soDu;
+    private BigInteger minSoTienGD;
+    private BigInteger maxSoTienGD;
 
-    public FormNapTien() {
+    public FormNapTien(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
+        this.taiKhoanNV = taiKhoanNV;
         fDate = new FormatDate();
         taiKhoanBUS = new TaiKhoanKHBUS();
         khachHangBUS = new KhachHangBUS();
+        giaoDichBUS = new GiaoDichBUS();
+        minSoTienGD = new BigInteger("10000");
+        maxSoTienGD = new BigInteger("1000000000");
 
         initComponents();
         initCustomUI();
@@ -70,6 +86,9 @@ public class FormNapTien extends javax.swing.JPanel {
         pwfSoDu.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
 
+        pwfMaPINNV.putClientProperty(FlatClientProperties.STYLE, ""
+            + "showRevealButton:true;");
+
         txtSoTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtTenTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtCCCD.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
@@ -77,38 +96,93 @@ public class FormNapTien extends javax.swing.JPanel {
         txtNgaySinh.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtDiaChi.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtSDT.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+
+        lbMaNV.setText("" + taiKhoanNV.getMaNhanVien());
+        lbTenNV.setText("" + taiKhoanNV.getTenNhanVien());
     }
 
     public void dienThongTinTKKH(int maTaiKhoanKH) {
         TaiKhoanKHDTO taiKhoanKH = taiKhoanBUS.getTaiKhoanKHById(maTaiKhoanKH);
 
         if (taiKhoanKH != null) {
-            lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
-            lbMaTKKH.setText("" + taiKhoanKH.getMaTKKH());
-            txtSoTaiKhoan.setText(taiKhoanKH.getSoTaiKhoan());
-            txtTenTaiKhoan.setText(taiKhoanKH.getTenTaiKhoan());
-            txtLoaiTaiKhoan.setText(taiKhoanKH.getTenLoaiTaiKhoan());
-            pwfSoDu.setText("" + taiKhoanKH.getSoDu());
-            lbTenKhachHang.setText(taiKhoanKH.getTenKhachHang());
+            if (taiKhoanKH.getMaTrangThai() != 6 && (taiKhoanKH.getMaLoaiTaiKhoan() != 1 || taiKhoanKH.getMaLoaiTaiKhoan() != 2)) {
+                MessageBox.showErrorMessage(null, "Không thể sử dụng tài khoản này!");
+            } else {
+                this.soDu = new BigInteger(taiKhoanKH.getSoDu());
 
-            KhachHangDTO khachHang = khachHangBUS.getKhachHangById(taiKhoanKH.getMaKhachHang(), 0);
-            if (khachHang != null) {
-                txtCCCD.setText(khachHang.getCccd());
-                txtNgaySinh.setText(fDate.toString(khachHang.getNgaySinh()));
-                txtDiaChi.setText(khachHang.getDiaChi());
-                txtSDT.setText(khachHang.getSdt());
+                lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
+                lbMaTKKH.setText("" + taiKhoanKH.getMaTKKH());
+                txtSoTaiKhoan.setText(taiKhoanKH.getSoTaiKhoan());
+                txtTenTaiKhoan.setText(taiKhoanKH.getTenTaiKhoan());
+                txtLoaiTaiKhoan.setText(taiKhoanKH.getTenLoaiTaiKhoan());
+                pwfSoDu.setText("" + taiKhoanKH.getSoDu());
+                lbTenKhachHang.setText(taiKhoanKH.getTenKhachHang());
 
-                String gioiTinh = khachHang.getGioiTinh();
-                if (gioiTinh.equals("Nam")) {
-                    rdbNam.setSelected(true);
-                } else if (gioiTinh.equals("Nữ")) {
-                    rdbNu.setSelected(true);
-                } else {
-                    rdbKhac.setSelected(true);
+                KhachHangDTO khachHang = khachHangBUS.getKhachHangById(taiKhoanKH.getMaKhachHang(), 0);
+                if (khachHang != null) {
+                    txtCCCD.setText(khachHang.getCccd());
+                    txtNgaySinh.setText(fDate.toString(khachHang.getNgaySinh()));
+                    txtDiaChi.setText(khachHang.getDiaChi());
+                    txtSDT.setText(khachHang.getSdt());
+
+                    String gioiTinh = khachHang.getGioiTinh();
+                    if (gioiTinh.equals("Nam")) {
+                        rdbNam.setSelected(true);
+                    } else if (gioiTinh.equals("Nữ")) {
+                        rdbNu.setSelected(true);
+                    } else {
+                        rdbKhac.setSelected(true);
+                    }
                 }
             }
         } else {
             MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản khách hàng!");
+        }
+
+    }
+
+    private void napTien() {
+        BigInteger soTien;
+        StringBuilder error = new StringBuilder();
+        error.append("");
+
+        GiaoDichDTO giaoDich = new GiaoDichDTO();
+
+        String maPIN = String.valueOf(pwfMaPINNV.getPassword());
+        if (txtSoTienNap.getText().isEmpty() || maPIN.isEmpty()) {
+            error.append("Vui lòng nhập đầy đủ thông tin");
+        } else {
+            try {
+                soTien = new BigInteger(txtSoTienNap.getText());
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
+                    error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
+                }
+            } catch (NumberFormatException ne) {
+                error.append("\nVui lòng nhập đúng số tiền giao dịch!");
+            }
+
+            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
+                error.append("\nSai mã PIN");
+            }
+        }
+
+        if (error.isEmpty()) {
+            giaoDich.setMaTaiKhoanKH(Integer.parseInt(lbMaTKKH.getText()));
+            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaNhanVien());
+            giaoDich.setTenKhachHang(lbHoTenKH.getText());
+            giaoDich.setTenNhanVien(taiKhoanNV.getTenNhanVien());
+            giaoDich.setMaLoaiGiaoDich(4);
+            giaoDich.setNoiDungGiaoDich("Nạp tiền vào tài khoản cho khách hàng " + lbHoTenKH.getText());
+            giaoDich.setNgayGiaoDich(fDate.getToday());
+            giaoDich.setSoTien(txtSoTienNap.getText());
+
+            if (giaoDichBUS.napTien(giaoDich)) {
+                MessageBox.showInformationMessage(null, "", "Nạp tiền thành công!");
+            } else {
+                MessageBox.showErrorMessage(null, "Nạp tiền thất bại!");
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Lỗi: " + error);
         }
 
     }
@@ -136,9 +210,9 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jPThongTinGD = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
+        lbMaNV = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
+        lbTenNV = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
@@ -151,7 +225,7 @@ public class FormNapTien extends javax.swing.JPanel {
         btnChonTKKH = new javax.swing.JButton();
         jPPINCode = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
-        txtPINCode1 = new javax.swing.JTextField();
+        pwfMaPINNV = new javax.swing.JPasswordField();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -201,7 +275,6 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel1.setText("VND");
 
         pwfSoDu.setEditable(false);
-        pwfSoDu.setText("130.000.000");
 
         javax.swing.GroupLayout jPSoDuLayout = new javax.swing.GroupLayout(jPSoDu);
         jPSoDu.setLayout(jPSoDuLayout);
@@ -275,14 +348,14 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel7.setText("Mã giao dịch viên:");
 
-        jLabel22.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel22.setText("NV032184742");
+        lbMaNV.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaNV.setText(".");
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel8.setText("Tên giao dịch viên:");
 
-        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel23.setText("Dương Nguyễn Nghĩa Thái");
+        lbTenNV.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbTenNV.setText(".");
 
         jLabel24.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel24.setText("Tên khách hàng:");
@@ -294,10 +367,10 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel26.setText("Loại giao dịch:");
 
         lbTenKhachHang.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        lbTenKhachHang.setText("Nguyễn Văn A");
+        lbTenKhachHang.setText(".");
 
         lbSoTienNap.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        lbSoTienNap.setText("12.354.111 VND");
+        lbSoTienNap.setText("(Chưa có)");
 
         jLabel29.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel29.setText("Nạp tiền vào tài khoản");
@@ -318,9 +391,9 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbSoTienNap, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbTenKhachHang, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbTenNV, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbMaNV, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPThongTinGDLayout.setVerticalGroup(
@@ -329,10 +402,10 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel22))
+                    .addComponent(lbMaNV))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel23)
+                    .addComponent(lbTenNV)
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -351,6 +424,11 @@ public class FormNapTien extends javax.swing.JPanel {
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton2.setText("Nạp tiền");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Đặt lại");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -400,7 +478,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(97, Short.MAX_VALUE))
         );
         jPPINCodeLayout.setVerticalGroup(
@@ -409,7 +487,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -858,6 +936,14 @@ public class FormNapTien extends javax.swing.JPanel {
         chonTKKH.setVisible(true);
     }//GEN-LAST:event_btnChonTKKHActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (lbMaTKKH.getText().equals("(Chưa chọn)")) {
+            MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản khách hàng!");
+        } else {
+            napTien();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
@@ -876,8 +962,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -907,10 +991,13 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lbHoTenKH;
+    private javax.swing.JLabel lbMaNV;
     private javax.swing.JLabel lbMaTKKH;
     private javax.swing.JLabel lbSoTienNap;
     private javax.swing.JLabel lbTenKhachHang;
+    private javax.swing.JLabel lbTenNV;
     private javax.swing.JLabel lbTitle;
+    private javax.swing.JPasswordField pwfMaPINNV;
     private javax.swing.JPasswordField pwfSoDu;
     private javax.swing.JRadioButton rdbKhac;
     private javax.swing.JRadioButton rdbNam;
@@ -919,7 +1006,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JTextField txtDiaChi;
     private javax.swing.JTextField txtLoaiTaiKhoan;
     private javax.swing.JTextField txtNgaySinh;
-    private javax.swing.JTextField txtPINCode1;
     private javax.swing.JTextField txtSDT;
     private javax.swing.JTextField txtSoTaiKhoan;
     private javax.swing.JTextField txtSoTienNap;

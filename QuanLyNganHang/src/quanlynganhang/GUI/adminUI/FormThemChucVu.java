@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
@@ -21,7 +22,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
     private ChucVuBUS chucVuBUS;
     private int biXoa;
 
-    public FormThemChucVu() {
+    public FormThemChucVu(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
         chucVuBUS = new ChucVuBUS();
         initComponents();
         initCustomUI();

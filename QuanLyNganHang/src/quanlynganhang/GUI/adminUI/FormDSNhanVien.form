@@ -299,7 +299,6 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnThemNV" max="32767" attributes="0"/>
                           <Component id="btnThemTKNV" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jButton7" alignment="0" max="32767" attributes="0"/>
                           <Component id="btnReload" alignment="0" max="32767" attributes="0"/>
                           <Component id="btnDoiBang" alignment="0" max="32767" attributes="0"/>
                       </Group>
@@ -314,9 +313,7 @@
                       <Component id="btnThemNV" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnThemTKNV" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton7" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
                       <Component id="btnReload" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnDoiBang" min="-2" pref="35" max="-2" attributes="0"/>
@@ -341,11 +338,6 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnThemTKNVActionPerformed"/>
               </Events>
-            </Component>
-            <Component class="javax.swing.JButton" name="jButton7">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Th&#xea;m ch&#x1ee9;c v&#x1ee5;"/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnReload">
               <Properties>

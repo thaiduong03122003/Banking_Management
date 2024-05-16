@@ -123,6 +123,15 @@ public class InputValidation {
             return false;
         }
     }
+    
+    public static boolean kiemTraSoTien(String soTien) {
+        if (soTien == null || soTien.trim().isEmpty()) {
+            return false;
+        } else {
+            String regex = "[0-9]+";
+            return Pattern.matches(regex, soTien);
+        }
+    }
 
     public static String catNganString(String originalString) {
         int maxLength = 20;

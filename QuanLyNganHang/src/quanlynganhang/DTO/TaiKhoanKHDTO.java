@@ -3,16 +3,15 @@ package quanlynganhang.DTO;
 import java.util.Date;
 
 public class TaiKhoanKHDTO {
-    private int maTKKH, soDu, maNganHang, maLoaiTaiKhoan, maKhachHang, maTrangThai;
-    private String soTaiKhoan, tenTaiKhoan, matKhau, tenNganHang, tenLoaiTaiKhoan, tenKhachHang, tenTrangThai;
+    private int maTKKH, maNganHang, maLoaiTaiKhoan, maKhachHang, maTrangThai;
+    private String soTaiKhoan, tenTaiKhoan, matKhau, soDu, tenNganHang, tenLoaiTaiKhoan, tenKhachHang, tenTrangThai;
     private Date ngayTao;
 
     public TaiKhoanKHDTO() {
     }
 
-    public TaiKhoanKHDTO(int maTKKH, int soDu, int maNganHang, int maLoaiTaiKhoan, int maKhachHang, int maTrangThai, String soTaiKhoan, String tenTaiKhoan, String matKhau, String tenNganHang, String tenLoaiTaiKhoan, String tenKhachHang, String tenTrangThai, Date ngayTao) {
+    public TaiKhoanKHDTO(int maTKKH, int maNganHang, int maLoaiTaiKhoan, int maKhachHang, int maTrangThai, String soTaiKhoan, String tenTaiKhoan, String matKhau, String soDu, String tenNganHang, String tenLoaiTaiKhoan, String tenKhachHang, String tenTrangThai, Date ngayTao) {
         this.maTKKH = maTKKH;
-        this.soDu = soDu;
         this.maNganHang = maNganHang;
         this.maLoaiTaiKhoan = maLoaiTaiKhoan;
         this.maKhachHang = maKhachHang;
@@ -20,6 +19,7 @@ public class TaiKhoanKHDTO {
         this.soTaiKhoan = soTaiKhoan;
         this.tenTaiKhoan = tenTaiKhoan;
         this.matKhau = matKhau;
+        this.soDu = soDu;
         this.tenNganHang = tenNganHang;
         this.tenLoaiTaiKhoan = tenLoaiTaiKhoan;
         this.tenKhachHang = tenKhachHang;
@@ -33,14 +33,6 @@ public class TaiKhoanKHDTO {
 
     public void setMaTKKH(int maTKKH) {
         this.maTKKH = maTKKH;
-    }
-
-    public int getSoDu() {
-        return soDu;
-    }
-
-    public void setSoDu(int soDu) {
-        this.soDu = soDu;
     }
 
     public int getMaNganHang() {
@@ -99,6 +91,14 @@ public class TaiKhoanKHDTO {
         this.matKhau = matKhau;
     }
 
+    public String getSoDu() {
+        return soDu;
+    }
+
+    public void setSoDu(String soDu) {
+        this.soDu = soDu;
+    }
+
     public String getTenNganHang() {
         return tenNganHang;
     }
@@ -139,5 +139,4 @@ public class TaiKhoanKHDTO {
         this.ngayTao = ngayTao;
     }
 
-    
 }

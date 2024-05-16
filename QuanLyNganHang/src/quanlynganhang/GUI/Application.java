@@ -14,34 +14,41 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import quanlynganhang.BUS.DieuHuongMenuBUS;
+import quanlynganhang.BUS.KiemTraDuLieuBUS;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.MainForm;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 import quanlynganhang.GUI.model.menubar.Menu;
 
 public class Application extends javax.swing.JFrame {
 
-    private static Application app;
     private final MainForm mainForm;
     private DieuHuongMenuBUS menuBUS;
+    private KiemTraDuLieuBUS kiemTraDuLieuBUS;
+    private TaiKhoanNVDTO taiKhoanNV;
     private Menu menu;
     private boolean isAdmin = false;
     
-    public Application() {
+    public Application(TaiKhoanNVDTO taiKhoanNV) {
+        kiemTraDuLieuBUS = new KiemTraDuLieuBUS(taiKhoanNV);
+        this.taiKhoanNV = taiKhoanNV;
         initComponents();
         setLocationRelativeTo(null);
         menu = new Menu(isAdmin);
-        menuBUS = new DieuHuongMenuBUS(menu, isAdmin);
-        mainForm = new MainForm(menu, menuBUS);
+        menuBUS = new DieuHuongMenuBUS(menu, isAdmin, this, null, taiKhoanNV);
+        mainForm = new MainForm(menu, menuBUS, taiKhoanNV, this, null);
         setContentPane(mainForm);
+        
+        kiemTraDuLieuBUS.chayKiemTraTinhTrangGTK();
     }
 
-    public static void showForm(Component component, String titleName) {
-        component.applyComponentOrientation(app.getComponentOrientation());
-        app.mainForm.showForm(component, titleName);
+    public void showForm(Component component, String titleName) {
+        component.applyComponentOrientation(this.getComponentOrientation());
+        mainForm.showForm(component, titleName);
     }
 
-    public static void setSelectedMenu(int index, int subIndex) {
-        app.menuBUS.setSelectedMenu(index, subIndex);
+    public void setSelectedMenu(int index, int subIndex) {
+        menuBUS.setSelectedMenu(index, subIndex);
     }
 
     @SuppressWarnings("unchecked")
@@ -70,22 +77,7 @@ public class Application extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-
-        java.awt.EventQueue.invokeLater(() -> {
-            FlatSVGIcon favicon = new FlatSVGIcon("quanlynganhang/icon/favicon.svg");
-            app = new Application();
-            app.setIconImage(favicon.getImage());
-            app.setTitle("Quản lý ngân hàng");
-            GlassPanePopup.install(app);
-            setSelectedMenu(0, 0);
-            app.setVisible(true);
-            app.setResizable(false);
-            app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        });
+        System.out.println("Nothing!");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

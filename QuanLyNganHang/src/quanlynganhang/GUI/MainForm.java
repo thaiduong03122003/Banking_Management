@@ -20,21 +20,30 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import quanlynganhang.BUS.DieuHuongMenuBUS;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
+import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.headerbar.HeaderBar;
 
 public class MainForm extends JLayeredPane {
-
-    public MainForm(Menu menu, DieuHuongMenuBUS menuBUS) {
+    private Application app;
+    private ApplicationAdmin appAdmin;
+    private TaiKhoanNVDTO taiKhoanNV;
+    
+    public MainForm(Menu menu, DieuHuongMenuBUS menuBUS, TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin) {
+        this.app = app;
+        this.appAdmin = appAdmin;
         this.menu = menu;
         this.menuBUS = menuBUS;
+        this.taiKhoanNV = taiKhoanNV;
+        
         init();
     }
 
     private void init() {
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setLayout(new MainFormLayout());
-        headerBar = new HeaderBar();
+        headerBar = new HeaderBar(taiKhoanNV, app, appAdmin);
         panelBody = new JPanel(new BorderLayout());
         initMenuArrowIcon();
         menuButton.putClientProperty(FlatClientProperties.STYLE, ""

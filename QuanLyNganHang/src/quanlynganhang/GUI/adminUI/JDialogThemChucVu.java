@@ -160,6 +160,8 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         chucVu.setqLGuiTietKiem(chxGuiTietKiem.isSelected() ? 1 : 0);
         chucVu.setqLVayVon(chxVayVon.isSelected() ? 1 : 0);
         chucVu.setqLVayTinDung(chxVayTinDung.isSelected() ? 1 : 0);
+        chucVu.setPhanQuyen(chxPhanQuyen.isSelected() ? 1 : 0);
+        chucVu.setThemChucVu(chxThemChucVu.isSelected() ? 1 : 0);
 
         chucVu.setqLKhachHang(layQuyenCheckBox(chxKhachHang, chxKHThem, chxKHSua, chxKHXoa));
         chucVu.setqLNhanVien(layQuyenCheckBox(chxNhanVien, chxNVThem, chxNVSua, chxNVXoa));
@@ -245,6 +247,18 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxVayTinDung.setSelected(true);
         } else {
             chxVayTinDung.setSelected(false);
+        }
+        
+        if (chucVu.getPhanQuyen()== 1) {
+            chxPhanQuyen.setSelected(true);
+        } else {
+            chxPhanQuyen.setSelected(false);
+        }
+        
+        if (chucVu.getThemChucVu()== 1) {
+            chxThemChucVu.setSelected(true);
+        } else {
+            chxThemChucVu.setSelected(false);
         }
 
         convertDataToCheckbox(chucVu.getqLKhachHang(), chxKhachHang, chxKHThem, chxKHSua, chxKHXoa);

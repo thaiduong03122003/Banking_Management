@@ -1,21 +1,45 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.KeyEvent;
+import java.math.BigInteger;
+import quanlynganhang.BUS.GiaoDichBUS;
+import quanlynganhang.BUS.KhachHangBUS;
+import quanlynganhang.BUS.MaHoaMatKhauBUS;
+import quanlynganhang.BUS.TaiKhoanKHBUS;
+import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.GiaoDichDTO;
+import quanlynganhang.DTO.KhachHangDTO;
+import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormChuyenCungNganHang extends javax.swing.JPanel {
 
-    /** Creates new form FormThongKe */
-    public FormChuyenCungNganHang() {
+    private TaiKhoanNVDTO taiKhoanNV;
+    private FormatDate fDate;
+    private TaiKhoanKHBUS taiKhoanKHBUS;
+    private KhachHangBUS khachHangBUS;
+    private GiaoDichBUS giaoDichBUS;
+    private TaiKhoanKHDTO taiKhoanKHNhan;
+    private int maTaiKhoanKHGui;
+    private BigInteger soDu;
+    private BigInteger minSoTienGD;
+    private BigInteger maxSoTienGD;
+
+    public FormChuyenCungNganHang(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
+        this.taiKhoanNV = taiKhoanNV;
+        fDate = new FormatDate();
+        taiKhoanKHBUS = new TaiKhoanKHBUS();
+        khachHangBUS = new KhachHangBUS();
+        giaoDichBUS = new GiaoDichBUS();
+        minSoTienGD = new BigInteger("10000");
+        maxSoTienGD = new BigInteger("1000000000");
+
         initComponents();
         initCustomUI();
     }
@@ -53,14 +77,114 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPAccTypeReceive.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        
-        txtSoDu.putClientProperty(FlatClientProperties.STYLE, ""
+
+        pwfSoDu.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
 
-        txtAccNumSend.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccNameSend.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccNumReceive.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
-        txtAccNameReceive.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        pwfMaPINNV.putClientProperty(FlatClientProperties.STYLE, ""
+            + "showRevealButton:true;");
+
+        txtSTKGui.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTenTKGui.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtSTKNhan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+        txtTenTKNhan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
+    }
+
+    public void dienTKNguoiGui(int maTaiKhoanKH) {
+        TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKH);
+
+        if (taiKhoanKH != null) {
+            if (taiKhoanKH.getMaTrangThai() != 6 && (taiKhoanKH.getMaLoaiTaiKhoan() != 1 || taiKhoanKH.getMaLoaiTaiKhoan() != 2)) {
+                MessageBox.showErrorMessage(null, "Không thể sử dụng tài khoản này!");
+            } else {
+                this.maTaiKhoanKHGui = maTaiKhoanKH;
+                this.soDu = new BigInteger(taiKhoanKH.getSoDu());
+
+                lbHoTenKHGui.setText(taiKhoanKH.getTenKhachHang());
+                lbMaTKKHGui.setText("" + taiKhoanKH.getMaTKKH());
+                txtSTKGui.setText(taiKhoanKH.getSoTaiKhoan());
+                txtTenTKGui.setText(InputValidation.catNganString(taiKhoanKH.getTenTaiKhoan()));
+                pwfSoDu.setText("" + taiKhoanKH.getSoDu());
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản người gửi!");
+        }
+    }
+
+    private void dienTKNguoiNhan(String soTaiKhoan) {
+        TaiKhoanKHDTO taiKhoanKHNhan = taiKhoanKHBUS.getTaiKhoanKHBySTK(soTaiKhoan, 1);
+
+        if (taiKhoanKHNhan != null) {
+            if (taiKhoanKHNhan.getMaTrangThai() != 6 && (taiKhoanKHNhan.getMaLoaiTaiKhoan() != 1 || taiKhoanKHNhan.getMaLoaiTaiKhoan() != 2)) {
+                MessageBox.showErrorMessage(null, "Không thể giao dịch với tài khoản này!");
+            } else {
+                this.taiKhoanKHNhan = taiKhoanKHNhan;
+                lbHoTenKHNhan.setText(taiKhoanKHNhan.getTenKhachHang());
+                lbMaTKKHNhan.setText("" + taiKhoanKHNhan.getMaTKKH());
+                txtSTKNhan.setText(taiKhoanKHNhan.getSoTaiKhoan());
+                txtTenTKNhan.setText(InputValidation.catNganString(taiKhoanKHNhan.getTenTaiKhoan()));
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản người nhận!");
+        }
+    }
+
+    private void chuyenTienCungNH() {
+        BigInteger soTien;
+        StringBuilder error = new StringBuilder();
+        error.append("");
+
+        GiaoDichDTO giaoDich = new GiaoDichDTO();
+
+        String maPIN = String.valueOf(pwfMaPINNV.getPassword());
+        if (txtSoTienChuyen.getText().isEmpty() || maPIN.isEmpty()) {
+            error.append("Vui lòng nhập đầy đủ thông tin");
+        } else {
+            try {
+                soTien = new BigInteger(txtSoTienChuyen.getText());
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
+                    error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
+                }
+
+                if (soTien.compareTo(soDu) > 0) {
+                    error.append("\nSố dư không đủ để thực hiện giao dịch!");
+                }
+            } catch (NumberFormatException ne) {
+                error.append("\nVui lòng nhập đúng số tiền giao dịch!");
+            }
+
+            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
+                error.append("\nSai mã PIN");
+            }
+        }
+
+        if (error.isEmpty()) {
+            giaoDich.setMaTaiKhoanKH(Integer.parseInt(lbMaTKKHGui.getText()));
+            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaNhanVien());
+            giaoDich.setTenKhachHang(lbHoTenKHGui.getText());
+            giaoDich.setTenNhanVien(taiKhoanNV.getTenNhanVien());
+            giaoDich.setMaLoaiGiaoDich(1);
+
+            if (txtNoiDung.getText().isEmpty()) {
+                giaoDich.setNoiDungGiaoDich(lbHoTenKHGui.getText() + " chuyển tiền đến cho " + lbHoTenKHNhan.getText());
+            } else {
+                giaoDich.setNoiDungGiaoDich(txtNoiDung.getText());
+            }
+
+            giaoDich.setNgayGiaoDich(fDate.getToday());
+            giaoDich.setSoTien(txtSoTienChuyen.getText());
+
+            boolean isTienTK = rdbTienTK.isSelected() ? true : false;
+
+            if (giaoDichBUS.chuyenTien(giaoDich, isTienTK, taiKhoanKHNhan, 1)) {
+                MessageBox.showInformationMessage(null, "", "Chuyển tiền thành công!");
+            } else {
+                MessageBox.showErrorMessage(null, "Chuyển tiền thất bại!");
+            }
+        } else {
+            MessageBox.showErrorMessage(null, "Lỗi: " + error);
+        }
+
     }
 
     /** This method is called from within the constructor to
@@ -80,58 +204,56 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         jPSoDu = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txtSoDu = new javax.swing.JPasswordField();
+        pwfSoDu = new javax.swing.JPasswordField();
         jPSoTienChuyen = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         txtSoTienChuyen = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btnChuyenTien = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnChonTKKH = new javax.swing.JButton();
         jPPINCode = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
-        txtPINCode1 = new javax.swing.JTextField();
+        pwfMaPINNV = new javax.swing.JPasswordField();
         jPNoiDungChuyen = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        txtSoTienNap1 = new javax.swing.JTextField();
+        txtNoiDung = new javax.swing.JTextField();
         jPTKNguoiNhan = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         txtStkNguoiNhan = new javax.swing.JTextField();
         jPNguonTien = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        rdbTienTK = new javax.swing.JRadioButton();
+        rdbTienMat = new javax.swing.JRadioButton();
         jPAccountSend = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jPCusNameSend = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        lbHoTenKHGui = new javax.swing.JLabel();
         jPAccNumSend = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        txtAccNumSend = new javax.swing.JTextField();
+        txtSTKGui = new javax.swing.JTextField();
         jPAccTypeSend = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        txtAccNameSend = new javax.swing.JTextField();
+        txtTenTKGui = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
+        lbMaTKKHGui = new javax.swing.JLabel();
         jPAccountReceive = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jPCusNameReceive = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
-        jLabel30 = new javax.swing.JLabel();
+        lbHoTenKHNhan = new javax.swing.JLabel();
         jPAccNumReceive = new javax.swing.JPanel();
         jLabel31 = new javax.swing.JLabel();
-        txtAccNumReceive = new javax.swing.JTextField();
+        txtSTKNhan = new javax.swing.JTextField();
         jPAccTypeReceive = new javax.swing.JPanel();
         jLabel32 = new javax.swing.JLabel();
-        txtAccNameReceive = new javax.swing.JTextField();
+        txtTenTKNhan = new javax.swing.JTextField();
         jLabel33 = new javax.swing.JLabel();
-        jLabel34 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        lbMaTKKHNhan = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(1132, 511));
 
@@ -146,8 +268,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel1.setText("VND");
 
-        txtSoDu.setEditable(false);
-        txtSoDu.setText("130.000.000");
+        pwfSoDu.setEditable(false);
 
         javax.swing.GroupLayout jPSoDuLayout = new javax.swing.GroupLayout(jPSoDu);
         jPSoDu.setLayout(jPSoDuLayout);
@@ -157,7 +278,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPSoDuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPSoDuLayout.createSequentialGroup()
-                        .addComponent(txtSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pwfSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -170,7 +291,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPSoDuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtSoDu, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(pwfSoDu, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                     .addGroup(jPSoDuLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel1)))
@@ -185,6 +306,11 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         txtSoTienChuyen.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtSoTienChuyenFocusLost(evt);
+            }
+        });
+        txtSoTienChuyen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSoTienChuyenActionPerformed(evt);
             }
         });
 
@@ -218,8 +344,13 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Chuyển tiền");
+        btnChuyenTien.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnChuyenTien.setText("Chuyển tiền");
+        btnChuyenTien.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChuyenTienActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Đặt lại");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +367,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnChuyenTien, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPFooterCusLayout.setVerticalGroup(
@@ -245,11 +376,16 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton2))
+                    .addComponent(btnChuyenTien))
                 .addContainerGap())
         );
 
-        jButton5.setText("Chọn tài khoản người gửi");
+        btnChonTKKH.setText("Chọn tài khoản người gửi");
+        btnChonTKKH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChonTKKHActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
@@ -264,7 +400,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(97, Short.MAX_VALUE))
         );
         jPPINCodeLayout.setVerticalGroup(
@@ -273,7 +409,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPINCode1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -282,9 +418,9 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel13.setText("Nội dung chuyển tiền");
 
-        txtSoTienNap1.addFocusListener(new java.awt.event.FocusAdapter() {
+        txtNoiDung.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-                txtSoTienNap1FocusLost(evt);
+                txtNoiDungFocusLost(evt);
             }
         });
 
@@ -298,7 +434,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                     .addGroup(jPNoiDungChuyenLayout.createSequentialGroup()
                         .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtSoTienNap1))
+                    .addComponent(txtNoiDung))
                 .addContainerGap())
         );
         jPNoiDungChuyenLayout.setVerticalGroup(
@@ -307,7 +443,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtSoTienNap1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNoiDung, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -319,6 +455,11 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         txtStkNguoiNhan.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtStkNguoiNhanFocusLost(evt);
+            }
+        });
+        txtStkNguoiNhan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtStkNguoiNhanKeyReleased(evt);
             }
         });
 
@@ -348,17 +489,17 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel8.setText("Nguồn tiền");
 
-        btnGroupNguonTien.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Tiền tài khoản");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnGroupNguonTien.add(rdbTienTK);
+        rdbTienTK.setSelected(true);
+        rdbTienTK.setText("Tiền tài khoản");
+        rdbTienTK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                rdbTienTKActionPerformed(evt);
             }
         });
 
-        btnGroupNguonTien.add(jRadioButton2);
-        jRadioButton2.setText("Tiền mặt");
+        btnGroupNguonTien.add(rdbTienMat);
+        rdbTienMat.setText("Tiền mặt");
 
         javax.swing.GroupLayout jPNguonTienLayout = new javax.swing.GroupLayout(jPNguonTien);
         jPNguonTien.setLayout(jPNguonTienLayout);
@@ -369,9 +510,9 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addGroup(jPNguonTienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPNguonTienLayout.createSequentialGroup()
-                        .addComponent(jRadioButton1)
+                        .addComponent(rdbTienTK)
                         .addGap(18, 18, 18)
-                        .addComponent(jRadioButton2)))
+                        .addComponent(rdbTienMat)))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
         jPNguonTienLayout.setVerticalGroup(
@@ -381,8 +522,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPNguonTienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                    .addComponent(rdbTienTK)
+                    .addComponent(rdbTienMat))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -396,7 +537,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5))
+                        .addComponent(btnChonTKKH))
                     .addComponent(jPNoiDungChuyen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPTKNguoiNhan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -418,7 +559,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbTitle)
-                    .addComponent(jButton5))
+                    .addComponent(btnChonTKKH))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
@@ -445,8 +586,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel9.setText("Họ tên khách hàng: ");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("(Chưa chọn)");
+        lbHoTenKHGui.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbHoTenKHGui.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPCusNameSendLayout = new javax.swing.GroupLayout(jPCusNameSend);
         jPCusNameSend.setLayout(jPCusNameSendLayout);
@@ -456,7 +597,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbHoTenKHGui, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPCusNameSendLayout.setVerticalGroup(
@@ -465,7 +606,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusNameSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel10))
+                    .addComponent(lbHoTenKHGui))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -474,8 +615,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel11.setText("Số tài khoản");
 
-        txtAccNumSend.setEditable(false);
-        txtAccNumSend.setEnabled(false);
+        txtSTKGui.setEditable(false);
+        txtSTKGui.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNumSendLayout = new javax.swing.GroupLayout(jPAccNumSend);
         jPAccNumSend.setLayout(jPAccNumSendLayout);
@@ -484,7 +625,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             .addGroup(jPAccNumSendLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccNumSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAccNumSend, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSTKGui, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -494,7 +635,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNumSend, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSTKGui, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -503,8 +644,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel12.setText("Tên tài khoản");
 
-        txtAccNameSend.setEditable(false);
-        txtAccNameSend.setEnabled(false);
+        txtTenTKGui.setEditable(false);
+        txtTenTKGui.setEnabled(false);
 
         javax.swing.GroupLayout jPAccTypeSendLayout = new javax.swing.GroupLayout(jPAccTypeSend);
         jPAccTypeSend.setLayout(jPAccTypeSendLayout);
@@ -514,7 +655,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPAccTypeSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                    .addComponent(txtAccNameSend))
+                    .addComponent(txtTenTKGui))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPAccTypeSendLayout.setVerticalGroup(
@@ -523,17 +664,15 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNameSend, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTenTKGui, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jLabel18.setText("Mã khách hàng: ");
+        jLabel18.setText("Mã tài khoản: ");
 
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel19.setText("(Chưa chọn)");
-
-        jButton4.setText("Xem thông tin chi tiết người gửi");
+        lbMaTKKHGui.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaTKKHGui.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPAccountSendLayout = new javax.swing.GroupLayout(jPAccountSend);
         jPAccountSend.setLayout(jPAccountSendLayout);
@@ -542,27 +681,21 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             .addGroup(jPAccountSendLayout.createSequentialGroup()
                 .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPAccountSendLayout.createSequentialGroup()
-                        .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lbMaTKKHGui, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPAccountSendLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPAccountSendLayout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jPAccNumSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPAccountSendLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPAccountSendLayout.createSequentialGroup()
-                                        .addComponent(jPAccNumSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jPAccTypeSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jPCusNameSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 1, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPAccountSendLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                                .addComponent(jPAccTypeSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPCusNameSend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
         jPAccountSendLayout.setVerticalGroup(
             jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -576,14 +709,12 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
-                    .addComponent(jLabel19))
+                    .addComponent(lbMaTKKHGui))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPAccountSendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPAccNumSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPAccTypeSend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -592,8 +723,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         jLabel28.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel28.setText("Họ tên khách hàng: ");
 
-        jLabel30.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel30.setText("(Chưa chọn)");
+        lbHoTenKHNhan.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbHoTenKHNhan.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPCusNameReceiveLayout = new javax.swing.GroupLayout(jPCusNameReceive);
         jPCusNameReceive.setLayout(jPCusNameReceiveLayout);
@@ -603,7 +734,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbHoTenKHNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPCusNameReceiveLayout.setVerticalGroup(
@@ -612,7 +743,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPCusNameReceiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel28)
-                    .addComponent(jLabel30))
+                    .addComponent(lbHoTenKHNhan))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -621,8 +752,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel31.setText("Số tài khoản");
 
-        txtAccNumReceive.setEditable(false);
-        txtAccNumReceive.setEnabled(false);
+        txtSTKNhan.setEditable(false);
+        txtSTKNhan.setEnabled(false);
 
         javax.swing.GroupLayout jPAccNumReceiveLayout = new javax.swing.GroupLayout(jPAccNumReceive);
         jPAccNumReceive.setLayout(jPAccNumReceiveLayout);
@@ -631,7 +762,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             .addGroup(jPAccNumReceiveLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccNumReceiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtAccNumReceive, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSTKNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -641,7 +772,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel31)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNumReceive, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtSTKNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -650,8 +781,8 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
         jLabel32.setText("Tên tài khoản");
 
-        txtAccNameReceive.setEditable(false);
-        txtAccNameReceive.setEnabled(false);
+        txtTenTKNhan.setEditable(false);
+        txtTenTKNhan.setEnabled(false);
 
         javax.swing.GroupLayout jPAccTypeReceiveLayout = new javax.swing.GroupLayout(jPAccTypeReceive);
         jPAccTypeReceive.setLayout(jPAccTypeReceiveLayout);
@@ -663,7 +794,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                     .addGroup(jPAccTypeReceiveLayout.createSequentialGroup()
                         .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 7, Short.MAX_VALUE))
-                    .addComponent(txtAccNameReceive))
+                    .addComponent(txtTenTKNhan))
                 .addContainerGap())
         );
         jPAccTypeReceiveLayout.setVerticalGroup(
@@ -672,17 +803,15 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel32)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAccNameReceive, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTenTKNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel33.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jLabel33.setText("Mã khách hàng: ");
+        jLabel33.setText("Mã tài khoản: ");
 
-        jLabel34.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel34.setText("(Chưa chọn)");
-
-        jButton1.setText("Xem thông tin chi tiết người nhận");
+        lbMaTKKHNhan.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbMaTKKHNhan.setText("(Chưa chọn)");
 
         javax.swing.GroupLayout jPAccountReceiveLayout = new javax.swing.GroupLayout(jPAccountReceive);
         jPAccountReceive.setLayout(jPAccountReceiveLayout);
@@ -702,16 +831,13 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                         .addGap(12, 12, 12)
                         .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbMaTKKHNhan, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPAccountReceiveLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jPAccNumReceive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPAccTypeReceive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPAccountReceiveLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jPAccTypeReceive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPAccountReceiveLayout.setVerticalGroup(
@@ -726,13 +852,11 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPAccountReceiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel33)
-                    .addComponent(jLabel34))
+                    .addComponent(lbMaTKKHNhan))
                 .addGap(6, 6, 6)
                 .addGroup(jPAccountReceiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPAccNumReceive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPAccTypeReceive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -768,46 +892,65 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void txtSoTienChuyenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienChuyenFocusLost
-        
+
     }//GEN-LAST:event_txtSoTienChuyenFocusLost
 
-    private void txtSoTienNap1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienNap1FocusLost
+    private void txtNoiDungFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNoiDungFocusLost
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtSoTienNap1FocusLost
+    }//GEN-LAST:event_txtNoiDungFocusLost
 
     private void txtStkNguoiNhanFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtStkNguoiNhanFocusLost
-        // TODO add your handling code here:
+        if (!txtStkNguoiNhan.getText().isEmpty()) {
+            dienTKNguoiNhan(txtStkNguoiNhan.getText());
+        }
     }//GEN-LAST:event_txtStkNguoiNhanFocusLost
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void rdbTienTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbTienTKActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    }//GEN-LAST:event_rdbTienTKActionPerformed
+
+    private void txtSoTienChuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSoTienChuyenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSoTienChuyenActionPerformed
+
+    private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH");
+        chonTKKH.setResizable(false);
+        chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonTKKH.setVisible(true);
+    }//GEN-LAST:event_btnChonTKKHActionPerformed
+
+    private void btnChuyenTienActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChuyenTienActionPerformed
+        if (lbMaTKKHNhan.getText().equals("(Chưa có)") || lbMaTKKHGui.getText().equals("(Chưa có)") || lbMaTKKHGui.getText().equals(lbMaTKKHNhan.getText())) {
+            MessageBox.showErrorMessage(null, "Thông tin không phù hợp! Vui lòng nhập chính xác và đầy đủ thông tin");
+        } else {
+            chuyenTienCungNH();
+        }
+    }//GEN-LAST:event_btnChuyenTienActionPerformed
+
+    private void txtStkNguoiNhanKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStkNguoiNhanKeyReleased
+
+    }//GEN-LAST:event_txtStkNguoiNhanKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnChonTKKH;
+    private javax.swing.JButton btnChuyenTien;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupNguonTien;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
-    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -830,20 +973,24 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
     private javax.swing.JPanel jPSoDu;
     private javax.swing.JPanel jPSoTienChuyen;
     private javax.swing.JPanel jPTKNguoiNhan;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JLabel lbHoTenKHGui;
+    private javax.swing.JLabel lbHoTenKHNhan;
+    private javax.swing.JLabel lbMaTKKHGui;
+    private javax.swing.JLabel lbMaTKKHNhan;
     private javax.swing.JLabel lbTitle;
-    private javax.swing.JTextField txtAccNameReceive;
-    private javax.swing.JTextField txtAccNameSend;
-    private javax.swing.JTextField txtAccNumReceive;
-    private javax.swing.JTextField txtAccNumSend;
-    private javax.swing.JTextField txtPINCode1;
-    private javax.swing.JPasswordField txtSoDu;
+    private javax.swing.JPasswordField pwfMaPINNV;
+    private javax.swing.JPasswordField pwfSoDu;
+    private javax.swing.JRadioButton rdbTienMat;
+    private javax.swing.JRadioButton rdbTienTK;
+    private javax.swing.JTextField txtNoiDung;
+    private javax.swing.JTextField txtSTKGui;
+    private javax.swing.JTextField txtSTKNhan;
     private javax.swing.JTextField txtSoTienChuyen;
-    private javax.swing.JTextField txtSoTienNap1;
     private javax.swing.JTextField txtStkNguoiNhan;
+    private javax.swing.JTextField txtTenTKGui;
+    private javax.swing.JTextField txtTenTKNhan;
     // End of variables declaration//GEN-END:variables
 }

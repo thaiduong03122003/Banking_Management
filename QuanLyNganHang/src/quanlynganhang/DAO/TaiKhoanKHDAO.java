@@ -7,13 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 
 public class TaiKhoanKHDAO {
 
-    public boolean insert(TaiKhoanKHDTO taiKhoanKH) throws Exception {
-        if (selectByAccountNum(taiKhoanKH.getSoTaiKhoan()) != null) {
-            return false;
+    public int insert(TaiKhoanKHDTO taiKhoanKH) throws Exception {
+        if (selectByAccountNum(taiKhoanKH.getSoTaiKhoan(), 1) != null) {
+            return 0;
         } else {
             String sql = "INSERT INTO tbl_tai_khoan_khach_hang(so_tai_khoan, ten_tai_khoan, mat_khau, ngay_tao_tk, so_du, ma_ngan_hang, ma_loai_tai_khoan, ma_khach_hang, ma_trang_thai, bi_xoa)"
                 + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -27,14 +29,31 @@ public class TaiKhoanKHDAO {
                 java.sql.Date dateNgaySinh = new Date(taiKhoanKH.getNgayTao().getTime());
                 pstmt.setDate(4, dateNgaySinh);
 
-                pstmt.setInt(5, taiKhoanKH.getSoDu());
+                pstmt.setString(5, taiKhoanKH.getSoDu());
                 pstmt.setInt(6, 1);
                 pstmt.setInt(7, taiKhoanKH.getMaLoaiTaiKhoan());
                 pstmt.setInt(8, taiKhoanKH.getMaKhachHang());
-                pstmt.setInt(9, 7);
+                
+                if (taiKhoanKH.getMaLoaiTaiKhoan() == 3) {
+                    pstmt.setInt(9, 6);
+                } else {
+                    pstmt.setInt(9, 7);
+                }
+                
                 pstmt.setInt(10, 0);
 
-                return pstmt.executeUpdate() > 0;
+                pstmt.executeUpdate();
+
+                ResultSet rs = pstmt.getGeneratedKeys();
+
+                if (rs.next()) {
+                    taiKhoanKH.setMaTKKH(rs.getInt(1));
+                }
+
+                return taiKhoanKH.getMaTKKH();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
             }
         }
     }
@@ -56,7 +75,7 @@ public class TaiKhoanKHDAO {
 
         if (selectById(taiKhoanKH.getMaTKKH()).getSoTaiKhoan().equals(taiKhoanKH.getSoTaiKhoan())) {
             return updateExecute(taiKhoanKH);
-        } else if (selectByAccountNum(taiKhoanKH.getSoTaiKhoan()) != null) {
+        } else if (selectByAccountNum(taiKhoanKH.getSoTaiKhoan(), 1) != null) {
             return false;
         } else {
             return updateExecute(taiKhoanKH);
@@ -86,7 +105,7 @@ public class TaiKhoanKHDAO {
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
             pstmt.setInt(1, 1);
-            
+
             List<TaiKhoanKHDTO> list = new ArrayList<>();
 
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -95,7 +114,7 @@ public class TaiKhoanKHDAO {
                     taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
                     taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
                     taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
-                    taiKhoanKH.setSoDu(rs.getInt("so_du"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
                     taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
                     taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
                     taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
@@ -127,8 +146,9 @@ public class TaiKhoanKHDAO {
                     taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
                     taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
                     taiKhoanKH.setMatKhau(rs.getString("mat_khau"));
-                    taiKhoanKH.setSoDu(rs.getInt("so_du"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
                     taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setMaLoaiTaiKhoan(rs.getInt("tkkh.ma_loai_tai_khoan"));
                     taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
                     taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
                     taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
@@ -138,26 +158,113 @@ public class TaiKhoanKHDAO {
                 }
             }
             return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
-
-    public TaiKhoanKHDTO selectByAccountNum(String soTaiKhoan) throws Exception {
-        String sql = "SELECT * FROM tbl_tai_khoan_khach_hang WHERE so_tai_khoan = ? ORDER BY ma_tk_khach_hang DESC LIMIT 1";
+    
+    public List<TaiKhoanKHDTO> selectByMaKH(int maKhachHang) throws Exception {
+        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
+            + " WHERE tkkh.ma_khach_hang = ? AND tkkh.ma_trang_thai = ? AND (tkkh.ma_loai_tai_khoan = ? OR tkkh.ma_loai_tai_khoan = ?)";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-            pstmt.setString(1, soTaiKhoan);
+
+            pstmt.setInt(1, maKhachHang);
+            pstmt.setInt(2, 6);
+            pstmt.setInt(3, 1);
+            pstmt.setInt(4, 2);
+
+            List<TaiKhoanKHDTO> list = new ArrayList<>();
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    TaiKhoanKHDTO taiKhoan = new TaiKhoanKHDTO();
-                    taiKhoan.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
-                    taiKhoan.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
-                    taiKhoan.setMaKhachHang(rs.getInt("ma_khach_hang"));
-                    taiKhoan.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
+                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
+                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
+                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
+                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
+                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
 
-                    return taiKhoan;
+                    list.add(taiKhoanKH);
                 }
             }
+            return list;
+        }
+    }
+    
+    public List<TaiKhoanKHDTO> selectTKVay() throws Exception {
+        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
+            + " WHERE tkkh.ma_loai_tai_khoan = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setInt(1, 4);
+
+            List<TaiKhoanKHDTO> list = new ArrayList<>();
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
+                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
+                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
+                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
+                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
+                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+
+                    list.add(taiKhoanKH);
+                }
+            }
+            return list;
+        }
+    }
+
+    public TaiKhoanKHDTO selectByAccountNum(String soTaiKhoan, int maNganHang) throws Exception {
+        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
+            + " WHERE so_tai_khoan = ? AND ma_ngan_hang = ? ORDER BY ma_tk_khach_hang DESC LIMIT 1";
+        
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            pstmt.setString(1, soTaiKhoan);
+            pstmt.setInt(2, maNganHang);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
+                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
+                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
+                    taiKhoanKH.setMatKhau(rs.getString("mat_khau"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
+                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
+                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
+                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    
+                    return taiKhoanKH;
+                }
+            }
+            
             return null;
         }
     }
@@ -182,7 +289,7 @@ public class TaiKhoanKHDAO {
             conditionalClause.append(" AND tkkh.ma_khach_hang = ?");
             params.add(maKhachHang);
         }
-        
+
         if (maLoaiTaiKhoan != 0) {
             conditionalClause.append(" AND tkkh.ma_loai_tai_khoan = ?");
             params.add(maLoaiTaiKhoan);
@@ -243,5 +350,24 @@ public class TaiKhoanKHDAO {
         }
     }
 
+    public boolean updateMoney(int mataiKhoanKH, String newSoDu) {
+        String sql = "UPDATE tbl_tai_khoan_khach_hang SET so_du = ? WHERE ma_tk_khach_hang = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setString(1, newSoDu);
+
+            pstmt.setInt(2, mataiKhoanKH);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+            return false;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
 }

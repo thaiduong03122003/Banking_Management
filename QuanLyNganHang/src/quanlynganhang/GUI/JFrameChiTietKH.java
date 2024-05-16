@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatLaf;
@@ -18,6 +14,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.DiaChiBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.NhanVienBUS;
@@ -29,10 +26,6 @@ import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JFrameChiTietKH extends javax.swing.JFrame {
 
     private DiaChiBUS diaChiBUS;
@@ -40,13 +33,16 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private KhachHangDTO khachHangDTO;
     private String fileName, newFileName;
+    private int quyenSua, quyenXoa;
 
-    public JFrameChiTietKH(KhachHangDTO khachHang, boolean isEdit) {
+    public JFrameChiTietKH(KhachHangDTO khachHang, boolean isEdit, int quyenSua, int quyenXoa) {
         diaChiBUS = new DiaChiBUS();
         khachHangBUS = new KhachHangBUS();
         khachHangDTO = new KhachHangDTO();
         khachHangDTO = khachHang;
         newFileName = "";
+        this.quyenSua = quyenSua;
+        this.quyenXoa = quyenXoa;
 
         initComponents();
         dienThongTin(khachHang);
@@ -272,7 +268,7 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
         } else {
             khachHang.setGioiTinh("Khác");
         }
-        
+
         if (rdbKhongNo.isSelected()) {
             khachHang.setNoXau(0);
         } else {
@@ -932,16 +928,21 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxPhuongXaItemStateChanged
 
     private void btnSuaThongTinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaThongTinActionPerformed
-        if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
-            doiTrangThaiNhap(true);
-            btnSuaThongTin.setText("Hủy sửa");
+        if (quyenSua == 1) {
+            if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
+                doiTrangThaiNhap(true);
+                btnSuaThongTin.setText("Hủy sửa");
 
+            } else {
+                dienThongTin(khachHangDTO);
+                doiTrangThaiNhap(false);
+                loadAnh(fileName);
+                btnChonAnh.setText("Cập nhật ảnh đại diện");
+                btnSuaThongTin.setText("Sửa thông tin");
+            }
         } else {
-            dienThongTin(khachHangDTO);
-            doiTrangThaiNhap(false);
-            loadAnh(fileName);
-            btnChonAnh.setText("Cập nhật ảnh đại diện");
-            btnSuaThongTin.setText("Sửa thông tin");
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_btnSuaThongTinActionPerformed
 
@@ -992,13 +993,18 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChonAnhActionPerformed
 
     private void btnXoaNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaNoActionPerformed
-        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nợ cho khách hàng này?") == JOptionPane.YES_OPTION) {
-            if (khachHangBUS.xoaNoXau(khachHangDTO.getMaKH())) {
-                MessageBox.showInformationMessage(null, "", "Xóa nợ thành công!");
-                khachHangDTO = khachHangBUS.getKhachHangById(khachHangDTO.getMaKH(), 0);
-                dienThongTin(khachHangDTO);
-                doiTrangThaiNhap(false);
+        if (quyenXoa == 1) {
+            if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nợ cho khách hàng này?") == JOptionPane.YES_OPTION) {
+                if (khachHangBUS.xoaNoXau(khachHangDTO.getMaKH())) {
+                    MessageBox.showInformationMessage(null, "", "Xóa nợ thành công!");
+                    khachHangDTO = khachHangBUS.getKhachHangById(khachHangDTO.getMaKH(), 0);
+                    dienThongTin(khachHangDTO);
+                    doiTrangThaiNhap(false);
+                }
             }
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_btnXoaNoActionPerformed
 

@@ -64,7 +64,7 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
                 }
             }
         } else {
-            MessageBox.showErrorMessage(null, "Mã không trùng khớp!");
+            MessageBox.showErrorMessage(null, "Mật khẩu không trùng khớp!");
             return false;
         }
 

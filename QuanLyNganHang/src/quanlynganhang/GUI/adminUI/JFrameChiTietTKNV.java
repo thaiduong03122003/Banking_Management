@@ -13,6 +13,7 @@ import java.text.ParseException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
 import quanlynganhang.BUS.validation.FormatDate;
@@ -28,11 +29,13 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     private NhanVienBUS nhanVienBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private String fileName;
-    private int maTaiKhoanNV;
+    private int quyenSua, quyenXoa, maTaiKhoanNV;
     private TaiKhoanNVDTO taiKhoanNV;
     private JDialogDoiMatKhau capLaiMatKhau;
 
-    public JFrameChiTietTKNV(int maTaiKhoanNV, boolean isEdit) {
+    public JFrameChiTietTKNV(int maTaiKhoanNV, boolean isEdit, int quyenSua, int quyenXoa) {
+        this.quyenSua = quyenSua;
+        this.quyenXoa = quyenXoa;
         nhanVienBUS = new NhanVienBUS();
         taiKhoanNVBUS = new TaiKhoanNVBUS();
         this.maTaiKhoanNV = maTaiKhoanNV;
@@ -232,8 +235,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         lbGhiChu = new javax.swing.JLabel();
         jPanel21 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         btnResetPassword = new javax.swing.JButton();
         btnResetPIN = new javax.swing.JButton();
         btnDoiTrangThai = new javax.swing.JButton();
@@ -830,10 +831,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton1.setText("Xem lịch sử thực hiện giao dịch");
-
-        jButton2.setText("Xem lịch sử thao tác");
-
         btnResetPassword.setText("Cấp lại mật khẩu");
         btnResetPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -862,21 +859,15 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
             .addGroup(jPanel21Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
                     .addComponent(btnResetPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnResetPIN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDoiTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnDoiTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel21Layout.setVerticalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel21Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(76, Short.MAX_VALUE)
                 .addComponent(btnResetPassword)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnResetPIN)
@@ -986,18 +977,23 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTenChucVuActionPerformed
 
     private void btnSuaThongTinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaThongTinActionPerformed
-        if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
-            if (!lbGhiChu.getText().isEmpty()) {
-                MessageBox.showErrorMessage(null, "Không thể sửa thông tin tài khoản của nhân viên đã bị xóa!");
-                return;
+        if (quyenSua == 1) {
+            if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
+                if (!lbGhiChu.getText().isEmpty()) {
+                    MessageBox.showErrorMessage(null, "Không thể sửa thông tin tài khoản của nhân viên đã bị xóa!");
+                    return;
+                } else {
+                    doiTrangThaiNhap(true);
+                    btnSuaThongTin.setText("Hủy sửa");
+                }
             } else {
-                doiTrangThaiNhap(true);
-                btnSuaThongTin.setText("Hủy sửa");
+                dienThongTin();
+                doiTrangThaiNhap(false);
+                btnSuaThongTin.setText("Sửa thông tin");
             }
         } else {
-            dienThongTin();
-            doiTrangThaiNhap(false);
-            btnSuaThongTin.setText("Sửa thông tin");
+            ChiaQuyenBUS.showError();
+            return;
         }
     }//GEN-LAST:event_btnSuaThongTinActionPerformed
 
@@ -1084,8 +1080,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     private javax.swing.JButton btnResetPIN;
     private javax.swing.JButton btnResetPassword;
     private javax.swing.JButton btnSuaThongTin;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
