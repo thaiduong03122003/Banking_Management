@@ -70,6 +70,45 @@ public class GiaoDichDAO {
             }
         }
     }
+    //==================17/9
+      public List<GiaoDichDTO> getMaxGiaoDich() throws Exception {
+        String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.*,Max(so_tien) FROM tbl_giao_dich gd"
+            + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien"
+            + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
+            + " LEFT JOIN tbl_trang_thai tt ON gd.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_giao_dich lgd ON gd.ma_loai_giao_dich = lgd.ma_loai_giao_dich";
+            
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            List<GiaoDichDTO> list = new ArrayList<>();
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    GiaoDichDTO giaoDich = new GiaoDichDTO();
+                    giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
+                    giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
+                    giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
+                    giaoDich.setSoTien(rs.getString("so_tien"));
+                    giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
+                    giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
+                    giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
+                    giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
+                    giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
+                    giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+
+                    list.add(giaoDich);
+                     return list;
+                }
+            }
+            return list;
+        }
+    }
+    //===================17/9
 
     public List<GiaoDichDTO> selectAll() throws Exception {
         String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"

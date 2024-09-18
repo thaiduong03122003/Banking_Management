@@ -28,18 +28,21 @@ public class Application extends javax.swing.JFrame {
     private TaiKhoanNVDTO taiKhoanNV;
     private Menu menu;
     private boolean isAdmin = false;
-    
+    public static  Menu instanceMenu;
     public Application(TaiKhoanNVDTO taiKhoanNV) {
+       
         kiemTraDuLieuBUS = new KiemTraDuLieuBUS(taiKhoanNV);
         this.taiKhoanNV = taiKhoanNV;
         initComponents();
         setLocationRelativeTo(null);
         menu = new Menu(isAdmin);
+         instanceMenu = menu;
         menuBUS = new DieuHuongMenuBUS(menu, isAdmin, this, null, taiKhoanNV);
         mainForm = new MainForm(menu, menuBUS, taiKhoanNV, this, null);
         setContentPane(mainForm);
         
         kiemTraDuLieuBUS.chayKiemTraTinhTrangGTK();
+        kiemTraDuLieuBUS.chayKiemTraTinhTrangVayVon();
     }
 
     public void showForm(Component component, String titleName) {

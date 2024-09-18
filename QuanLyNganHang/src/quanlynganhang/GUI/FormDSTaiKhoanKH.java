@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +46,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
 
         initComponents();
         thietLapChucVu();
-        txtSearchTaiKhoanKH.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã tài khoản/ mã khách hàng cần tìm...");
+        txtSearchTaiKhoanKH.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập số tài khoản/ tên tài khoản/ tên khách hàng cần tìm...");
         loadDSTaiKhoanKH(false, null);
         jTableDSTaiKhoanKH.getTableHeader().setReorderingAllowed(false);
     }
@@ -62,7 +63,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = isFiltered ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, list) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, null);
+        Object[][] dataModel = isFiltered ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, null, false);
         currentList = isFiltered ? list : taiKhoanKHBUS.getDSTaiKhoanKH();
         String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
         model.setDataVector(dataModel, title);
@@ -72,6 +73,18 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
 
     private void sapXep(int columnIndex, boolean isAscending) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSTaiKhoanKH.getModel());
+
+        if (columnIndex == 0) { 
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Integer int1 = Integer.parseInt(o1.toString());
+                    Integer int2 = Integer.parseInt(o2.toString());
+                    return int1.compareTo(int2);
+                }
+            });
+        }
+
         jTableDSTaiKhoanKH.setRowSorter(sorter);
 
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
@@ -183,6 +196,11 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         });
 
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -400,18 +418,25 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         try {
-            if (boloc != null) {
-                listLocTaiKhoanKH = boloc.listKHBoLoc();
-                if (listLocTaiKhoanKH == null) {
-                    MessageBox.showErrorMessage(null, "Không có tài khoản khách hàng nào!");
-                    boloc = null;
-                    loadDSTaiKhoanKH(false, null);
-                } else {
-                    loadDSTaiKhoanKH(isFiltered, currentList);
-                }
-            } else {
-                loadDSTaiKhoanKH(false, null);
-            }
+//            if (boloc != null) {
+//                listLocTaiKhoanKH = boloc.listKHBoLoc();
+//                if (listLocTaiKhoanKH == null) {
+//                    MessageBox.showErrorMessage(null, "Không có tài khoản khách hàng nào!");
+//                    boloc = null;
+//                    loadDSTaiKhoanKH(false, null);
+//                } else {
+//                    loadDSTaiKhoanKH(isFiltered, currentList);
+//                }
+//            } else {
+//                loadDSTaiKhoanKH(false, null);
+//            }
+            List<TaiKhoanKHDTO> dsTKKH = taiKhoanKHBUS.getDSTaiKhoanKH();
+            loadDSTaiKhoanKH( false, dsTKKH);
+
+            DefaultTableModel model = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
+            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+            jTableDSTaiKhoanKH.setRowSorter(sorter);
+            sorter.setRowFilter(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -537,15 +562,15 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmDongTKActionPerformed
 
     private void txtSearchTaiKhoanKHKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchTaiKhoanKHKeyReleased
-        DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
-        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-        jTableDSTaiKhoanKH.setRowSorter(obj1);
-
-        int[] searchColumns = {0, 1, 2, 3};
-
-        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchTaiKhoanKH.getText(), searchColumns);
-
-        obj1.setRowFilter(rowFilter);
+//        DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
+//        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+//        jTableDSTaiKhoanKH.setRowSorter(obj1);
+//
+//        int[] searchColumns = {0, 1, 2, 3};
+//
+//        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchTaiKhoanKH.getText(), searchColumns);
+//
+//        obj1.setRowFilter(rowFilter);
     }//GEN-LAST:event_txtSearchTaiKhoanKHKeyReleased
 
     private void cbxSapXepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSapXepItemStateChanged
@@ -559,10 +584,10 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                 sapXep(0, false);
                 break;
             case "Ngày tạo tăng dần":
-                sapXep(4, true);
+                sapXep(5, true);
                 break;
             case "Ngày tạo giảm dần":
-                sapXep(4, false);
+                sapXep(5, false);
                 break;
             default:
                 TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSTaiKhoanKH.getModel());
@@ -603,6 +628,19 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
             return;
         }
     }//GEN-LAST:event_btnNhapFileActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
+        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+        jTableDSTaiKhoanKH.setRowSorter(obj1);
+
+        int[] searchColumns = { 1, 2, 3};
+
+        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchTaiKhoanKH.getText(), searchColumns);
+
+        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

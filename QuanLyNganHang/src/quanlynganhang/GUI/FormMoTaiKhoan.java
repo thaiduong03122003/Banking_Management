@@ -55,6 +55,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     private String soTienGD;
     private ChucVuDTO chucVu;
     private int quyenThem1, quyenThem2, quyenSua, quyenXoa;
+    private boolean isAutoGenerateSTK;
 
     public FormMoTaiKhoan(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
         this.taiKhoanNV = taiKhoanNV;
@@ -66,6 +67,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         diaChiBUS = new DiaChiBUS();
         fileName = "no_image.png";
         minSoDu = new BigInteger("100000");
+        isAutoGenerateSTK = false;
 
         initComponents();
         initCustomUI();
@@ -131,6 +133,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
         cbxQuanHuyen.setEnabled(false);
         cbxPhuongXa.setEnabled(false);
+        btnAutoGenerateSTK.setEnabled(false);
     }
 
     private void loadTinhThanh(String selectedName) {
@@ -411,6 +414,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             pwfMatKhau.setEnabled(true);
             txtTien.setEnabled(true);
             btnTaoTK.setEnabled(true);
+            btnAutoGenerateSTK.setEnabled(true);
         }
     }
 
@@ -421,10 +425,21 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
         taiKhoanKH.setMaKhachHang(Integer.parseInt(lbMaKH.getText()));
 
-        if (InputValidation.kiemTraCCCD(txtSoTaiKhoan.getText())) {
-            taiKhoanKH.setSoTaiKhoan(txtSoTaiKhoan.getText());
+        if (!isAutoGenerateSTK) {
+            if (InputValidation.kiemTraCCCD(txtSoTaiKhoan.getText())) {
+                taiKhoanKH.setSoTaiKhoan(txtSoTaiKhoan.getText());
+            } else {
+                error.append("\nSố tài khoản không hợp lệ");
+            }
         } else {
-            error.append("\nSố tài khoản không hợp lệ");
+            String soTaiKhoanMoi = taiKhoanKHBUS.taoSTKTuDong();
+
+            if (soTaiKhoanMoi.equals("")) {
+                error.append("\nSố tài khoản bị lỗi");
+            } else {
+                txtSoTaiKhoan.setText(soTaiKhoanMoi);
+                taiKhoanKH.setSoTaiKhoan(soTaiKhoanMoi);
+            }
         }
 
         taiKhoanKH.setTenTaiKhoan(txtTenTaiKhoan.getText());
@@ -536,6 +551,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         jPAccNum = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         txtSoTaiKhoan = new javax.swing.JTextField();
+        btnAutoGenerateSTK = new javax.swing.JButton();
         jPAccType = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         cbxLoaiTaiKhoan = new javax.swing.JComboBox<>();
@@ -883,12 +899,13 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                         .addGap(12, 12, 12)
                         .addComponent(jPIdCardNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPCustomerInfoLayout.createSequentialGroup()
+                                .addComponent(jPPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPCustomerInfoLayout.setVerticalGroup(
@@ -954,6 +971,13 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
         txtSoTaiKhoan.setEnabled(false);
 
+        btnAutoGenerateSTK.setText("Tạo STK tự động");
+        btnAutoGenerateSTK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAutoGenerateSTKActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPAccNumLayout = new javax.swing.GroupLayout(jPAccNum);
         jPAccNum.setLayout(jPAccNumLayout);
         jPAccNumLayout.setHorizontalGroup(
@@ -961,10 +985,13 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             .addGroup(jPAccNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPAccNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSoTaiKhoan)
+                    .addGroup(jPAccNumLayout.createSequentialGroup()
+                        .addComponent(txtSoTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAutoGenerateSTK, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))
                     .addGroup(jPAccNumLayout.createSequentialGroup()
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 115, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPAccNumLayout.setVerticalGroup(
@@ -973,7 +1000,9 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtSoTaiKhoan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPAccNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtSoTaiKhoan, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(btnAutoGenerateSTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1371,8 +1400,21 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnTaoTKActionPerformed
 
+    private void btnAutoGenerateSTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutoGenerateSTKActionPerformed
+        if (btnAutoGenerateSTK.getText().equals("Tạo số tài khoản tự động")) {
+            txtSoTaiKhoan.setEnabled(false);
+            isAutoGenerateSTK = true;
+            btnAutoGenerateSTK.setText("Hủy tạo tự động");
+        } else {
+            txtSoTaiKhoan.setEnabled(true);
+            isAutoGenerateSTK = false;
+            btnAutoGenerateSTK.setText("Tạo số tài khoản tự động");
+        }
+    }//GEN-LAST:event_btnAutoGenerateSTKActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAutoGenerateSTK;
     private javax.swing.JButton btnChonKH;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.JButton btnLuuKH;

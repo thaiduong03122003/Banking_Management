@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import quanlynganhang.BUS.GiaoDichBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
@@ -19,7 +20,7 @@ import quanlynganhang.GUI.adminUI.JFrameChiTietTKNV;
 import quanlynganhang.GUI.adminUI.JFrameThemTKNV2;
 import quanlynganhang.GUI.model.message.MessageBox;
 import quanlynganhang.GUI.FormMoTheTinDung;
-
+import quanlynganhang.GUI.adminUI.FormThongKe;
 public class JDialogTableChonItem extends javax.swing.JDialog {
 
     private String loaiDanhSach;
@@ -27,6 +28,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
     private KhachHangBUS khachHangBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private TaiKhoanKHBUS taiKhoanKHBUS;
+    private  GiaoDichBUS giaoDichBUS;
     private JFrameThemTKNV2 themTKNV2;
     private FormPhanQuyen phanQuyen;
     private FormMoTaiKhoan moTaiKhoan;
@@ -55,7 +57,18 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         switchTable();
     }
+      public JDialogTableChonItem(java.awt.Frame parent, boolean modal,FormThongKe fromThongKe, String title, String loaiDanhSach) {
+        super(parent, modal);
+        this.phanQuyen = phanQuyen;
+        this.loaiDanhSach = loaiDanhSach;
+        this.setTitle(title);
 
+        initComponents();
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+
+        switchTable();
+    }
     public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormPhanQuyen phanQuyen, String title, String loaiDanhSach) {
         super(parent, modal);
         this.phanQuyen = phanQuyen;
@@ -81,7 +94,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         switchTable();
     }
-
+   
     public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormNapTien napTien, String title, String loaiDanhSach) {
         super(parent, modal);
         this.napTien = napTien;
@@ -237,7 +250,69 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         switchTable();
     }
+     // ========================================17/9
+      public void loadDSRutTien() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
 
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 3);
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+        public void loadDSNapTien() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 4);
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+ 
+           public void loadDSGuiTietKiem() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 5);
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+             public void loadDSGiaoDich() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, giaoDichBUS.getDSGiaoDich(),0);
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+               public void loadDSMaxGiiaoDich() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = giaoDichBUS.doiSangObjectMaxGiaoDich();
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+                  public void loadDSVayVon() throws Exception {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
+
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null,7);
+         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+// ===========================================17/9
     public void loadDSNhanVien() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
@@ -275,7 +350,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, null);
+        Object[][] dataModel = taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, null, true);
         String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
         model.setDataVector(dataModel, title);
 
@@ -310,7 +385,33 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
             } else if (loaiDanhSach.equals("DSTKV")) {
                 taiKhoanKHBUS = new TaiKhoanKHBUS();
                 loadDSTaiKhoanVay();
-            } else {
+            }//======================17/9
+             else if (loaiDanhSach.equals("DSRT")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSRutTien();
+            } 
+               else if (loaiDanhSach.equals("DSNT")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSNapTien();
+            } 
+               else if (loaiDanhSach.equals("DSGTK")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSGuiTietKiem();
+            } 
+               else if (loaiDanhSach.equals("DSGD")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSGiaoDich();
+            } 
+              else if (loaiDanhSach.equals("DSMGD")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSMaxGiiaoDich();
+            } 
+                else if (loaiDanhSach.equals("DSVV")) {
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSVayVon();
+            } 
+            
+            else {
                 MessageBox.showErrorMessage(null, "Không tìm thấy danh sách được chọn!");
             }
         } catch (Exception e) {

@@ -40,6 +40,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     private BigInteger soDu, soTien, minSoTienGD, maxSoTienGD;
     private TaiKhoanNVDTO taiKhoanNV;
     private TaiKhoanKHDTO taiKhoanNguon;
+    private boolean isAutoGenerateSTK;
 
     public FormMoTKTietKiem(TaiKhoanNVDTO taiKhoanNV) {
         this.taiKhoanNV = taiKhoanNV;
@@ -53,9 +54,11 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         maKhachHang = 0;
         maTaiKhoanKH = 0;
         maKyHan = 0;
+        isAutoGenerateSTK = true;
 
         initComponents();
         initCustomUI();
+        chxSTKTuDongActionPerformed(null);
         loadKyHan();
     }
 
@@ -196,7 +199,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             error.append("Vui lòng chọn tài khoản nguồn!");
         }
 
-        if (txtTienTietKiem.getText().isEmpty() || cbxKyHan.getSelectedIndex() == 0 || cbxGiaHan.getSelectedIndex() == 0 || cbxNhanLai.getSelectedIndex() == 0 || txtSTKTietKiem.getText().isEmpty() || txtTenTKTietKiem.getText().isEmpty()) {
+        if (txtTienTietKiem.getText().isEmpty() || cbxKyHan.getSelectedIndex() == 0 || cbxGiaHan.getSelectedIndex() == 0 || cbxNhanLai.getSelectedIndex() == 0 || (txtSTKTietKiem.getText().isEmpty() && !isAutoGenerateSTK) || txtTenTKTietKiem.getText().isEmpty()) {
             error.append("Vui lòng nhập đầu đủ thông tin");
         } else {
             try {
@@ -217,10 +220,22 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         GiaoDichDTO giaoDich = new GiaoDichDTO();
         TaiKhoanKHDTO taiKhoanGTK = new TaiKhoanKHDTO();
         TietKiemDTO tietKiem = new TietKiemDTO();
-        if (InputValidation.kiemTraCCCD(txtSTKTietKiem.getText())) {
-            taiKhoanGTK.setSoTaiKhoan(txtSTKTietKiem.getText());
+        
+        if (isAutoGenerateSTK) {
+            String soTaiKhoanMoi = taiKhoanKHBUS.taoSTKTuDong();
+
+            if (soTaiKhoanMoi.equals("")) {
+                error.append("\nSố tài khoản bị lỗi");
+            } else {
+                txtSTKTietKiem.setText(soTaiKhoanMoi);
+                taiKhoanGTK.setSoTaiKhoan(soTaiKhoanMoi);
+            }
         } else {
-            error.append("\nSố tài khoản không hợp lệ");
+            if (InputValidation.kiemTraCCCD(txtSTKTietKiem.getText())) {
+                taiKhoanGTK.setSoTaiKhoan(txtSTKTietKiem.getText());
+            } else {
+                error.append("\nSố tài khoản không hợp lệ");
+            }
         }
 
         if (error.isEmpty()) {
@@ -232,7 +247,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             taiKhoanGTK.setMaNganHang(1);
             taiKhoanGTK.setMaTrangThai(6);
             taiKhoanGTK.setNgayTao(fDate.getToday());
-            
+
             if (isTienTK) {
                 giaoDich.setMaTaiKhoanKH(taiKhoanNguon.getMaTKKH());
                 tietKiem.setMaTaiKhoanNguonTien(taiKhoanNguon.getMaTKKH());
@@ -326,6 +341,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jPStkTietKiem = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         txtSTKTietKiem = new javax.swing.JTextField();
+        chxSTKTuDong = new javax.swing.JCheckBox();
         jPTenTKTietKiem = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         txtTenTKTietKiem = new javax.swing.JTextField();
@@ -646,6 +662,14 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
         jLabel11.setText("Số tài khoản tiết kiệm");
 
+        chxSTKTuDong.setSelected(true);
+        chxSTKTuDong.setText("Tạo số tài khoản tự động");
+        chxSTKTuDong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxSTKTuDongActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPStkTietKiemLayout = new javax.swing.GroupLayout(jPStkTietKiem);
         jPStkTietKiem.setLayout(jPStkTietKiemLayout);
         jPStkTietKiemLayout.setHorizontalGroup(
@@ -654,7 +678,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPStkTietKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtSTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chxSTKTuDong, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPStkTietKiemLayout.setVerticalGroup(
@@ -664,7 +689,9 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chxSTKTuDong)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
@@ -679,10 +706,10 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             .addGroup(jPTenTKTietKiemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPTenTKTietKiemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtTenTKTietKiem)
                     .addGroup(jPTenTKTietKiemLayout.createSequentialGroup()
                         .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 47, Short.MAX_VALUE)))
+                        .addGap(0, 17, Short.MAX_VALUE))
+                    .addComponent(txtTenTKTietKiem))
                 .addContainerGap())
         );
         jPTenTKTietKiemLayout.setVerticalGroup(
@@ -692,7 +719,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtTenTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPCustomerInfoLayout = new javax.swing.GroupLayout(jPCustomerInfo);
@@ -728,8 +755,8 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(jPStkTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPTenTKTietKiem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addComponent(jPTenTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPCustomerInfoLayout.setVerticalGroup(
@@ -759,11 +786,10 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jPStkTietKiem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(31, 31, 31))
-                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addComponent(jPTenTKTietKiem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPStkTietKiem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPFooterCus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -902,7 +928,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addGroup(jPAccNameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPAccNameLayout.createSequentialGroup()
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 70, Short.MAX_VALUE))
+                        .addGap(0, 94, Short.MAX_VALUE))
                     .addComponent(txtEmail))
                 .addContainerGap())
         );
@@ -1105,7 +1131,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbLoaiTK, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)))
+                        .addComponent(lbLoaiTK, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPTKInfoLayout.setVerticalGroup(
@@ -1264,6 +1290,17 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_cbxKyHanItemStateChanged
 
+    private void chxSTKTuDongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxSTKTuDongActionPerformed
+        if (chxSTKTuDong.isSelected()) {
+            txtSTKTietKiem.setText("");
+            txtSTKTietKiem.setEnabled(false);
+            isAutoGenerateSTK = true;
+        } else {
+            txtSTKTietKiem.setEnabled(true);
+            isAutoGenerateSTK = false;
+        }
+    }//GEN-LAST:event_chxSTKTuDongActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonKH;
@@ -1274,6 +1311,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cbxKyHan;
     private javax.swing.JComboBox<String> cbxNhanLai;
     private javax.swing.JComboBox<String> cbxTKNguon;
+    private javax.swing.JCheckBox chxSTKTuDong;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;

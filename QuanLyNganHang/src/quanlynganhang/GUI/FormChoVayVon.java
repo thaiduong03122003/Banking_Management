@@ -32,6 +32,8 @@ import quanlynganhang.DTO.VayVonDTO;
 import quanlynganhang.GUI.adminUI.JDialogXemAnh;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
+import java.util.List;
+import java.util.ArrayList;
 
 public class FormChoVayVon extends javax.swing.JPanel {
 
@@ -262,7 +264,19 @@ public class FormChoVayVon extends javax.swing.JPanel {
             } else {
                 MessageBox.showErrorMessage(null, "Người này không thể vay vì đang có nợ xấu!");
             }
-        }   
+            List<TaiKhoanKHDTO> taiKhoanKHDTO = taiKhoanKHBUS.getTaiKhoanKHByMaKH(maKhachHang);
+            for(TaiKhoanKHDTO taiKhoan:taiKhoanKHDTO){
+                System.out.println(taiKhoan.getTenLoaiTaiKhoan());
+                if(taiKhoan.getTenLoaiTaiKhoan().equals("Tài khoản cá nhân")){
+                    txtSTKVay.setText(taiKhoan.getSoTaiKhoan());
+                    txtTenTKVay.setText(taiKhoan.getTenKhachHang());
+                    return;
+                }
+            }
+            MessageBox.showErrorMessage(null, "Người này không có tài khoản cá nhân để vay vốn!");
+            txtSTKVay.setText("");
+            txtTenTKVay.setText("");
+        }
     }
     
     private void taoTaiKhoanVV() {
@@ -274,7 +288,6 @@ public class FormChoVayVon extends javax.swing.JPanel {
         
             try {
                 soTien = new BigInteger(txtTienVay.getText());
-                BigInteger thuNhap = new BigInteger(txtThuNhap.getText());
                 
                 if (isVayTinChap == 1) {
                     if (soTien.compareTo(maxGD1) > 0 || soTien.compareTo(minGD) < 0) {
@@ -558,6 +571,8 @@ public class FormChoVayVon extends javax.swing.JPanel {
         );
         jLabel11.setText("Số tài khoản vay vốn");
 
+        txtSTKVay.setEnabled(false);
+
         javax.swing.GroupLayout jPStkTietKiemLayout = new javax.swing.GroupLayout(jPStkTietKiem);
         jPStkTietKiem.setLayout(jPStkTietKiemLayout);
         jPStkTietKiemLayout.setHorizontalGroup(
@@ -583,6 +598,8 @@ public class FormChoVayVon extends javax.swing.JPanel {
         jLabel12.setIcon(new FlatSVGIcon("quanlynganhang/icon/account_name_label.svg")
         );
         jLabel12.setText("Tên tài khoản vay vốn");
+
+        txtTenTKVay.setEnabled(false);
 
         javax.swing.GroupLayout jPTenTKTietKiemLayout = new javax.swing.GroupLayout(jPTenTKTietKiem);
         jPTenTKTietKiem.setLayout(jPTenTKTietKiemLayout);

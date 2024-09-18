@@ -3,10 +3,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package quanlynganhang.GUI.model.headerbar;
-
+import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.Application;
 import quanlynganhang.GUI.FormPopupProfile;
@@ -14,12 +32,16 @@ import quanlynganhang.GUI.JFrameThongBao;
 import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.glasspanepopup.DefaultOption;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
+import quanlynganhang.GUI.model.menubar.PopupSubMenu;
 
 public class HeaderBar extends javax.swing.JPanel {
     private Application app;
     private ApplicationAdmin appAdmin;
     private TaiKhoanNVDTO taiKhoanNV;
-    
+     private JPopupMenu suggestionPopup; // Popup lưu trữ ngoài phương thức
+    private JList<String> suggestionList; // JList lưu trữ ngoài phương thức
+    private ArrayList<String> suggestions; // Danh sách gợi ý tĩnh hoặc động
+
     public HeaderBar(TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin) {
         this.app = app;
         this.appAdmin = appAdmin;
@@ -40,8 +62,193 @@ public class HeaderBar extends javax.swing.JPanel {
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tìm kiếm trong menu");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
         txtSearch.setVisible(false);
+        // Khởi tạo danh sách gợi ý và popup
+        suggestions = new ArrayList<>();
+        suggestions.add("Trang chủ");
+        suggestions.add("Thống kê");
+        suggestions.add("Danh sách khách hàng");
+        suggestions.add("Danh sách thẻ ngân hàng");
+        suggestions.add("Danh sách tài khoản KH");
+        suggestions.add("Danh sách giao dịch");
+        suggestions.add("Mở tài khoản ngân hàng");
+        suggestions.add("Mở Thẻ ghi nợ");
+        suggestions.add("Mở thẻ tín dụng");
+        suggestions.add("Nạp tiền vào tài khoản");
+        suggestions.add("Rút tiền khỏi tài khoản");
+        suggestions.add("Chuyển tiền cùng ngân hàng");
+        suggestions.add("Chuyển tiền liên ngân hàng");
+        suggestions.add("Cho vay");
+        suggestions.add("Trả khoản vay");
+         suggestions.add("Gủi tiết kiệm");
+
+        suggestionPopup = new JPopupMenu();
+        suggestionList = new JList<>();
+        suggestionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(suggestionList);
+        scrollPane.setPreferredSize(new Dimension(200, 100));
+        suggestionPopup.add(scrollPane);
+
+        setEventInputSearch();
     }
+         public void setEventInputSearch() {
+              txtSearch.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if(txtSearch.getText().length()==0) return;
+                searchByText(txtSearch.getText().trim());
+            }
+        }
+    });
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                onTextChange();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                onTextChange();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                onTextChange();
+            }
+
+            public void onTextChange() {
+                String value = txtSearch.getText().trim();
+
+                // Nếu không có văn bản nào trong txtSearch, ẩn popup
+                if (value.isEmpty()) {
+                    suggestionPopup.setVisible(false);
+                    return;
+                }
+
+                // Lọc các gợi ý dựa trên văn bản nhập vào
+                ArrayList<String> filteredSuggestions = new ArrayList<>();
+                for (String suggestion : suggestions) {
+                    if (suggestion.toLowerCase().contains(value.toLowerCase())) {
+                        filteredSuggestions.add(suggestion);
+                    }
+                }
+
+                // Nếu không có gợi ý phù hợp, ẩn popup
+                if (filteredSuggestions.isEmpty()) {
+                    suggestionPopup.setVisible(false);
+                    return;
+                }
+
+                // Cập nhật JList với gợi ý mới
+                suggestionList.setListData(filteredSuggestions.toArray(new String[0]));
+
+                // Hiển thị popup ngay dưới JTextField
+                suggestionPopup.setLocation(txtSearch.getLocationOnScreen().x, txtSearch.getLocationOnScreen().y + txtSearch.getHeight());
+                suggestionPopup.setVisible(true);
+       
+                // Xử lý sự kiện khi người dùng chọn gợi ý
+                suggestionList.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 1) {
+                            String selectedValue = suggestionList.getSelectedValue();
+                            if (selectedValue != null) {
+                                txtSearch.setText(selectedValue);
+                                suggestionPopup.setVisible(false); 
+                                 searchByText(txtSearch.getText().trim());
+                            }
+                           
+                           
+                        }
+                    }
+                });
+            }
+        });
+
+        // Đảm bảo khi người dùng click vào một khu vực khác, popup sẽ ẩn đi
+        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                suggestionPopup.setVisible(false);
+            }
+        });
+    }
+private void searchByText(String text) {
     
+     String temp = Normalizer.normalize(text, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+      System.out.println("search:"+pattern.matcher(temp).replaceAll("").toLowerCase());
+    switch (pattern.matcher(temp).replaceAll("").toLowerCase()) {
+        
+        case "trang chu":
+            Application.instanceMenu.setSelectedMenu(0, 1);
+            break;
+        case "thong ke":
+            Application.instanceMenu.setSelectedMenu(1, 1);
+            break;
+        case "danh sach khach hang":
+            System.out.println("df");
+            Application.instanceMenu.setSelectedMenu(2, 1);
+            break;
+        case "danh sach the ngan hang":
+            System.out.println("conl");
+            Application.instanceMenu.setSelectedMenu(4,1 );
+            break;
+        case "danh sach tai khoan kh":
+            Application.instanceMenu.setSelectedMenu(3, 1);
+            break;
+        case "danh sach giao dich":
+            Application.instanceMenu.setSelectedMenu(5, 1);
+            break;
+         case "mo tai khoan ngan hang":
+            Application.instanceMenu.setSelectedMenu(6, 1);
+            break; 
+          case "mo the ghi no":
+            Application.instanceMenu.setSelectedMenu(7, 1);
+            break; 
+            case "mo the tin dung":
+            Application.instanceMenu.setSelectedMenu(7, 2);
+            break; 
+              case "nap tien vao tai khoan":
+            Application.instanceMenu.setSelectedMenu(8, 1);
+            break; 
+             case "rut tien khoi tai khoan":
+            Application.instanceMenu.setSelectedMenu(8, 2);
+            break; 
+              case "chuyen tien cung ngan hang":
+            Application.instanceMenu.setSelectedMenu(8, 3);
+            break; 
+              case "chuyen tien lien ngan hang":
+            Application.instanceMenu.setSelectedMenu(8, 4);
+            break; 
+              case "cho vay":
+            Application.instanceMenu.setSelectedMenu(10, 1);
+            break; 
+              case "tra khoan vay":
+            Application.instanceMenu.setSelectedMenu(10, 2);
+            break; 
+              case "gui tiet kiem":
+            Application.instanceMenu.setSelectedMenu(9, 1);
+            break; 
+        default:
+            System.out.println("value: " + text + " not found");
+           JOptionPane.showMessageDialog(
+        null, 
+        "<html>"+ "Không tìm thấy kết quả nào cho: " + text+"</html>", 
+        "Kết quả tìm kiếm", 
+        JOptionPane.INFORMATION_MESSAGE
+    );
+            break;
+           
+    }
+    txtSearch.setText("");
+}
+
+       
+      
+       
+       
+
     public void setTitleName(String name) {
         lbPanelName.setText(name);
     }
@@ -55,6 +262,8 @@ public class HeaderBar extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jPHeaderBar = new javax.swing.JPanel();
         jpWelcome = new javax.swing.JPanel();
         lbPanelName = new javax.swing.JLabel();
@@ -66,6 +275,19 @@ public class HeaderBar extends javax.swing.JPanel {
         btnMessage = new javax.swing.JButton();
         btnMail = new javax.swing.JButton();
         btnShowSearch = new javax.swing.JButton();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
 
         setPreferredSize(new java.awt.Dimension(1017, 74));
         addAncestorListener(new javax.swing.event.AncestorListener() {
@@ -99,6 +321,14 @@ public class HeaderBar extends javax.swing.JPanel {
                 .addComponent(lbPanelName)
                 .addContainerGap(17, Short.MAX_VALUE))
         );
+
+        txtSearch.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                txtSearchInputMethodTextChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpSearchLayout = new javax.swing.GroupLayout(jpSearch);
         jpSearch.setLayout(jpSearchLayout);
@@ -270,6 +500,10 @@ public class HeaderBar extends javax.swing.JPanel {
 
     }//GEN-LAST:event_btnShowSearchActionPerformed
 
+    private void txtSearchInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtSearchInputMethodTextChanged
+    
+    }//GEN-LAST:event_txtSearchInputMethodTextChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnMail;
@@ -278,6 +512,8 @@ public class HeaderBar extends javax.swing.JPanel {
     private javax.swing.JButton btnProfile;
     private javax.swing.JButton btnShowSearch;
     private javax.swing.JPanel jPHeaderBar;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JPanel jpProfile;
     private javax.swing.JPanel jpSearch;
     private javax.swing.JPanel jpWelcome;

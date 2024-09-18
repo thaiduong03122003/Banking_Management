@@ -27,7 +27,7 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
         giaoDichBUS = new GiaoDichBUS();
         listLocGiaoDich = new ArrayList<>();
         initComponents();
-        txtSearchDS.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã giao dịch hoặc mã khách hàng / nhân viên cần tìm...");
+        txtSearchDS.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập số tài khoản giao dịch cần tìm...");
         loadDSGiaoDich(false, null);
         jTableDSGD.getTableHeader().setReorderingAllowed(false);
     }
@@ -108,6 +108,11 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
         });
 
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -313,34 +318,54 @@ public class FormDSGiaoDich extends javax.swing.JPanel {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         try {
-            if (boloc != null) {
-                listLocGiaoDich = boloc.listGDBoLoc();
-                if (listLocGiaoDich == null) {
-                    MessageBox.showErrorMessage(null, "Không có giao dịch nào!");
-                    boloc = null;
-                    loadDSGiaoDich(false, null);
-                } else {
-                    loadDSGiaoDich(isFiltered, currentList);
-                }
-            } else {
-                loadDSGiaoDich(false, null);
-            }
+//            if (boloc != null) {
+//                listLocGiaoDich = boloc.listGDBoLoc();
+//                if (listLocGiaoDich == null) {
+//                    MessageBox.showErrorMessage(null, "Không có giao dịch nào!");
+//                    boloc = null;
+//                    loadDSGiaoDich(false, null);
+//                } else {
+//                    loadDSGiaoDich(isFiltered, currentList);
+//                }
+//            } else {
+//                loadDSGiaoDich(false, null);
+//            }
+            List<GiaoDichDTO> dsGD = giaoDichBUS.getDSGiaoDich();
+            loadDSGiaoDich(false, dsGD);
+
+            DefaultTableModel model = (DefaultTableModel) jTableDSGD.getModel();
+            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+            jTableDSGD.setRowSorter(sorter);
+            sorter.setRowFilter(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_btnReloadActionPerformed
 
     private void txtSearchDSKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchDSKeyReleased
+//        DefaultTableModel obj = (DefaultTableModel) jTableDSGD.getModel();
+//        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+//        jTableDSGD.setRowSorter(obj1);
+//
+//        int[] searchColumns = {0, 1, 2, 6};
+//
+//        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchDS.getText(), searchColumns);
+//
+//        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_txtSearchDSKeyReleased
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
         DefaultTableModel obj = (DefaultTableModel) jTableDSGD.getModel();
         TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
         jTableDSGD.setRowSorter(obj1);
 
-        int[] searchColumns = {0, 1, 2, 6};
+        int[] searchColumns = {1};
 
         RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchDS.getText(), searchColumns);
 
         obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_txtSearchDSKeyReleased
+    }//GEN-LAST:event_jButton5ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

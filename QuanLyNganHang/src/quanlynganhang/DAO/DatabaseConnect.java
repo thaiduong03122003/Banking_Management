@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class DatabaseConnect {
     public static final String DB_NAME = "banking_db";
     public static final String USERNAME = "root";
-    public static final String PASSWORD = "031203";
+    public static final String PASSWORD = "";
     
     public static Connection getConnection() throws ClassNotFoundException, SQLException {
         return getConnection(DB_NAME, USERNAME, PASSWORD);

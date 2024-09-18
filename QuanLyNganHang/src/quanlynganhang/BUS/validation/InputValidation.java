@@ -14,11 +14,11 @@ public class InputValidation {
             return false;
         }
 
-        if (name.length() < 2 || name.length() > 50) {
+        if (name.length() <= 0 || name.length() > 50) {
             return false;
         }
 
-        if (!Pattern.matches("[\\p{L}\\s]{2,}'?", name)) {
+        if (!Pattern.matches("[\\p{L}\\s]{1,}'?", name)) {
             return false;
         }
 

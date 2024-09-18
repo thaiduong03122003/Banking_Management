@@ -2,6 +2,7 @@ package quanlynganhang.GUI;
 
 import quanlynganhang.GUI.adminUI.*;
 import quanlynganhang.GUI.*;
+import java.util.Comparator;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.event.WindowAdapter;
@@ -51,7 +52,7 @@ public class FormDSKhachHang extends javax.swing.JPanel {
         listLocKH = new ArrayList<>();
         initComponents();
         thietLapChucVu();
-        txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / họ tên / mã căn cước của khách hàng cần tìm...");
+        txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập họ tên / mã căn cước của khách hàng cần tìm...");
         biXoa = 0;
         loadDSKhachHang(biXoa, false, null);
         jTableDSKH.getTableHeader().setReorderingAllowed(false);
@@ -79,6 +80,18 @@ public class FormDSKhachHang extends javax.swing.JPanel {
 
     private void sapXep(int columnIndex, boolean isAscending) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSKH.getModel());
+
+        if (columnIndex == 0) { 
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Integer int1 = Integer.parseInt(o1.toString());
+                    Integer int2 = Integer.parseInt(o2.toString());
+                    return int1.compareTo(int2);
+                }
+            });
+        }
+
         jTableDSKH.setRowSorter(sorter);
 
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
@@ -87,6 +100,7 @@ public class FormDSKhachHang extends javax.swing.JPanel {
         sorter.setSortKeys(sortKeys);
         sorter.sort();
     }
+
 
     private boolean xuatFile() {
         try {
@@ -184,6 +198,11 @@ public class FormDSKhachHang extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
 
+        txtSearchNV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSearchNVActionPerformed(evt);
+            }
+        });
         txtSearchNV.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtSearchNVKeyReleased(evt);
@@ -191,6 +210,11 @@ public class FormDSKhachHang extends javax.swing.JPanel {
         });
 
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -221,10 +245,15 @@ public class FormDSKhachHang extends javax.swing.JPanel {
             }
         });
 
-        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã khách hàng tăng dần", "Mã khách hàng giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
         cbxSapXep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxSapXepItemStateChanged(evt);
+            }
+        });
+        cbxSapXep.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxSapXepActionPerformed(evt);
             }
         });
 
@@ -419,18 +448,25 @@ public class FormDSKhachHang extends javax.swing.JPanel {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         try {
-            if (boloc != null) {
-                listLocKH = boloc.listNVBoLoc();
-                if (listLocKH == null) {
-                    MessageBox.showErrorMessage(null, "Không có khách hàng nào!");
-                    boloc = null;
-                    loadDSKhachHang(biXoa, false, null);
-                } else {
-                    loadDSKhachHang(biXoa, isFiltered, listLocKH);
-                }
-            } else {
-                loadDSKhachHang(biXoa, false, null);
-            }
+//            if (boloc != null) {
+//                listLocKH = boloc.listNVBoLoc();
+//                if (listLocKH == null) {
+//                    MessageBox.showErrorMessage(null, "Không có khách hàng nào!");
+//                    boloc = null;
+//                    loadDSKhachHang(biXoa, false, null);
+//                } else {
+//                    loadDSKhachHang(biXoa, isFiltered, listLocKH);
+//                }
+//            } else {
+//                loadDSKhachHang(biXoa, false, null);
+//            }
+            List<KhachHangDTO> dsKH = khachHangBUS.getDSKhachHang(biXoa);
+            loadDSKhachHang(biXoa, false, dsKH);
+
+            DefaultTableModel model = (DefaultTableModel) jTableDSKH.getModel();
+            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+            jTableDSKH.setRowSorter(sorter);
+            sorter.setRowFilter(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -599,15 +635,15 @@ public class FormDSKhachHang extends javax.swing.JPanel {
     }//GEN-LAST:event_ppmXoaActionPerformed
 
     private void txtSearchNVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchNVKeyReleased
-        DefaultTableModel obj = (DefaultTableModel) jTableDSKH.getModel();
-        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-        jTableDSKH.setRowSorter(obj1);
-
-        int[] searchColumns = {0, 1, 2, 8};
-
-        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchNV.getText(), searchColumns);
-
-        obj1.setRowFilter(rowFilter);
+//        DefaultTableModel obj = (DefaultTableModel) jTableDSKH.getModel();
+//        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+//        jTableDSKH.setRowSorter(obj1);
+//
+//        int[] searchColumns = {0, 1, 2, 8};
+//
+//        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchNV.getText(), searchColumns);
+//
+//        obj1.setRowFilter(rowFilter);
     }//GEN-LAST:event_txtSearchNVKeyReleased
 
     private void cbxSapXepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSapXepItemStateChanged
@@ -666,6 +702,29 @@ public class FormDSKhachHang extends javax.swing.JPanel {
         }
 
     }//GEN-LAST:event_btnNhapFileActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        String keyword = txtSearchNV.getText();
+
+        DefaultTableModel obj = (DefaultTableModel) jTableDSKH.getModel();
+        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+        jTableDSKH.setRowSorter(obj1);
+
+        int[] searchColumns = {1, 2, 8};
+
+        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(keyword, searchColumns);
+
+        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void cbxSapXepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxSapXepActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxSapXepActionPerformed
+
+    private void txtSearchNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchNVActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSearchNVActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

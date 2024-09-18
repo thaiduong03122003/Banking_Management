@@ -1,6 +1,7 @@
 package quanlynganhang.BUS;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,51 @@ public class VayVonBUS {
         } catch (Exception ex) {
             ex.printStackTrace();
             return 0;
+        }
+    }
+    
+    public List<VayVonDTO> getDSVayVon() {
+        try {
+            return vayVonDAO.selectAll();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public VayVonDTO getById(int maVayVon) {
+        try {
+            return vayVonDAO.selectById(maVayVon);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public VayVonDTO getByMaTKKH(int maTKKH) {
+        try {
+            return vayVonDAO.selectByMaTKKH(maTKKH);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public boolean updateDuNo(int maVayVon, String duNo, int maTrangThai) {
+        try {
+            return vayVonDAO.updateDuNo(maVayVon, duNo, maTrangThai);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean updateNgayTraNo(int maVayVon, Date ngayTraNo) {
+        try {
+            return vayVonDAO.updateNgayTraNo(maVayVon, ngayTraNo);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
         }
     }
 }

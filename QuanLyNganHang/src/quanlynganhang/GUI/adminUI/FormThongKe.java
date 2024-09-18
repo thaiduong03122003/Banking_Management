@@ -1,23 +1,30 @@
 package quanlynganhang.GUI.adminUI;
 
 import quanlynganhang.GUI.*;
-import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.text.NumberFormat;
+import java.util.Locale;
+import javax.swing.JOptionPane;
 import quanlynganhang.BUS.ThongKeBUS;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
-
+import  quanlynganhang.GUI.JDialogTableChonItem;
 public class FormThongKe extends javax.swing.JPanel {
 
     private ThongKeBUS thongKeBUS;
+    public  static FormThongKe instance = null;
     public FormThongKe(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
+        instance = this;
         thongKeBUS = new ThongKeBUS();
         initComponents();
         loadSoLieu();
     }
 
     private void loadSoLieu() {
+           Locale localeVN = new Locale("vi", "VN");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+
+        
         txtTongKH.setText("" + thongKeBUS.tongKH());
         txtTongTKKH.setText("" + thongKeBUS.tongTKKH());
         txtTongNV.setText("" + thongKeBUS.tongNV());
@@ -107,13 +114,11 @@ public class FormThongKe extends javax.swing.JPanel {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jSeparator3 = new javax.swing.JSeparator();
-        jButton3 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtTongTienRut = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jSeparator6 = new javax.swing.JSeparator();
-        jButton6 = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         txtTongTienNap = new javax.swing.JLabel();
@@ -142,7 +147,6 @@ public class FormThongKe extends javax.swing.JPanel {
         jPanel21 = new javax.swing.JPanel();
         jPanel22 = new javax.swing.JPanel();
         jSeparator10 = new javax.swing.JSeparator();
-        jButton10 = new javax.swing.JButton();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
         txtTongTien = new javax.swing.JLabel();
@@ -161,6 +165,11 @@ public class FormThongKe extends javax.swing.JPanel {
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -631,16 +640,6 @@ public class FormThongKe extends javax.swing.JPanel {
 
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        jButton3.setText("<html><i>Xem chi tiết</i></html>");
-        jButton3.setBorderPainted(false);
-        jButton3.setContentAreaFilled(false);
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
         jLabel7.setIcon(new FlatSVGIcon("quanlynganhang/icon/all_rut_tien.svg")
         );
 
@@ -655,9 +654,6 @@ public class FormThongKe extends javax.swing.JPanel {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator3)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -679,21 +675,10 @@ public class FormThongKe extends javax.swing.JPanel {
                         .addComponent(txtTongTienRut)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28))
         );
 
         jPanel5.add(jPanel6);
-
-        jButton6.setText("<html><i>Xem chi tiết</i></html>");
-        jButton6.setBorderPainted(false);
-        jButton6.setContentAreaFilled(false);
-        jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
 
         jLabel16.setIcon(new FlatSVGIcon("quanlynganhang/icon/all_gui_tien.svg")
         );
@@ -709,9 +694,6 @@ public class FormThongKe extends javax.swing.JPanel {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator6)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -733,8 +715,7 @@ public class FormThongKe extends javax.swing.JPanel {
                         .addComponent(txtTongTienNap)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28))
         );
 
         jPanel5.add(jPanel8);
@@ -859,47 +840,47 @@ public class FormThongKe extends javax.swing.JPanel {
             }
         });
 
-        jLabel25.setIcon(new FlatSVGIcon("quanlynganhang/icon/all_vay_tin_dung.svg")
-        );
+        // jLabel25.setIcon(new FlatSVGIcon("quanlynganhang/icon/all_vay_tin_dung.svg")
+        // );
 
-        jLabel26.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel26.setText("Tổng số tiền vay tín dụng");
+        // jLabel26.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        // jLabel26.setText("Tổng số tiền vay tín dụng");
 
-        jLabel27.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel27.setText("600");
+        // jLabel27.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        // jLabel27.setText("600");
 
-        javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
-        jPanel18.setLayout(jPanel18Layout);
-        jPanel18Layout.setHorizontalGroup(
-            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator9)
-            .addGroup(jPanel18Layout.createSequentialGroup()
-                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jPanel18Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel18Layout.setVerticalGroup(
-            jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel18Layout.createSequentialGroup()
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel27)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        // javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
+        // jPanel18.setLayout(jPanel18Layout);
+        // jPanel18Layout.setHorizontalGroup(
+        //     jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        //     .addComponent(jSeparator9)
+        //     .addGroup(jPanel18Layout.createSequentialGroup()
+        //         .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+        //         .addGap(0, 0, Short.MAX_VALUE))
+        //     .addGroup(jPanel18Layout.createSequentialGroup()
+        //         .addGap(26, 26, 26)
+        //         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+        //         .addGap(18, 18, 18)
+        //         .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        //             .addComponent(jLabel27, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        //             .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE))
+        //         .addContainerGap())
+        // );
+        // jPanel18Layout.setVerticalGroup(
+        //     jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        //     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel18Layout.createSequentialGroup()
+        //         .addContainerGap()
+        //         .addGroup(jPanel18Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        //             .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+        //             .addGroup(jPanel18Layout.createSequentialGroup()
+        //                 .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+        //                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        //                 .addComponent(jLabel27)))
+        //         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        //         .addComponent(jSeparator9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        //         .addGap(5, 5, 5)
+        //         .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        // );
 
         jPanel5.add(jPanel18);
 
@@ -930,16 +911,6 @@ public class FormThongKe extends javax.swing.JPanel {
 
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        jButton10.setText("<html><i>Xem chi tiết</i></html>");
-        jButton10.setBorderPainted(false);
-        jButton10.setContentAreaFilled(false);
-        jButton10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
-            }
-        });
-
         jLabel28.setIcon(new FlatSVGIcon("quanlynganhang/icon/tien_trong_kho.svg")
         );
 
@@ -954,9 +925,6 @@ public class FormThongKe extends javax.swing.JPanel {
         jPanel22Layout.setHorizontalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator10)
-            .addGroup(jPanel22Layout.createSequentialGroup()
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel22Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -978,8 +946,7 @@ public class FormThongKe extends javax.swing.JPanel {
                         .addComponent(txtTongTien)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28))
         );
 
         jPanel21.add(jPanel22);
@@ -1009,74 +976,124 @@ public class FormThongKe extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+                JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách khách hàng", "DSKH");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách tài khoản khách hàng", "DSTKKH");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+         JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách nhân viên", "DSNV");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+                 // TODO add your handling code here:DSTKNV
+                    JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách tài khoản nhân viên", "DSTKNV");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
-
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+          if(thongKeBUS.tongGiaoDich()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt giao dịch nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "giao dịch lớn nhất", "DSMGD");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+       if(thongKeBUS.tongVV()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt giao dịch nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách vay vốn", "DSVV");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton9ActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton10ActionPerformed
-
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        // TODO add your handling code here:
+         if(thongKeBUS.tongLuotRut()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt rút nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách rút tiền", "DSRT");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton14ActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        // TODO add your handling code here:
+         if(thongKeBUS.tongLuotNap()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt nạp nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách nạp tiền", "DSNT");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
-        // TODO add your handling code here:
+        if(thongKeBUS.tongGTK()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt gửi nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách gửi tiền tiết kiệm", "DSGTK");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
-        // TODO add your handling code here:
+        if(thongKeBUS.tongGTK()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt giao dịch nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách giao dịch", "DSGD");
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
     }//GEN-LAST:event_jButton17ActionPerformed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+                    // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;

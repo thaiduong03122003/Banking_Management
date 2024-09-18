@@ -23,7 +23,7 @@ public class Menu extends JPanel {
 
     boolean isAdmin;
     private String menuItems[][];
-
+   
     private void setContentMenu() {
         if (isAdmin) {
             menuItems = new String[][] {
@@ -58,7 +58,7 @@ public class Menu extends JPanel {
                 {"Chuyển tiền", "Nạp tiền vào tài khoản", "Rút tiền khỏi tài khoản", "Chuyển cùng ngân hàng", "Chuyển liên ngân hàng"},
                 {"Gửi tiết kiệm"},
                 {"Vay vốn", "Cho vay vốn", "Trả khoản vay"},
-                {"Thanh toán tín dụng"}
+                // {"Thanh toán tín dụng"}
             };
         }
     }
@@ -99,12 +99,13 @@ public class Menu extends JPanel {
 
     public Menu(boolean isAdmin) {
         this.isAdmin = isAdmin;
+         
         setContentMenu();
         init();
         setInfoMenuHeader();
         System.out.println("Gia tri cua isAdmin: " + this.isAdmin);
     }
-
+ 
     private void init() {
         setLayout(new MenuLayout());
         putClientProperty(FlatClientProperties.STYLE, ""
@@ -182,11 +183,15 @@ public class Menu extends JPanel {
         return lbTitle;
     }
 
-    public void setSelectedMenu(int index, int subIndex) {
+    public  void setSelectedMenu(int index, int subIndex) {
         runEvent(index, subIndex);
+         setSelected(index, subIndex);
+     
+         
+       
     }
 
-    protected void setSelected(int index, int subIndex) {
+    public void setSelected(int index, int subIndex) {
         int size = panelMenu.getComponentCount();
         for (int i = 0; i < size; i++) {
             Component com = panelMenu.getComponent(i);
@@ -209,6 +214,7 @@ public class Menu extends JPanel {
         if (!menuAction.isCancel()) {
             setSelected(index, subIndex);
         }
+         
     }
 
     public void addMenuEvent(MenuEvent event) {

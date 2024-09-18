@@ -15,7 +15,7 @@ public class TietKiemDAO {
 
         if (tietKiem.getMaTaiKhoanNguonTien() == 0) {
             String sql = "INSERT INTO tbl_dich_vu_gui_tiet_kiem(ma_ky_han, hinh_thuc_gia_han, hinh_thuc_nhan_lai, ma_tk_khach_hang, ngay_mo_tk, ngay_nhan_lai, so_tien_goc, ma_trang_thai)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 

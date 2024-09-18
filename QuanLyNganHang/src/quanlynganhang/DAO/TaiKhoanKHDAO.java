@@ -100,6 +100,41 @@ public class TaiKhoanKHDAO {
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
             + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
             + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
+            + " WHERE ma_ngan_hang = ? AND kh.bi_xoa = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            pstmt.setInt(1, 1);
+            pstmt.setInt(2, 0);
+
+            List<TaiKhoanKHDTO> list = new ArrayList<>();
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
+                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
+                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
+                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
+                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
+                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+
+                    list.add(taiKhoanKH);
+                }
+            }
+            return list;
+        }
+    }
+    
+    public List<TaiKhoanKHDTO> selectAllIncludeDeleted() throws Exception {
+        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
             + " WHERE ma_ngan_hang = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -164,6 +199,27 @@ public class TaiKhoanKHDAO {
         }
     }
     
+    public String getNewSTK() throws Exception {
+        String sql = "SELECT * FROM tbl_tai_khoan_khach_hang WHERE ma_ngan_hang = ? ORDER BY ma_tk_khach_hang DESC LIMIT 1";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            pstmt.setInt(1, 1);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    String sotaiKhoan = (rs.getString("so_tai_khoan"));
+                    
+                    return sotaiKhoan;
+                }
+            }
+            return "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    
     public List<TaiKhoanKHDTO> selectByMaKH(int maKhachHang) throws Exception {
         String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -200,6 +256,8 @@ public class TaiKhoanKHDAO {
             return list;
         }
     }
+    
+    
     
     public List<TaiKhoanKHDTO> selectTKVay() throws Exception {
         String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"

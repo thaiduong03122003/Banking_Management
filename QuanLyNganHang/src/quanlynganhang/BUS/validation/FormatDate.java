@@ -58,6 +58,10 @@ public class FormatDate {
     }
 
     public Date addMonth(Date date, int nOMonths) {
+        if (nOMonths == 0) {
+            return date;
+        }
+        
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try {
             LocalDate localDate1 = LocalDate.parse(toString(date), format);
@@ -88,6 +92,22 @@ public class FormatDate {
             long daysBetween = ChronoUnit.DAYS.between(localDate2, localDate1);
 
             return (int) daysBetween;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    
+    public int tinhSoThang(Date date1, Date date2) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+
+            LocalDate localDate1 = LocalDate.parse(toString(date1), format);
+            LocalDate localDate2 = LocalDate.parse(toString(date2), format);
+
+            long monthsBetween = ChronoUnit.MONTHS.between(localDate2, localDate1);
+
+            return (int) monthsBetween;
         } catch (Exception e) {
             e.printStackTrace();
             return 0;

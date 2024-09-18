@@ -351,7 +351,7 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
         btnChonAnh = new javax.swing.JButton();
         btnSuaThongTin = new javax.swing.JButton();
         btnCapNhat = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnXoaKH = new javax.swing.JButton();
         ptbAnh = new quanlynganhang.GUI.model.picturebox.PictureBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -752,9 +752,14 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 0, 51));
-        jButton4.setText("Xóa");
+        btnXoaKH.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnXoaKH.setForeground(new java.awt.Color(255, 0, 51));
+        btnXoaKH.setText("Xóa");
+        btnXoaKH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaKHActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -769,7 +774,7 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnSuaThongTin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnCapNhat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnXoaKH, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(36, 36, 36)))
                 .addContainerGap())
         );
@@ -783,7 +788,7 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCapNhat)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4)
+                .addComponent(btnXoaKH)
                 .addGap(18, 18, 18))
         );
 
@@ -1008,6 +1013,31 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnXoaNoActionPerformed
 
+    private void btnXoaKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaKHActionPerformed
+        if (khachHangDTO.getBiXoa() == 1) {
+            MessageBox.showErrorMessage(null, "Khách hàng này không tồn tại!");
+            return;
+        }
+        
+        int maKH = Integer.parseInt(txtMaKH.getText());
+        
+        if (maKH != 0) {
+                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa khách hàng này?") == JOptionPane.YES_OPTION) {
+                        boolean isDelete = khachHangBUS.deleteKhachHang(maKH);
+                        if (isDelete == false) {
+                            MessageBox.showErrorMessage(null, "Xóa khách hàng thất bại!");
+                            return;
+                        } else {
+                            MessageBox.showInformationMessage(null, "", "Xóa khách hàng thành công");
+                            
+                            btnXoaKH.setEnabled(false);
+                        }
+                    } else {
+                        return;
+                    }
+                }
+    }//GEN-LAST:event_btnXoaKHActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1031,11 +1061,11 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupNoXau;
     private javax.swing.JButton btnSuaThongTin;
+    private javax.swing.JButton btnXoaKH;
     private javax.swing.JButton btnXoaNo;
     private javax.swing.JComboBox<String> cbxPhuongXa;
     private javax.swing.JComboBox<String> cbxQuanHuyen;
     private javax.swing.JComboBox<String> cbxTinhThanh;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

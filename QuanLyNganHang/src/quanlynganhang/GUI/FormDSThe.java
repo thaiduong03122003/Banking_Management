@@ -9,9 +9,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.RowFilter;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -45,7 +48,7 @@ public class FormDSThe extends javax.swing.JPanel {
 
         initComponents();
 
-        txtSearchThe.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / số thẻ hoặc mã khách hàng cần tìm...");
+        txtSearchThe.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập số thẻ hoặc tên khách hàng cần tìm...");
         loadDSThe(false, null);
         jTableDSThe.getTableHeader().setReorderingAllowed(false);
     }
@@ -62,6 +65,29 @@ public class FormDSThe extends javax.swing.JPanel {
         model.setDataVector(dataModel, title);
 
         jTableDSThe.setDefaultEditor(Object.class, null);
+    }
+    
+    private void sapXep(int columnIndex, boolean isAscending) {
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSThe.getModel());
+
+        if (columnIndex == 0) { 
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Integer int1 = Integer.parseInt(o1.toString());
+                    Integer int2 = Integer.parseInt(o2.toString());
+                    return int1.compareTo(int2);
+                }
+            });
+        }
+
+        jTableDSThe.setRowSorter(sorter);
+
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(columnIndex, isAscending ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+
+        sorter.setSortKeys(sortKeys);
+        sorter.sort();
     }
 
     private boolean xuatFile() {
@@ -165,6 +191,11 @@ public class FormDSThe extends javax.swing.JPanel {
         });
 
         jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -195,7 +226,17 @@ public class FormDSThe extends javax.swing.JPanel {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã thẻ tăng dần", "Mã thẻ giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -377,18 +418,25 @@ public class FormDSThe extends javax.swing.JPanel {
 
     private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
         try {
-            if (boloc != null) {
-                listLocThe = boloc.listTheBoLoc();
-                if (listLocThe == null) {
-                    MessageBox.showErrorMessage(null, "Không có thẻ nào!");
-                    boloc = null;
-                    loadDSThe(false, null);
-                } else {
-                    loadDSThe(isFiltered, currentList);
-                }
-            } else {
-                loadDSThe(false, null);
-            }
+//            if (boloc != null) {
+//                listLocThe = boloc.listTheBoLoc();
+//                if (listLocThe == null) {
+//                    MessageBox.showErrorMessage(null, "Không có thẻ nào!");
+//                    boloc = null;
+//                    loadDSThe(false, null);
+//                } else {
+//                    loadDSThe(isFiltered, currentList);
+//                }
+//            } else {
+//                loadDSThe(false, null);
+//            }
+            List<TheATMDTO> dsThe = theATMBUS.getDSThe();
+            loadDSThe(false, dsThe);
+
+            DefaultTableModel model = (DefaultTableModel) jTableDSThe.getModel();
+            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+            jTableDSThe.setRowSorter(sorter);
+            sorter.setRowFilter(null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -521,16 +569,58 @@ public class FormDSThe extends javax.swing.JPanel {
     }//GEN-LAST:event_mnuDoiTrangThaiActionPerformed
 
     private void txtSearchTheKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchTheKeyReleased
+//        DefaultTableModel obj = (DefaultTableModel) jTableDSThe.getModel();
+//        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
+//        jTableDSThe.setRowSorter(obj1);
+//
+//        int[] searchColumns = {0};
+//
+//        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchThe.getText(), searchColumns);
+//
+//        obj1.setRowFilter(rowFilter);
+    }//GEN-LAST:event_txtSearchTheKeyReleased
+ 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
         DefaultTableModel obj = (DefaultTableModel) jTableDSThe.getModel();
         TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
         jTableDSThe.setRowSorter(obj1);
 
-        int[] searchColumns = {0};
+        int[] searchColumns = {1,2};
 
         RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchThe.getText(), searchColumns);
 
         obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_txtSearchTheKeyReleased
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        // TODO add your handling code here:
+        String selectedSortOption = (String) jComboBox1.getSelectedItem();
+
+        switch (selectedSortOption) {
+            case "Mã thẻ tăng dần":
+                sapXep(0, true);
+                break;
+            case "Mã thẻ giảm dần":
+                sapXep(0, false);
+                break;
+            case "Tên theo thứ tự A -> Z":
+                System.out.println("quanlynganhang.GUI.FormDSThe.cbxSapXepItemStateChanged()");
+                sapXep(2, true);
+                break;
+            case "Tên theo thứ tự Z -> A":
+                sapXep(2, false);
+                break;
+            default:
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSThe.getModel());
+                jTableDSThe.setRowSorter(null);
+                break;
+        }
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

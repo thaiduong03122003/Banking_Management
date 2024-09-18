@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -39,7 +40,16 @@ public class TaiKhoanKHBUS {
             return null;
         }
     }
-    
+
+    public List<TaiKhoanKHDTO> getAllDSTaiKhoanKH() {
+        try {
+            return taiKhoanKHDAO.selectAllIncludeDeleted();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<TaiKhoanKHDTO> getDSTaiKhoanNguon(int maKhachHang) {
         try {
             return taiKhoanKHDAO.selectByMaKH(maKhachHang);
@@ -48,7 +58,7 @@ public class TaiKhoanKHBUS {
             return null;
         }
     }
-    
+
     private List<TaiKhoanKHDTO> getDSTaiKhoanVay() {
         try {
             return taiKhoanKHDAO.selectTKVay();
@@ -58,13 +68,18 @@ public class TaiKhoanKHBUS {
         }
     }
 
-    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, List<TaiKhoanKHDTO> listTaiKhoanKH) {
+    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, List<TaiKhoanKHDTO> listTaiKhoanKH, boolean isBiXoa) {
         List<TaiKhoanKHDTO> list = new ArrayList<>();
 
         if (isFiltered) {
             list = listTaiKhoanKH;
         } else {
-            list = getDSTaiKhoanKH();
+            if (isBiXoa) {
+                list = getDSTaiKhoanKH();
+            } else {
+                list = getAllDSTaiKhoanKH();
+            }
+
         }
 
         FormatDate fDate = new FormatDate();
@@ -84,7 +99,7 @@ public class TaiKhoanKHBUS {
         }
         return data;
     }
-    
+
     public Object[][] doiSangObjectTaiKhoanVay() {
         List<TaiKhoanKHDTO> list = getDSTaiKhoanVay();
 
@@ -104,7 +119,7 @@ public class TaiKhoanKHBUS {
         }
         return data;
     }
-    
+
     public Map<Integer, String> convertListTKNguonToMap(int maKhachHang) {
         List<TaiKhoanKHDTO> list = getDSTaiKhoanNguon(maKhachHang);
         if (list == null) {
@@ -113,12 +128,12 @@ public class TaiKhoanKHBUS {
 
         Map<Integer, String> map = new HashMap<>();
         for (TaiKhoanKHDTO taiKhoanKH : list) {
-            map.put(taiKhoanKH.getMaTKKH(), taiKhoanKH.getSoTaiKhoan()+ " - " + taiKhoanKH.getTenLoaiTaiKhoan());
+            map.put(taiKhoanKH.getMaTKKH(), taiKhoanKH.getSoTaiKhoan() + " - " + taiKhoanKH.getTenLoaiTaiKhoan());
         }
 
         return map;
     }
-    
+
     public Integer getIdFromSTKNguon(String tenTKNguon, int maKhachHang) {
         Map<Integer, String> map = new HashMap<>();
         map = convertListTKNguonToMap(maKhachHang);
@@ -133,7 +148,7 @@ public class TaiKhoanKHBUS {
 
     public int addTaiKhoanKH(TaiKhoanKHDTO taiKhoanKH) {
         try {
-            
+
             return taiKhoanKHDAO.insert(taiKhoanKH);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -167,13 +182,31 @@ public class TaiKhoanKHBUS {
             return null;
         }
     }
-    
+
+    public TaiKhoanKHDTO getTaiKhoanKHBySTK(String soTK) {
+        try {
+            return taiKhoanKHDAO.selectByAccountNum(soTK, 1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     public TaiKhoanKHDTO getTaiKhoanKHBySTK(String sotaiKhoan, int maNganHang) {
         try {
             return taiKhoanKHDAO.selectByAccountNum(sotaiKhoan, maNganHang);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
+        }
+    }
+
+    private String getNewSTK() {
+        try {
+            return taiKhoanKHDAO.getNewSTK();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
         }
     }
 
@@ -278,6 +311,38 @@ public class TaiKhoanKHBUS {
                 }
                 return list;
             }
+        }
+    }
+
+    public String taoSTKTuDong() {
+        String soTaiKhoan = getNewSTK();
+
+        if (soTaiKhoan.equals("")) {
+            return "";
+        }
+
+        BigInteger newSTK = new BigInteger(soTaiKhoan);
+
+        boolean flag = true;
+        int count = 1;
+        while (flag) {
+            newSTK = newSTK.add(new BigInteger("" + count));
+
+            if (getTaiKhoanKHBySTK(newSTK.toString()) != null) {
+                count++;
+            } else {
+                flag = false;
+            }
+        }
+        return newSTK.toString();
+    }
+
+    public List<TaiKhoanKHDTO> getTaiKhoanKHByMaKH(int maTaiKhoanKH) {
+        try {
+            return taiKhoanKHDAO.selectByMaKH(maTaiKhoanKH);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
     }
 }

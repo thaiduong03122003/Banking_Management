@@ -14,6 +14,14 @@ public class FormTrangChu extends javax.swing.JPanel {
         initComponents();
         jPBody.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
+        jPTinTuc.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$HeaderBar.background;");
+        jPGhiChu.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$HeaderBar.background;");
+        jPLich.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$HeaderBar.background;");
+        jPGhiChu2.putClientProperty(FlatClientProperties.STYLE, ""
+            + "background:$HeaderBar.background;");
         slideshow1.initSlideshow(new Slide1(), new Slide2(), new Slide3());
         
     }
@@ -28,7 +36,7 @@ public class FormTrangChu extends javax.swing.JPanel {
     private void initComponents() {
 
         jPBody = new javax.swing.JPanel();
-        jPSubMenu = new javax.swing.JPanel();
+        jPLich = new javax.swing.JPanel();
         jPTodo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -36,7 +44,7 @@ public class FormTrangChu extends javax.swing.JPanel {
         jCheckBox3 = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         slideshow1 = new quanlynganhang.GUI.model.slider.Slideshow();
-        jPanel2 = new javax.swing.JPanel();
+        jPTinTuc = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -44,8 +52,8 @@ public class FormTrangChu extends javax.swing.JPanel {
         jPanel5 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
+        jPGhiChu2 = new javax.swing.JPanel();
+        jPGhiChu = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
@@ -56,7 +64,7 @@ public class FormTrangChu extends javax.swing.JPanel {
 
         jPBody.setBackground(new java.awt.Color(102, 102, 102));
 
-        jPSubMenu.setBackground(new java.awt.Color(51, 204, 255));
+        jPLich.setBackground(new java.awt.Color(51, 204, 255));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Việc cần làm ");
@@ -94,18 +102,18 @@ public class FormTrangChu extends javax.swing.JPanel {
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPSubMenuLayout = new javax.swing.GroupLayout(jPSubMenu);
-        jPSubMenu.setLayout(jPSubMenuLayout);
-        jPSubMenuLayout.setHorizontalGroup(
-            jPSubMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPSubMenuLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPLichLayout = new javax.swing.GroupLayout(jPLich);
+        jPLich.setLayout(jPLichLayout);
+        jPLichLayout.setHorizontalGroup(
+            jPLichLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPLichLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPTodo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPSubMenuLayout.setVerticalGroup(
-            jPSubMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPSubMenuLayout.createSequentialGroup()
+        jPLichLayout.setVerticalGroup(
+            jPLichLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPLichLayout.createSequentialGroup()
                 .addGap(192, 192, 192)
                 .addComponent(jPTodo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -122,7 +130,7 @@ public class FormTrangChu extends javax.swing.JPanel {
             .addComponent(slideshow1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
         );
 
-        jPanel2.setBackground(new java.awt.Color(56, 204, 255));
+        jPTinTuc.setBackground(new java.awt.Color(56, 204, 255));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -182,23 +190,23 @@ public class FormTrangChu extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPTinTucLayout = new javax.swing.GroupLayout(jPTinTuc);
+        jPTinTuc.setLayout(jPTinTucLayout);
+        jPTinTucLayout.setHorizontalGroup(
+            jPTinTucLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPTinTucLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPTinTucLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPTinTucLayout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPTinTucLayout.setVerticalGroup(
+            jPTinTucLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPTinTucLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -208,11 +216,11 @@ public class FormTrangChu extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(51, 204, 255));
+        jPGhiChu2.setBackground(new java.awt.Color(51, 204, 255));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Ghi chú");
+        jPGhiChu.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jPGhiChu.setForeground(new java.awt.Color(255, 255, 255));
+        jPGhiChu.setText("Ghi chú");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -224,16 +232,16 @@ public class FormTrangChu extends javax.swing.JPanel {
 
         jButton3.setText("Xem tất cả");
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPGhiChu2Layout = new javax.swing.GroupLayout(jPGhiChu2);
+        jPGhiChu2.setLayout(jPGhiChu2Layout);
+        jPGhiChu2Layout.setHorizontalGroup(
+            jPGhiChu2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPGhiChu2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPGhiChu2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPGhiChu2Layout.createSequentialGroup()
+                        .addComponent(jPGhiChu, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -242,12 +250,12 @@ public class FormTrangChu extends javax.swing.JPanel {
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        jPGhiChu2Layout.setVerticalGroup(
+            jPGhiChu2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPGhiChu2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                .addGroup(jPGhiChu2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jPGhiChu)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
                     .addComponent(jButton3))
@@ -266,11 +274,11 @@ public class FormTrangChu extends javax.swing.JPanel {
                     .addGroup(jPBodyLayout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPSubMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPLich, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPBodyLayout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPTinTuc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPGhiChu2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(6, 6, 6))
         );
         jPBodyLayout.setVerticalGroup(
@@ -278,12 +286,12 @@ public class FormTrangChu extends javax.swing.JPanel {
             .addGroup(jPBodyLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPSubMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPLich, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPTinTuc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPGhiChu2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -315,17 +323,17 @@ public class FormTrangChu extends javax.swing.JPanel {
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPBody;
-    private javax.swing.JPanel jPSubMenu;
+    private javax.swing.JLabel jPGhiChu;
+    private javax.swing.JPanel jPGhiChu2;
+    private javax.swing.JPanel jPLich;
+    private javax.swing.JPanel jPTinTuc;
     private javax.swing.JPanel jPTodo;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;

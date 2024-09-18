@@ -53,9 +53,6 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     }
 
     private void doiTrangThaiNhap(boolean isEnabel) {
-        txtSoTaiKhoan.setEnabled(isEnabel);
-        txtTenTaiKhoan.setEnabled(isEnabel);
-        txtNgayTaoTK.setEnabled(isEnabel);
         btnResetPassword.setEnabled(isEnabel);
         btnDoiTrangThai.setEnabled(isEnabel);
         btnCapNhat.setEnabled(isEnabel);

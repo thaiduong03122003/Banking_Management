@@ -35,7 +35,7 @@ public class GiaoDichBUS {
             ex.printStackTrace();
         }
     }
-    
+
     public List<GiaoDichDTO> getDSGiaoDich() {
         try {
             return giaoDichDAO.selectAll();
@@ -45,6 +45,61 @@ public class GiaoDichBUS {
         }
     }
     
+    //=====================================================17/9
+      public Object[][] doiSangObjectMaxGiaoDich() throws Exception {
+        List<GiaoDichDTO> list = new ArrayList<>();
+    
+       
+           
+        
+        list = giaoDichDAO.getMaxGiaoDich();
+        
+         
+    
+        Object[][] data = new Object[list.size()][8];
+        int rowIndex = 0;
+        for (GiaoDichDTO giaoDich : list) {
+            data[rowIndex][0] = giaoDich.getMaGiaoDich();
+            data[rowIndex][1] = giaoDich.getSoTaiKhoan();
+            data[rowIndex][2] = giaoDich.getTenKhachHang();
+            data[rowIndex][3] = giaoDich.getSoTien();
+            data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
+            data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
+            data[rowIndex][6] = giaoDich.getTenNhanVien();
+            data[rowIndex][7] = giaoDich.getTenTrangThai();
+            rowIndex++;
+        }
+        return data;
+    }
+
+       public Object[][] doiSangObjectGiaoDichTK(boolean isFiltered, List<GiaoDichDTO> listGiaoDich,int loaiGD) throws Exception {
+        List<GiaoDichDTO> list = new ArrayList<>();
+
+        if (isFiltered) {
+            list = listGiaoDich;
+        } else {
+            list = giaoDichDAO.filter(null, null, 0, 0, 0, loaiGD);
+        }
+         
+    
+        Object[][] data = new Object[list.size()][8];
+        int rowIndex = 0;
+        for (GiaoDichDTO giaoDich : list) {
+            data[rowIndex][0] = giaoDich.getMaGiaoDich();
+            data[rowIndex][1] = giaoDich.getSoTaiKhoan();
+            data[rowIndex][2] = giaoDich.getTenKhachHang();
+            data[rowIndex][3] = giaoDich.getSoTien();
+            data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
+            data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
+            data[rowIndex][6] = giaoDich.getTenNhanVien();
+            data[rowIndex][7] = giaoDich.getTenTrangThai();
+            rowIndex++;
+        }
+        return data;
+    }
+
+    //======================================================17/9
+ 
     public Object[][] doiSangObjectGiaoDich(boolean isFiltered, List<GiaoDichDTO> listGiaoDich) {
         List<GiaoDichDTO> list = new ArrayList<>();
 
@@ -69,7 +124,7 @@ public class GiaoDichBUS {
         }
         return data;
     }
-    
+
     public List<GiaoDichDTO> locGiaoDich(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maNhanVien, int maTaiKhoanKH, int maLoaiGiaoDich) throws Exception {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
@@ -254,7 +309,7 @@ public class GiaoDichBUS {
         BigInteger tienMat = new BigInteger(khoTien.getTienMat());
         BigInteger soTien = new BigInteger(soTienTru);
 
-        boolean isSufficient = tienMat.subtract(soTien).compareTo(BigInteger.ZERO) <= 0;
+        boolean isSufficient = tienTK.subtract(soTien).compareTo(BigInteger.ZERO) <= 0;
         if (isSufficient) {
             return false;
         } else {
@@ -263,11 +318,7 @@ public class GiaoDichBUS {
             tienTK = tienTK.subtract(soTien);
             khoTien.setTienTKNganHang(tienTK.toString());
 
-            if (khoTienDAO.updateMoney(khoTien)) {
-                return true;
-            }
-
-            return false;
+            return khoTienDAO.updateMoney(khoTien);
         }
     }
 
@@ -278,21 +329,27 @@ public class GiaoDichBUS {
         BigInteger tienMat = new BigInteger(khoTien.getTienMat());
         BigInteger soTien = new BigInteger(soTienThem);
 
-        boolean isSufficient = tienMat.subtract(soTien).compareTo(BigInteger.ZERO) <= 0;
-        if (isSufficient) {
-            return false;
-        } else {
-            khoTien.setTienMat(tienMat.toString());
+        khoTien.setTienMat(tienMat.toString());
 
-            tienTK = tienTK.add(soTien);
-            khoTien.setTienTKNganHang(tienTK.toString());
+        tienTK = tienTK.add(soTien);
+        khoTien.setTienTKNganHang(tienTK.toString());
 
-            if (khoTienDAO.updateMoney(khoTien)) {
-                return true;
-            }
+        return khoTienDAO.updateMoney(khoTien);
+    }
 
-            return false;
-        }
+    public boolean themTienMatTrongKho(String soTienThem) {
+        layTienTuKho();
+
+        BigInteger tienTK = new BigInteger(khoTien.getTienTKNganHang());
+        BigInteger tienMat = new BigInteger(khoTien.getTienMat());
+        BigInteger soTien = new BigInteger(soTienThem);
+
+        khoTien.setTienTKNganHang(tienTK.toString());
+
+        tienMat = tienMat.add(soTien);
+        khoTien.setTienMat(tienMat.toString());
+
+        return khoTienDAO.updateMoney(khoTien);
     }
 
     public boolean chuyenTienLaiTKVeTK(GiaoDichDTO giaoDich) {
@@ -300,9 +357,9 @@ public class GiaoDichBUS {
             System.out.println("Da tru tien trong kho!");
             try {
                 BigInteger soTien = new BigInteger(String.valueOf(giaoDich.getSoTien()));
-                
+
                 TaiKhoanKHDTO taiKhoanKH = taiKhoanKHDAO.selectById(giaoDich.getMaTaiKhoanKH());
-                
+
                 if (taiKhoanKH == null) {
                     System.out.println("Khong tim thay TKKH!");
                 } else {
@@ -310,7 +367,7 @@ public class GiaoDichBUS {
                 }
                 BigInteger soDu = new BigInteger(taiKhoanKH.getSoDu());
                 soDu = soDu.add(soTien);
-                
+
                 System.out.println("So du moi: " + soDu.toString());
 
                 String newSoDu = soDu.toString();
@@ -330,6 +387,59 @@ public class GiaoDichBUS {
         }
     }
 
+    public String thanhToanKhoanVay(GiaoDichDTO giaoDich, boolean isTienTuTK) {
+
+        if (giaoDich == null) {
+            return "Lỗi giao dịch";
+        }
+
+        BigInteger soTienGiaoDich = new BigInteger(giaoDich.getSoTien());
+
+        if (soTienGiaoDich.compareTo(BigInteger.ZERO) <= 0) {
+            return "Số tiền giao dịch không hợp lệ";
+        }
+
+        if (isTienTuTK) {
+            try {
+                TaiKhoanKHDTO taiKhoanKH = taiKhoanKHDAO.selectById(giaoDich.getMaTaiKhoanKH());
+
+                if (taiKhoanKH == null) {
+                    return "Không tìm thấy tài khoản khách hàng";
+                }
+
+                BigInteger soDu, soDuMoi;
+                soDu = new BigInteger(taiKhoanKH.getSoDu());
+
+                soDuMoi = soDu.subtract(soTienGiaoDich);
+
+                if (soDuMoi.compareTo(BigInteger.ZERO) < 0) {
+                    return "Số dư tài khoản không đủ!";
+                }
+
+                if (!taiKhoanKHDAO.updateMoney(taiKhoanKH.getMaTKKH(), soDuMoi.toString())) {
+                    return "Cập nhật số dư mới cho tài khoản thất bại!";
+                }
+
+                if (!themTienTKTrongKho(soTienGiaoDich.toString())) {
+                    return "Lỗi chuyển tiền từ tài khoản vào kho!";
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Lỗi trong quá trình xử lý giao dịch!";
+            }
+        } else {
+            if (!themTienMatTrongKho(soTienGiaoDich.toString())) {
+                return "Lỗi chuyển tiền mặt vào kho!";
+            }
+        }
+
+        if (themGiaoDich(giaoDich) == 0) {
+            return "Lỗi thực hiện giao dịch!";
+        }
+        return "1";
+    }
+
     private int themGiaoDich(GiaoDichDTO giaoDich) {
         try {
             return giaoDichDAO.insert(giaoDich);
@@ -338,5 +448,4 @@ public class GiaoDichBUS {
             return 0;
         }
     }
-
 }

@@ -175,7 +175,7 @@ public class FormRutTien extends javax.swing.JPanel {
         GiaoDichDTO giaoDich = new GiaoDichDTO();
 
         String maPIN = String.valueOf(pwfMaPINNV.getPassword());
-        if (txtSoTienRut.getText().isEmpty() || maPIN.isEmpty()) {
+        if (txtSoTienRut.getText().isEmpty()) {
             error.append("Vui lòng nhập đầy đủ thông tin");
         } else {
             try {
@@ -191,9 +191,9 @@ public class FormRutTien extends javax.swing.JPanel {
                 error.append("\nVui lòng nhập đúng số tiền giao dịch!");
             }
 
-            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
-                error.append("\nSai mã PIN");
-            }
+//            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
+//                error.append("\nSai mã PIN");
+//            }
         }
 
         if (error.isEmpty()) {

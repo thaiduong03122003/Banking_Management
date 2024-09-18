@@ -742,10 +742,14 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtSoTaiKhoan" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="txtSoTaiKhoan" min="-2" pref="166" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnAutoGenerateSTK" pref="162" max="32767" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel11" min="-2" pref="231" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="115" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -758,7 +762,10 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="txtSoTaiKhoan" min="-2" pref="35" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="txtSoTaiKhoan" pref="35" max="32767" attributes="0"/>
+                          <Component id="btnAutoGenerateSTK" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -780,6 +787,14 @@
               <Properties>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="btnAutoGenerateSTK">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="T&#x1ea1;o STK t&#x1ef1; &#x111;&#x1ed9;ng"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAutoGenerateSTKActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
