@@ -971,7 +971,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
         txtSoTaiKhoan.setEnabled(false);
 
-        btnAutoGenerateSTK.setText("Tạo STK tự động");
+        btnAutoGenerateSTK.setText("Tạo số tài khoản tự động");
         btnAutoGenerateSTK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAutoGenerateSTKActionPerformed(evt);

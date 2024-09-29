@@ -790,7 +790,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="btnAutoGenerateSTK">
               <Properties>
-                <Property name="text" type="java.lang.String" value="T&#x1ea1;o STK t&#x1ef1; &#x111;&#x1ed9;ng"/>
+                <Property name="text" type="java.lang.String" value="T&#x1ea1;o s&#x1ed1; t&#xe0;i kho&#x1ea3;n t&#x1ef1; &#x111;&#x1ed9;ng"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAutoGenerateSTKActionPerformed"/>

@@ -2,6 +2,7 @@ package quanlynganhang.BUS;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -297,6 +298,7 @@ public class KiemTraDuLieuBUS {
         return result.toString();
     }
 
+
     private void xuLyTienPhat(VayVonDTO vayVon) {
         System.out.println("Dang xu ly tien phat");
 
@@ -314,7 +316,7 @@ public class KiemTraDuLieuBUS {
                 continue;
             }
 
-            soThang = fDate.tinhSoThang(toDay, fDate.addMonth(traVay.getThoiGian(), 1));
+            soThang = fDate.tinhSoThang(toDay, traVay.getThoiGian());
 
             if (soThang >= 1) {
                 System.out.println("Dang cap nhat trang thai cho ma " + traVay.getMaKyTraNo());
