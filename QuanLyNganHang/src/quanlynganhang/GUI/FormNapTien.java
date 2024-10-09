@@ -12,6 +12,7 @@ import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.GiaoDichDTO;
@@ -58,10 +59,6 @@ public class FormNapTien extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPSoTienNap.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        jPPINCode.putClientProperty(FlatClientProperties.STYLE, ""
-            + "background:$BodyPanel.background;");
-//        jPThongTinGD.putClientProperty(FlatClientProperties.STYLE, ""
-//            + "background:$BodyPanel.background;");
         jPFooterCus.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPCusNameInfo.putClientProperty(FlatClientProperties.STYLE, ""
@@ -84,9 +81,6 @@ public class FormNapTien extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
 
         pwfSoDu.putClientProperty(FlatClientProperties.STYLE, ""
-            + "showRevealButton:true;");
-
-        pwfMaPINNV.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
 
         txtSoTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
@@ -115,7 +109,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 txtSoTaiKhoan.setText(taiKhoanKH.getSoTaiKhoan());
                 txtTenTaiKhoan.setText(taiKhoanKH.getTenTaiKhoan());
                 txtLoaiTaiKhoan.setText(taiKhoanKH.getTenLoaiTaiKhoan());
-                pwfSoDu.setText("" + taiKhoanKH.getSoDu());
+                pwfSoDu.setText("" + FormatNumber.convertNumToVND(new BigInteger(taiKhoanKH.getSoDu())));
                 lbTenKhachHang.setText(taiKhoanKH.getTenKhachHang());
 
                 KhachHangDTO khachHang = khachHangBUS.getKhachHangById(taiKhoanKH.getMaKhachHang(), 0);
@@ -138,32 +132,25 @@ public class FormNapTien extends javax.swing.JPanel {
         } else {
             MessageBox.showErrorMessage(null, "Không tìm thấy tài khoản khách hàng!");
         }
-
     }
 
     private void napTien() {
-        BigInteger soTien;
+        BigInteger soTien = new BigInteger("0");
         StringBuilder error = new StringBuilder();
         error.append("");
 
         GiaoDichDTO giaoDich = new GiaoDichDTO();
-
-        String maPIN = String.valueOf(pwfMaPINNV.getPassword());
         if (txtSoTienNap.getText().isEmpty()) {
             error.append("Vui lòng nhập đầy đủ thông tin");
         } else {
             try {
-                soTien = new BigInteger(txtSoTienNap.getText());
+                soTien = new BigInteger(txtSoTienNap.getText().trim().replace(",", ""));
                 if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
                     error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
                 }
             } catch (NumberFormatException ne) {
                 error.append("\nVui lòng nhập đúng số tiền giao dịch!");
             }
-
-//            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
-//                error.append("\nSai mã PIN");
-//            }
         }
 
         if (error.isEmpty()) {
@@ -174,7 +161,7 @@ public class FormNapTien extends javax.swing.JPanel {
             giaoDich.setMaLoaiGiaoDich(4);
             giaoDich.setNoiDungGiaoDich("Nạp tiền vào tài khoản cho khách hàng " + lbHoTenKH.getText());
             giaoDich.setNgayGiaoDich(fDate.getToday());
-            giaoDich.setSoTien(txtSoTienNap.getText());
+            giaoDich.setSoTien(soTien.toString());
 
             if (giaoDichBUS.napTien(giaoDich)) {
                 MessageBox.showInformationMessage(null, "", "Nạp tiền thành công!");
@@ -185,6 +172,16 @@ public class FormNapTien extends javax.swing.JPanel {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
         }
 
+    }
+    
+    private void onCodeTextChanged() {
+        String currency = txtSoTienNap.getText().trim().replace(",", "");
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtSoTienNap.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
+        }
     }
 
     /** This method is called from within the constructor to
@@ -220,12 +217,9 @@ public class FormNapTien extends javax.swing.JPanel {
         lbSoTienNap = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btnNap = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
-        jPPINCode = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        pwfMaPINNV = new javax.swing.JPasswordField();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -312,6 +306,11 @@ public class FormNapTien extends javax.swing.JPanel {
         txtSoTienNap.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtSoTienNapFocusLost(evt);
+            }
+        });
+        txtSoTienNap.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSoTienNapKeyReleased(evt);
             }
         });
 
@@ -422,11 +421,11 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Nạp tiền");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnNap.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnNap.setText("Nạp tiền");
+        btnNap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnNapActionPerformed(evt);
             }
         });
 
@@ -445,7 +444,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnNap, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPFooterCusLayout.setVerticalGroup(
@@ -454,7 +453,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton2))
+                    .addComponent(btnNap))
                 .addContainerGap())
         );
 
@@ -464,32 +463,6 @@ public class FormNapTien extends javax.swing.JPanel {
                 btnChonTKKHActionPerformed(evt);
             }
         });
-
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
-        );
-        jLabel15.setText("Mã PIN của nhân viên thực hiện giao dịch");
-
-        javax.swing.GroupLayout jPPINCodeLayout = new javax.swing.GroupLayout(jPPINCode);
-        jPPINCode.setLayout(jPPINCodeLayout);
-        jPPINCodeLayout.setHorizontalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(97, Short.MAX_VALUE))
-        );
-        jPPINCodeLayout.setVerticalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         javax.swing.GroupLayout jPCustomerInfoLayout = new javax.swing.GroupLayout(jPCustomerInfo);
         jPCustomerInfo.setLayout(jPCustomerInfoLayout);
@@ -507,8 +480,7 @@ public class FormNapTien extends javax.swing.JPanel {
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jPSoTienNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(jPThongTinGD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -526,9 +498,7 @@ public class FormNapTien extends javax.swing.JPanel {
                 .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPSoTienNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(86, 86, 86)
                 .addComponent(jPThongTinGD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -930,32 +900,35 @@ public class FormNapTien extends javax.swing.JPanel {
     }//GEN-LAST:event_txtSoTienNapFocusLost
 
     private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
-        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH");
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH", true);
         chonTKKH.setResizable(false);
         chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonTKKH.setVisible(true);
     }//GEN-LAST:event_btnChonTKKHActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnNapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNapActionPerformed
         if (lbMaTKKH.getText().equals("(Chưa chọn)")) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản khách hàng!");
         } else {
             napTien();
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnNapActionPerformed
+
+    private void txtSoTienNapKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoTienNapKeyReleased
+        onCodeTextChanged();
+    }//GEN-LAST:event_txtSoTienNapKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
     private javax.swing.ButtonGroup btnGroupGender;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnNap;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -983,7 +956,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JPanel jPFooterCus;
     private javax.swing.JPanel jPGender;
     private javax.swing.JPanel jPIdCentizenCard;
-    private javax.swing.JPanel jPPINCode;
     private javax.swing.JPanel jPPhoneNum;
     private javax.swing.JPanel jPSoDu;
     private javax.swing.JPanel jPSoTienNap;
@@ -997,7 +969,6 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JLabel lbTenKhachHang;
     private javax.swing.JLabel lbTenNV;
     private javax.swing.JLabel lbTitle;
-    private javax.swing.JPasswordField pwfMaPINNV;
     private javax.swing.JPasswordField pwfSoDu;
     private javax.swing.JRadioButton rdbKhac;
     private javax.swing.JRadioButton rdbNam;

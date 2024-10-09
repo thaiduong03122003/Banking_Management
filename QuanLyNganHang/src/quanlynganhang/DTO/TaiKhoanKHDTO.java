@@ -3,30 +3,37 @@ package quanlynganhang.DTO;
 import java.util.Date;
 
 public class TaiKhoanKHDTO {
-    private int maTKKH, maNganHang, maLoaiTaiKhoan, maKhachHang, maTrangThai;
-    private String soTaiKhoan, tenTaiKhoan, matKhau, soDu, tenNganHang, tenLoaiTaiKhoan, tenKhachHang, tenTrangThai;
+    private int maTKKH, maNganHang, maLoaiTaiKhoan, maKhachHang, maTrangThai, biXoa;
+    private String soTaiKhoan, tenTaiKhoan, matKhau, soDu, tenNganHang, tenLoaiTaiKhoan, tenKhachHang, tenTrangThai, email, sdt;
     private Date ngayTao;
 
     public TaiKhoanKHDTO() {
     }
 
-    public TaiKhoanKHDTO(int maTKKH, int maNganHang, int maLoaiTaiKhoan, int maKhachHang, int maTrangThai, String soTaiKhoan, String tenTaiKhoan, String matKhau, String soDu, String tenNganHang, String tenLoaiTaiKhoan, String tenKhachHang, String tenTrangThai, Date ngayTao) {
-        this.maTKKH = maTKKH;
-        this.maNganHang = maNganHang;
-        this.maLoaiTaiKhoan = maLoaiTaiKhoan;
-        this.maKhachHang = maKhachHang;
-        this.maTrangThai = maTrangThai;
-        this.soTaiKhoan = soTaiKhoan;
-        this.tenTaiKhoan = tenTaiKhoan;
-        this.matKhau = matKhau;
-        this.soDu = soDu;
-        this.tenNganHang = tenNganHang;
-        this.tenLoaiTaiKhoan = tenLoaiTaiKhoan;
-        this.tenKhachHang = tenKhachHang;
-        this.tenTrangThai = tenTrangThai;
-        this.ngayTao = ngayTao;
+    public String getEmail() {
+        return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+    
+    public int getBiXoa() {
+        return biXoa;
+    }
+
+    public void setBiXoa(int biXoa) {
+        this.biXoa = biXoa;
+    }
+    
     public int getMaTKKH() {
         return maTKKH;
     }

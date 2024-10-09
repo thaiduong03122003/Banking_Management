@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package quanlynganhang.GUI.model.headerbar;
+
 import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
@@ -25,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.Application;
 import quanlynganhang.GUI.FormPopupProfile;
@@ -33,21 +35,29 @@ import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.glasspanepopup.DefaultOption;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 import quanlynganhang.GUI.model.menubar.PopupSubMenu;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 public class HeaderBar extends javax.swing.JPanel {
+
     private Application app;
     private ApplicationAdmin appAdmin;
     private TaiKhoanNVDTO taiKhoanNV;
-     private JPopupMenu suggestionPopup; // Popup lưu trữ ngoài phương thức
+    private JPopupMenu suggestionPopup; // Popup lưu trữ ngoài phương thức
     private JList<String> suggestionList; // JList lưu trữ ngoài phương thức
     private ArrayList<String> suggestions; // Danh sách gợi ý tĩnh hoặc động
+    private int maDangNhap, quyenSua, quyenXoa;
+    private boolean isAdmin;
 
-    public HeaderBar(TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin) {
+    public HeaderBar(boolean isAdmin, int maDangNhap, TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin, int quyenSua, int quyenXoa) {
+        this.isAdmin = isAdmin;
         this.app = app;
+        this.maDangNhap = maDangNhap;
         this.appAdmin = appAdmin;
         this.taiKhoanNV = taiKhoanNV;
+        this.quyenSua = quyenSua;
+        this.quyenXoa = quyenXoa;
         initComponents();
-        
+
         putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$HeaderBar.background;");
         jPHeaderBar.putClientProperty(FlatClientProperties.STYLE, ""
@@ -58,7 +68,7 @@ public class HeaderBar extends javax.swing.JPanel {
             + "background:$HeaderBar.background;");
         jpProfile.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$HeaderBar.background;");
-        
+
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tìm kiếm trong menu");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
         txtSearch.setVisible(false);
@@ -79,7 +89,10 @@ public class HeaderBar extends javax.swing.JPanel {
         suggestions.add("Chuyển tiền liên ngân hàng");
         suggestions.add("Cho vay");
         suggestions.add("Trả khoản vay");
-         suggestions.add("Gủi tiết kiệm");
+        suggestions.add("Danh sách nhân viên");
+        suggestions.add("Danh sách tài khoản NV");
+        suggestions.add("Thêm chức vụ");
+        suggestions.add("Phân quyền");
 
         suggestionPopup = new JPopupMenu();
         suggestionList = new JList<>();
@@ -90,16 +103,19 @@ public class HeaderBar extends javax.swing.JPanel {
 
         setEventInputSearch();
     }
-         public void setEventInputSearch() {
-              txtSearch.addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if(txtSearch.getText().length()==0) return;
-                searchByText(txtSearch.getText().trim());
+
+    public void setEventInputSearch() {
+        txtSearch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (txtSearch.getText().length() == 0) {
+                        return;
+                    }
+                    searchByText(txtSearch.getText().trim());
+                }
             }
-        }
-    });
+        });
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -145,7 +161,7 @@ public class HeaderBar extends javax.swing.JPanel {
                 // Hiển thị popup ngay dưới JTextField
                 suggestionPopup.setLocation(txtSearch.getLocationOnScreen().x, txtSearch.getLocationOnScreen().y + txtSearch.getHeight());
                 suggestionPopup.setVisible(true);
-       
+
                 // Xử lý sự kiện khi người dùng chọn gợi ý
                 suggestionList.addMouseListener(new MouseAdapter() {
                     @Override
@@ -154,11 +170,10 @@ public class HeaderBar extends javax.swing.JPanel {
                             String selectedValue = suggestionList.getSelectedValue();
                             if (selectedValue != null) {
                                 txtSearch.setText(selectedValue);
-                                suggestionPopup.setVisible(false); 
-                                 searchByText(txtSearch.getText().trim());
+                                suggestionPopup.setVisible(false);
+                                searchByText(txtSearch.getText().trim());
                             }
-                           
-                           
+
                         }
                     }
                 });
@@ -173,81 +188,161 @@ public class HeaderBar extends javax.swing.JPanel {
             }
         });
     }
-private void searchByText(String text) {
-    
-     String temp = Normalizer.normalize(text, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-      System.out.println("search:"+pattern.matcher(temp).replaceAll("").toLowerCase());
-    switch (pattern.matcher(temp).replaceAll("").toLowerCase()) {
-        
-        case "trang chu":
-            Application.instanceMenu.setSelectedMenu(0, 1);
-            break;
-        case "thong ke":
-            Application.instanceMenu.setSelectedMenu(1, 1);
-            break;
-        case "danh sach khach hang":
-            System.out.println("df");
-            Application.instanceMenu.setSelectedMenu(2, 1);
-            break;
-        case "danh sach the ngan hang":
-            System.out.println("conl");
-            Application.instanceMenu.setSelectedMenu(4,1 );
-            break;
-        case "danh sach tai khoan kh":
-            Application.instanceMenu.setSelectedMenu(3, 1);
-            break;
-        case "danh sach giao dich":
-            Application.instanceMenu.setSelectedMenu(5, 1);
-            break;
-         case "mo tai khoan ngan hang":
-            Application.instanceMenu.setSelectedMenu(6, 1);
-            break; 
-          case "mo the ghi no":
-            Application.instanceMenu.setSelectedMenu(7, 1);
-            break; 
-            case "mo the tin dung":
-            Application.instanceMenu.setSelectedMenu(7, 2);
-            break; 
-              case "nap tien vao tai khoan":
-            Application.instanceMenu.setSelectedMenu(8, 1);
-            break; 
-             case "rut tien khoi tai khoan":
-            Application.instanceMenu.setSelectedMenu(8, 2);
-            break; 
-              case "chuyen tien cung ngan hang":
-            Application.instanceMenu.setSelectedMenu(8, 3);
-            break; 
-              case "chuyen tien lien ngan hang":
-            Application.instanceMenu.setSelectedMenu(8, 4);
-            break; 
-              case "cho vay":
-            Application.instanceMenu.setSelectedMenu(10, 1);
-            break; 
-              case "tra khoan vay":
-            Application.instanceMenu.setSelectedMenu(10, 2);
-            break; 
-              case "gui tiet kiem":
-            Application.instanceMenu.setSelectedMenu(9, 1);
-            break; 
-        default:
-            System.out.println("value: " + text + " not found");
-           JOptionPane.showMessageDialog(
-        null, 
-        "<html>"+ "Không tìm thấy kết quả nào cho: " + text+"</html>", 
-        "Kết quả tìm kiếm", 
-        JOptionPane.INFORMATION_MESSAGE
-    );
-            break;
-           
-    }
-    txtSearch.setText("");
-}
 
-       
-      
-       
-       
+    private void searchByText(String text) {
+
+        String temp = Normalizer.normalize(text, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+
+        if (!isAdmin) {
+            switch (pattern.matcher(temp).replaceAll("").toLowerCase()) {
+
+                case "trang chu":
+                    Application.instanceMenu.setSelectedMenu(0, 1);
+                    break;
+                case "thong ke":
+                    Application.instanceMenu.setSelectedMenu(1, 1);
+                    break;
+                case "danh sach khach hang":
+                    Application.instanceMenu.setSelectedMenu(2, 1);
+                    break;
+                case "danh sach nhan vien":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "danh sach tai khoan nv":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "them chuc vu":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "phan quyen":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "danh sach the ngan hang":
+                    Application.instanceMenu.setSelectedMenu(4, 1);
+                    break;
+                case "danh sach tai khoan kh":
+                    Application.instanceMenu.setSelectedMenu(3, 1);
+                    break;
+                case "danh sach giao dich":
+                    Application.instanceMenu.setSelectedMenu(5, 1);
+                    break;
+                case "mo tai khoan ngan hang":
+                    Application.instanceMenu.setSelectedMenu(6, 1);
+                    break;
+                case "mo the ghi no":
+                    Application.instanceMenu.setSelectedMenu(7, 1);
+                    break;
+                case "mo the tin dung":
+                    Application.instanceMenu.setSelectedMenu(7, 2);
+                    break;
+                case "nap tien vao tai khoan":
+                    Application.instanceMenu.setSelectedMenu(8, 1);
+                    break;
+                case "rut tien khoi tai khoan":
+                    Application.instanceMenu.setSelectedMenu(8, 2);
+                    break;
+                case "chuyen tien cung ngan hang":
+                    Application.instanceMenu.setSelectedMenu(8, 3);
+                    break;
+                case "chuyen tien lien ngan hang":
+                    Application.instanceMenu.setSelectedMenu(8, 4);
+                    break;
+                case "cho vay":
+                    Application.instanceMenu.setSelectedMenu(10, 1);
+                    break;
+                case "tra khoan vay":
+                    Application.instanceMenu.setSelectedMenu(10, 2);
+                    break;
+                case "gui tiet kiem":
+                    Application.instanceMenu.setSelectedMenu(9, 1);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "<html>" + "Không tìm thấy kết quả nào cho: " + text + "</html>",
+                        "Kết quả tìm kiếm",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    break;
+            }
+
+        } else {
+
+            switch (pattern.matcher(temp).replaceAll("").toLowerCase()) {
+
+                case "trang chu":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(0, 1);
+                    break;
+                case "thong ke":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(1, 1);
+                    break;
+                case "danh sach khach hang":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(2, 1);
+                    break;
+                case "danh sach nhan vien":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(3, 1);
+                    break;
+                case "danh sach tai khoan nv":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(5, 1);
+                    break;
+                case "them chuc vu":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(9, 1);
+                    break;
+                case "phan quyen":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(8, 1);
+                    break;
+                case "danh sach the ngan hang":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(6, 1);
+                    break;
+                case "danh sach tai khoan kh":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(4, 1);
+                    break;
+                case "danh sach giao dich":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(7, 1);
+                    break;
+                case "mo tai khoan ngan hang":
+                    ApplicationAdmin.instanceMenu.setSelectedMenu(6, 1);
+                    break;
+                case "mo the ghi no":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "mo the tin dung":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "nap tien vao tai khoan":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "rut tien khoi tai khoan":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "chuyen tien cung ngan hang":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "chuyen tien lien ngan hang":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "cho vay":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "tra khoan vay":
+                    ChiaQuyenBUS.showError();
+                    break;
+                case "gui tiet kiem":
+                    ChiaQuyenBUS.showError();
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(
+                        null,
+                        "<html>" + "Không tìm thấy kết quả nào cho: " + text + "</html>",
+                        "Kết quả tìm kiếm",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    break;
+            }
+        }
+        txtSearch.setText("");
+    }
 
     public void setTitleName(String name) {
         lbPanelName.setText(name);
@@ -271,9 +366,6 @@ private void searchByText(String text) {
         txtSearch = new javax.swing.JTextField();
         jpProfile = new javax.swing.JPanel();
         btnProfile = new javax.swing.JButton();
-        btnNotifi = new javax.swing.JButton();
-        btnMessage = new javax.swing.JButton();
-        btnMail = new javax.swing.JButton();
         btnShowSearch = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -362,37 +454,6 @@ private void searchByText(String text) {
             }
         });
 
-        btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/have_notifi_btn.svg")
-        );
-        btnNotifi.setToolTipText("Thông báo");
-        btnNotifi.setBorderPainted(false);
-        btnNotifi.setContentAreaFilled(false);
-        btnNotifi.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnNotifi.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNotifiActionPerformed(evt);
-            }
-        });
-
-        btnMessage.setIcon(new FlatSVGIcon("quanlynganhang/icon/chat_btn.svg")
-        );
-        btnMessage.setToolTipText("Tin nhắn");
-        btnMessage.setBorderPainted(false);
-        btnMessage.setContentAreaFilled(false);
-        btnMessage.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
-        btnMail.setIcon(new FlatSVGIcon("quanlynganhang/icon/mail_btn.svg")
-        );
-        btnMail.setToolTipText("Email");
-        btnMail.setBorderPainted(false);
-        btnMail.setContentAreaFilled(false);
-        btnMail.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnMail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnMailActionPerformed(evt);
-            }
-        });
-
         btnShowSearch.setIcon(new FlatSVGIcon("quanlynganhang/icon/show_search_btn.svg")
         );
         btnShowSearch.setToolTipText("Tìm kiếm");
@@ -415,14 +476,8 @@ private void searchByText(String text) {
         jpProfileLayout.setHorizontalGroup(
             jpProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpProfileLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(192, Short.MAX_VALUE)
                 .addComponent(btnShowSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnMail, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnNotifi, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -430,11 +485,7 @@ private void searchByText(String text) {
             jpProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpProfileLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jpProfileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                    .addComponent(btnNotifi, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnMail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnShowSearch, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
+                .addComponent(btnShowSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(btnProfile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -471,23 +522,15 @@ private void searchByText(String text) {
     }//GEN-LAST:event_formAncestorAdded
 
     private void btnProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnProfileMouseClicked
-        GlassPanePopup.showPopup(new FormPopupProfile(taiKhoanNV, app, appAdmin, 1, 0));
+        GlassPanePopup.showPopup(new FormPopupProfile(maDangNhap, taiKhoanNV, app, appAdmin, quyenSua, quyenXoa));
     }//GEN-LAST:event_btnProfileMouseClicked
 
-    private void btnNotifiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNotifiActionPerformed
-        btnNotifi.setIcon(new FlatSVGIcon("quanlynganhang/icon/notifi_btn.svg"));
-        JFrameThongBao thongbao = new JFrameThongBao();
-        thongbao.setTitle("Thông báo");
-        thongbao.setDefaultCloseOperation(JFrameThongBao.DISPOSE_ON_CLOSE);
-        thongbao.setVisible(true);
-    }//GEN-LAST:event_btnNotifiActionPerformed
+    private void btnShowSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowSearchActionPerformed
 
-    private void btnMailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnMailActionPerformed
+    }//GEN-LAST:event_btnShowSearchActionPerformed
 
     private void btnShowSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnShowSearchMouseClicked
-        if(!txtSearch.isVisible()) {
+        if (!txtSearch.isVisible()) {
             txtSearch.setVisible(true);
             revalidate();
         } else {
@@ -496,19 +539,12 @@ private void searchByText(String text) {
         }
     }//GEN-LAST:event_btnShowSearchMouseClicked
 
-    private void btnShowSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowSearchActionPerformed
-
-    }//GEN-LAST:event_btnShowSearchActionPerformed
-
     private void txtSearchInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtSearchInputMethodTextChanged
-    
+
     }//GEN-LAST:event_txtSearchInputMethodTextChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnMail;
-    private javax.swing.JButton btnMessage;
-    private javax.swing.JButton btnNotifi;
     private javax.swing.JButton btnProfile;
     private javax.swing.JButton btnShowSearch;
     private javax.swing.JPanel jPHeaderBar;

@@ -10,13 +10,11 @@ import quanlynganhang.GUI.model.message.MessageBox;
 
 public class JDialogDoiMatKhau extends javax.swing.JDialog {
 
-    private boolean isDoiMatKhau;
     private int maTaiKhoan;
     private TaiKhoanNVBUS taiKhoanNVBUS;
 
-    public JDialogDoiMatKhau(java.awt.Frame parent, boolean modal, boolean isDoiMatKhau, int maTaiKhoan) {
+    public JDialogDoiMatKhau(java.awt.Frame parent, boolean modal, int maTaiKhoan) {
         super(parent, modal);
-        this.isDoiMatKhau = isDoiMatKhau;
         this.maTaiKhoan = maTaiKhoan;
         taiKhoanNVBUS = new TaiKhoanNVBUS();
         initComponents();
@@ -31,11 +29,9 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
 
         txtMaTK.setText("" + maTaiKhoan);
 
-        if (!isDoiMatKhau) {
-            lbTitle.setText("Đổi mã PIN");
-            lbMKMoi.setText("Mã PIN mới:");
-            lbNhapLaiMKMoi.setText("Nhập lại mã PIN mới:");
-        }
+        lbTitle.setText("Đổi mã PIN");
+        lbMKMoi.setText("Mã PIN mới:");
+        lbNhapLaiMKMoi.setText("Nhập lại mã PIN mới:");
     }
 
     private boolean capNhatMatKhau() {
@@ -44,30 +40,19 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
         TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
         taiKhoanNV.setMaTKNV(maTaiKhoan);
 
-        if (password1.equals(password2)) {
-
-            if (isDoiMatKhau) {
-                if (InputValidation.kiemTraMatKhau(password1)) {
-                    taiKhoanNV.setMatKhau(MaHoaMatKhauBUS.encryptPassword(password1));
-                    return taiKhoanNVBUS.doiMatKhau(taiKhoanNV, isDoiMatKhau);
-                } else {
-                    MessageBox.showErrorMessage(null, "Mật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
-                    return false;
-                }
-            } else {
-                if (InputValidation.kiemTraMaPIN(password1)) {
-                    taiKhoanNV.setMaPIN(MaHoaMatKhauBUS.encryptPassword(password1));
-                    return taiKhoanNVBUS.doiMatKhau(taiKhoanNV, isDoiMatKhau);
-                } else {
-                    MessageBox.showErrorMessage(null, "Mã PIN có độ dài 6 ký tự, chỉ chứa các ký tự số!");
-                    return false;
-                }
-            }
-        } else {
+        if (!password1.equals(password2)) {
             MessageBox.showErrorMessage(null, "Mật khẩu không trùng khớp!");
             return false;
         }
 
+        if (InputValidation.kiemTraMatKhau(password1)) {
+            taiKhoanNV.setMatKhau(MaHoaMatKhauBUS.encryptPassword(password1));
+            
+            return taiKhoanNVBUS.doiMatKhau(taiKhoanNV);
+        } else {
+            MessageBox.showErrorMessage(null, "Mật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
+            return false;
+        }
     }
 
     /** This method is called from within the constructor to

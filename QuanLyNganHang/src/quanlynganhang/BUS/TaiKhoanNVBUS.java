@@ -20,12 +20,15 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.DAO.TaiKhoanNVDAO;
+import quanlynganhang.DAO.TinhTrangDangNhapDAO;
+import quanlynganhang.DTO.KhoiPhucMatKhauDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 
 public class TaiKhoanNVBUS {
 
     private final TaiKhoanNVDAO taiKhoanNVDAO = new TaiKhoanNVDAO();
+    private final TinhTrangDangNhapDAO tinhTrangDangNhapDAO = new TinhTrangDangNhapDAO();
     private FormatDate fDate = new FormatDate();
     private int maNhanVien, maTrangThai;
     private Date dateFrom, dateTo;
@@ -42,46 +45,50 @@ public class TaiKhoanNVBUS {
         }
     }
 
-    public Object[][] doiSangObjectTaiKhoanNV(boolean isFiltered, List<TaiKhoanNVDTO> listTaiKhoanNV) {
+    public Object[][] doiSangObjectTaiKhoanNV(boolean isFiltered, boolean isSerached, List<TaiKhoanNVDTO> listTaiKhoanNV) {
         List<TaiKhoanNVDTO> list = new ArrayList<>();
 
-        if (isFiltered) {
-            list = listTaiKhoanNV;
-        } else {
-            list = getDSTaiKhoanNV();
-        }
+        list = (isFiltered || isSerached) ? listTaiKhoanNV : getDSTaiKhoanNV();
 
         FormatDate fDate = new FormatDate();
 
-        Object[][] data = new Object[list.size()][5];
+        Object[][] data = new Object[list.size()][6];
         int rowIndex = 0;
         for (TaiKhoanNVDTO taiKhoanNV : list) {
+
             data[rowIndex][0] = taiKhoanNV.getMaTKNV();
             data[rowIndex][1] = taiKhoanNV.getTenNhanVien();
             data[rowIndex][2] = taiKhoanNV.getTenDangNhap();
             data[rowIndex][3] = fDate.toString(taiKhoanNV.getNgayTaoTK());
-            data[rowIndex][4] = taiKhoanNV.getTenTrangThai();
+
+            maTrangThai = taiKhoanNV.getMaTrangThai();
+            if (maTrangThai == 1 || maTrangThai == 2) {
+                data[rowIndex][4] = "<html><p style='color:rgb(255,0,0);'>" + taiKhoanNV.getTenTrangThai() + "</p></html>";
+            } else {
+                data[rowIndex][4] = taiKhoanNV.getTenTrangThai();
+            }
+
+            int tinhTrang = taiKhoanNV.getTinhTrangDangNhap();
+
+            if (tinhTrang == 0) {
+                data[rowIndex][5] = "Đã đăng xuất";
+            } else if (tinhTrang == 1) {
+                data[rowIndex][5] = "<html><p style='color:rgb(0, 255, 13);'>Đang đăng nhập</p></html>";
+            } else {
+                data[rowIndex][5] = "<html><p style='color:rgb(255, 0, 0);'>Chưa từng đăng nhập</p></html>";
+            }
+
             rowIndex++;
         }
         return data;
     }
 
-    public boolean addTaiKhoanNV(TaiKhoanNVDTO taiKhoanNV) {
-        try {
-            return taiKhoanNVDAO.insert(taiKhoanNV);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+    public int addTaiKhoanNV(TaiKhoanNVDTO taiKhoanNV) {
+        return taiKhoanNVDAO.insert(taiKhoanNV);
     }
 
     public boolean updateTaiKhoanNV(TaiKhoanNVDTO taiKhoanNV) {
-        try {
-            return taiKhoanNVDAO.update(taiKhoanNV);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return taiKhoanNVDAO.update(taiKhoanNV);
     }
 
     public boolean doiTrangThai(int maTaiKhoanNV, int maTrangThai) {
@@ -102,31 +109,36 @@ public class TaiKhoanNVBUS {
         }
     }
 
-    public List<TaiKhoanNVDTO> locTaiKhoanNV(java.util.Date dateFrom, java.util.Date dateTo, int maNhanVien, int maTrangThai) throws Exception {
+    public List<TaiKhoanNVDTO> locTaiKhoanNV(java.util.Date dateFrom, java.util.Date dateTo, int maNhanVien, int maTrangThai, int maTinhTrang) {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
 
         if (dateFrom != null && dateTo != null) {
             dateBatDau = new Date(dateFrom.getTime());
             dateKetThuc = new Date(dateTo.getTime());
+        } else if (dateFrom != null && dateTo == null) {
+            dateBatDau = new Date(dateFrom.getTime());
+        } else if (dateFrom == null && dateTo != null) {
+            dateKetThuc = new Date(dateTo.getTime());
         }
 
-        this.maNhanVien = maNhanVien;
-        this.maTrangThai = maTrangThai;
-
-        return taiKhoanNVDAO.filter(dateBatDau, dateKetThuc, maNhanVien, maTrangThai);
+        return taiKhoanNVDAO.filter(dateBatDau, dateKetThuc, maNhanVien, maTrangThai, maTinhTrang);
     }
-    
-    public boolean doiMatKhau(TaiKhoanNVDTO taiKhoanNV, boolean doiMatKhau) {
+
+    public List<TaiKhoanNVDTO> timKiemTheoLoai(String typeName, String inputValue) {
+        return taiKhoanNVDAO.searchByInputType(typeName, inputValue);
+    }
+
+    public boolean doiMatKhau(TaiKhoanNVDTO taiKhoanNV) {
+        return taiKhoanNVDAO.changePassword(taiKhoanNV);
+    }
+
+    public KhoiPhucMatKhauDTO getEmailByUsername(String username) {
         try {
-            if (doiMatKhau) {
-                return taiKhoanNVDAO.changePassword(taiKhoanNV);
-            } else {
-                return taiKhoanNVDAO.changePINCode(taiKhoanNV);
-            }
+            return taiKhoanNVDAO.getEmailFromUsername(username);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 
@@ -170,43 +182,5 @@ public class TaiKhoanNVBUS {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    }
-
-    public List<TaiKhoanNVDTO> nhapExcel(File file) throws IOException {
-        List<TaiKhoanNVDTO> list = new ArrayList<>();
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String sheetName = workbook.getSheetName(0);
-            if (!sheetName.equals("Danh sách tài khoản nhân viên")) {
-                return null;
-            } else {
-                Row row;
-                try {
-                    int value = (int) sheet.getRow(4).getCell(0).getNumericCellValue();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
-                    row = sheet.getRow(i);
-
-                    try {
-                        TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
-                        taiKhoanNV.setMaTKNV((int) row.getCell(0).getNumericCellValue());
-                        taiKhoanNV.setTenNhanVien(row.getCell(1).getStringCellValue());
-                        taiKhoanNV.setTenDangNhap(row.getCell(2).getStringCellValue());
-                        taiKhoanNV.setNgayTaoTK(fDate.toDate(row.getCell(3).getStringCellValue()));
-                        taiKhoanNV.setTenTrangThai(row.getCell(4).getStringCellValue());
-
-                        list.add(taiKhoanNV);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return list;
-            }
-        }
     }
 }

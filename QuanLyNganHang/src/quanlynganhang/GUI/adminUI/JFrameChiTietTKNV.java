@@ -29,7 +29,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     private NhanVienBUS nhanVienBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private String fileName;
-    private int quyenSua, quyenXoa, maTaiKhoanNV;
+    private int quyenSua, quyenXoa, maTaiKhoanNV, maTrangThai;
     private TaiKhoanNVDTO taiKhoanNV;
     private JDialogDoiMatKhau capLaiMatKhau;
 
@@ -57,9 +57,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
 
     private void doiTrangThaiNhap(boolean isEnabel) {
         txtTenDangNhap.setEnabled(isEnabel);
-        txtNgayTaoTK.setEnabled(isEnabel);
         btnResetPassword.setEnabled(isEnabel);
-        btnResetPIN.setEnabled(isEnabel);
         btnDoiTrangThai.setEnabled(isEnabel);
         btnCapNhat.setEnabled(isEnabel);
     }
@@ -79,7 +77,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         taiKhoanNV = taiKhoanNVBUS.getTaiKhoanNVById(maTaiKhoanNV);
         if (taiKhoanNV != null) {
             this.taiKhoanNV = taiKhoanNV;
-
+            this.maTrangThai = taiKhoanNV.getMaTrangThai();
             NhanVienDTO nhanVien = new NhanVienDTO();
             nhanVien = nhanVienBUS.getNhanVienById(taiKhoanNV.getMaNhanVien(), 2);
 
@@ -144,15 +142,14 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         int maTaiKhoanNV = Integer.parseInt(txtMaTKNV.getText());
         taiKhoanNV.setMaTKNV(maTaiKhoanNV);
 
-        taiKhoanNV.setTenDangNhap(txtTenDangNhap.getText());
-
-        if (InputValidation.kiemTraNgay(txtNgayTaoTK.getText())) {
-            taiKhoanNV.setNgayTaoTK(fDate.toDate(txtNgayTaoTK.getText()));
+        if (InputValidation.kiemTraTen(txtTenDangNhap.getText().trim())) {
+            taiKhoanNV.setTenDangNhap(txtTenDangNhap.getText().trim());
         } else {
-            error.append("\nNgày tạo không hợp lệ");
+            error.append("Tên đang nhập không hợp lệ!");
         }
 
         if (error.isEmpty()) {
+            taiKhoanNV.setMaTrangThai(maTrangThai);
             if (taiKhoanNVBUS.updateTaiKhoanNV(taiKhoanNV)) {
                 this.taiKhoanNV = taiKhoanNV;
                 return true;
@@ -236,7 +233,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         lbGhiChu = new javax.swing.JLabel();
         jPanel21 = new javax.swing.JPanel();
         btnResetPassword = new javax.swing.JButton();
-        btnResetPIN = new javax.swing.JButton();
         btnDoiTrangThai = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -838,13 +834,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
             }
         });
 
-        btnResetPIN.setText("Cấp lại mã PIN");
-        btnResetPIN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnResetPINActionPerformed(evt);
-            }
-        });
-
         btnDoiTrangThai.setText("Đổi trạng thái tài khoản");
         btnDoiTrangThai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -860,18 +849,15 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnResetPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnResetPIN, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDoiTrangThai, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel21Layout.setVerticalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel21Layout.createSequentialGroup()
-                .addContainerGap(76, Short.MAX_VALUE)
+                .addContainerGap(105, Short.MAX_VALUE)
                 .addComponent(btnResetPassword)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnResetPIN)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(btnDoiTrangThai)
                 .addContainerGap())
         );
@@ -981,6 +967,8 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
             if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
                 if (!lbGhiChu.getText().isEmpty()) {
                     MessageBox.showErrorMessage(null, "Không thể sửa thông tin tài khoản của nhân viên đã bị xóa!");
+                    btnDoiTrangThai.setEnabled(false);
+                    btnResetPassword.setEnabled(false);
                     return;
                 } else {
                     doiTrangThaiNhap(true);
@@ -992,8 +980,10 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
                 btnSuaThongTin.setText("Sửa thông tin");
             }
         } else {
-            ChiaQuyenBUS.showError();
-            return;
+            btnSuaThongTin.setVisible(false);
+            btnCapNhat.setVisible(false);
+            btnResetPassword.setVisible(false);
+            btnDoiTrangThai.setVisible(false);
         }
     }//GEN-LAST:event_btnSuaThongTinActionPerformed
 
@@ -1046,16 +1036,10 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDoiTrangThaiActionPerformed
 
     private void btnResetPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPasswordActionPerformed
-        capLaiMatKhau = new JDialogDoiMatKhau(null, true, true, maTaiKhoanNV);
+        capLaiMatKhau = new JDialogDoiMatKhau(null, true, maTaiKhoanNV);
         capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhau.DISPOSE_ON_CLOSE);
         capLaiMatKhau.setVisible(true);
     }//GEN-LAST:event_btnResetPasswordActionPerformed
-
-    private void btnResetPINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetPINActionPerformed
-        capLaiMatKhau = new JDialogDoiMatKhau(null, true, false, maTaiKhoanNV);
-        capLaiMatKhau.setDefaultCloseOperation(JDialogDoiMatKhau.DISPOSE_ON_CLOSE);
-        capLaiMatKhau.setVisible(true);
-    }//GEN-LAST:event_btnResetPINActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1077,7 +1061,6 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     private javax.swing.JButton btnCapNhat;
     private javax.swing.JButton btnDoiTrangThai;
     private javax.swing.ButtonGroup btnGroupGender;
-    private javax.swing.JButton btnResetPIN;
     private javax.swing.JButton btnResetPassword;
     private javax.swing.JButton btnSuaThongTin;
     private javax.swing.JLabel jLabel11;

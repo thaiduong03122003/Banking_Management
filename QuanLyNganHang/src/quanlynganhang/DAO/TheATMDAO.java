@@ -7,11 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.poi.util.LocaleID;
 import quanlynganhang.DTO.TheATMDTO;
 
 public class TheATMDAO {
-    public int insert(TheATMDTO theATM) throws Exception {
+
+    public int insert(TheATMDTO theATM) {
         if (selectByCardNum(theATM.getSoThe()) != null) {
             return 0;
         } else {
@@ -22,13 +22,13 @@ public class TheATMDAO {
 
                 pstmt.setString(1, theATM.getSoThe());
                 pstmt.setString(2, theATM.getTenThe());
-                
+
                 java.sql.Date dateTao = new Date(theATM.getNgayTao().getTime());
                 pstmt.setDate(3, dateTao);
-                
+
                 java.sql.Date dateThoiHan = new Date(theATM.getThoiHanThe().getTime());
                 pstmt.setDate(4, dateThoiHan);
-                
+
                 pstmt.setString(5, theATM.getMaPIN());
                 pstmt.setInt(6, theATM.getMaTaiKhoanKH());
 
@@ -46,12 +46,12 @@ public class TheATMDAO {
                 return theATM.getMaThe();
             } catch (Exception e) {
                 e.printStackTrace();
-                return 0;
             }
+            return 0;
         }
     }
 
-    private boolean updateExecute(TheATMDTO theATM) throws Exception {
+    private boolean updateExecute(TheATMDTO theATM) {
         String sql = "UPDATE tbl_the_atm SET so_the = ? WHERE ma_the = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -60,10 +60,13 @@ public class TheATMDAO {
             pstmt.setInt(2, theATM.getMaThe());
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    public boolean update(TheATMDTO theATM) throws Exception {
+    public boolean update(TheATMDTO theATM) {
 
         if (selectById(theATM.getMaThe()).getSoThe().equals(theATM.getSoThe())) {
             return updateExecute(theATM);
@@ -72,7 +75,6 @@ public class TheATMDAO {
         } else {
             return updateExecute(theATM);
         }
-
     }
 
     public boolean switchStatus(int maThe, int maTrangThai) {
@@ -89,8 +91,27 @@ public class TheATMDAO {
             return false;
         }
     }
+    
+    public String getNewSoThe() {
+        String sql = "SELECT * FROM tbl_THE_ATM ORDER BY ma_the DESC LIMIT 1";
 
-    public List<TheATMDTO> selectAll() throws Exception {
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TheATMDTO theATM = new TheATMDTO();
+                    String soThe = (rs.getString("so_the"));
+
+                    return soThe;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public List<TheATMDTO> selectAll() {
         String sql = "SELECT the.*, tkkh.*, kh.*, loaithe.*, tt.* FROM tbl_the_atm the"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON the.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -117,15 +138,19 @@ public class TheATMDAO {
                     theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
                     theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
                     theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    
+
                     list.add(theATM);
                 }
+                
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public TheATMDTO selectById(int maThe) throws Exception {
+    public TheATMDTO selectById(int maThe) {
         String sql = "SELECT the.*, tkkh.*, kh.*, loaithe.*, tt.* FROM tbl_the_atm the"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON the.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -139,7 +164,7 @@ public class TheATMDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     TheATMDTO theATM = new TheATMDTO();
-                    
+
                     theATM.setMaThe(rs.getInt("ma_the"));
                     theATM.setSoThe(rs.getString("so_the"));
                     theATM.setTenThe(rs.getString("ten_the"));
@@ -152,18 +177,17 @@ public class TheATMDAO {
                     theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
                     theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
                     theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    
+
                     return theATM;
                 }
             }
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
-    
-    public List<TheATMDTO> selectByMaKH(int maKhachHang) throws Exception {
+
+    public List<TheATMDTO> selectByMaKH(int maKhachHang) {
         String sql = "SELECT the.*, tkkh.*, kh.* FROM tbl_the_atm the"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON the.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -180,7 +204,7 @@ public class TheATMDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     TheATMDTO theATM = new TheATMDTO();
-                    
+
                     theATM.setMaThe(rs.getInt("ma_the"));
                     theATM.setSoThe(rs.getString("so_the"));
                     theATM.setTenThe(rs.getString("ten_the"));
@@ -194,35 +218,40 @@ public class TheATMDAO {
                     theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
                     theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
                     theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    
+
                     list.add(theATM);
                 }
+                
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public TheATMDTO selectByCardNum(String soThe) throws Exception {
+    public TheATMDTO selectByCardNum(String soThe) {
         String sql = "SELECT * FROM tbl_the_atm WHERE so_the = ?";
-        
+
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
             pstmt.setString(1, soThe);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     TheATMDTO theATM = new TheATMDTO();
-                    
+
                     theATM.setMaThe(rs.getInt("ma_the"));
-                    
+
                     return theATM;
                 }
             }
-            
-            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public List<TheATMDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maKhachHang, int maLoaiThe, int maTrangThai) throws Exception {
+    public List<TheATMDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maKhachHang, int maLoaiThe, int maTrangThai) {
         String sql = "SELECT the.*, tkkh.*, kh.*, loaithe.*, tt.* FROM tbl_the_atm the"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON the.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -237,6 +266,16 @@ public class TheATMDAO {
         if (dateFrom != null && dateTo != null) {
             conditionalClause.append(" AND the.ngay_tao BETWEEN ? AND ?");
             params.add(dateFrom);
+            params.add(dateTo);
+        }
+
+        if (dateFrom != null && dateTo == null) {
+            conditionalClause.append(" AND the.ngay_tao > ?");
+            params.add(dateFrom);
+        }
+
+        if (dateFrom == null && dateTo != null) {
+            conditionalClause.append(" AND the.ngay_tao < ?");
             params.add(dateTo);
         }
 
@@ -267,38 +306,105 @@ public class TheATMDAO {
 
             List<TheATMDTO> list = new ArrayList<>();
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (!rs.next()) {
-                    list = null;
-                } else {
-                    do {
-                        TheATMDTO theATM = new TheATMDTO();
-                    
-                        theATM.setMaThe(rs.getInt("ma_the"));
-                        theATM.setSoThe(rs.getString("so_the"));
-                        theATM.setTenThe(rs.getString("ten_the"));
-                        theATM.setMaKhachHang(rs.getInt("kh.ma_khach_hang"));
-                        theATM.setHoTenKH(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
-                        theATM.setMaTaiKhoanKH(rs.getInt("the.ma_tk_khach_hang"));
-                        theATM.setNgayTao(rs.getDate("the.ngay_tao"));
-                        theATM.setThoiHanThe(rs.getDate("the.thoi_han_the"));
-                        theATM.setMaPIN(rs.getString("the.ma_PIN"));
-                        theATM.setMaLoaiThe(rs.getInt("the.ma_loai_the"));
-                        theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
-                        theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
-                        theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                while (rs.next()) {
 
-                        list.add(theATM);
-                    } while (rs.next());
+                    TheATMDTO theATM = new TheATMDTO();
+
+                    theATM.setMaThe(rs.getInt("ma_the"));
+                    theATM.setSoThe(rs.getString("so_the"));
+                    theATM.setTenThe(rs.getString("ten_the"));
+                    theATM.setMaKhachHang(rs.getInt("kh.ma_khach_hang"));
+                    theATM.setHoTenKH(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    theATM.setMaTaiKhoanKH(rs.getInt("the.ma_tk_khach_hang"));
+                    theATM.setNgayTao(rs.getDate("the.ngay_tao"));
+                    theATM.setThoiHanThe(rs.getDate("the.thoi_han_the"));
+                    theATM.setMaPIN(rs.getString("the.ma_PIN"));
+                    theATM.setMaLoaiThe(rs.getInt("the.ma_loai_the"));
+                    theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
+                    theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
+                    theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+
+                    list.add(theATM);
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                list = null;
+
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public boolean changePIN(TheATMDTO theATM) throws Exception {
+    public List<TheATMDTO> searchByInputType(String typeName, String inputValue) {
+        String sql = "SELECT the.*, tkkh.*, kh.*, loaithe.*, tt.* FROM tbl_the_atm the"
+            + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON the.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_loai_the_atm loaithe ON the.ma_loai_the = loaithe.ma_loai_the"
+            + " LEFT JOIN tbl_trang_thai tt ON the.ma_trang_thai = tt.ma_trang_thai"
+            + " WHERE the.ma_the != ?";
+
+        StringBuilder conditionalClause = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(0);
+
+        if (typeName.equals("name")) {
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ?)");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("accNum")) {
+            conditionalClause.append(" AND tkkh.so_tai_khoan LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("cardNum")) {
+            conditionalClause.append(" AND the.so_the LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (conditionalClause.length() > 0) {
+            sql += conditionalClause.toString();
+            System.out.println("Cau sql: " + sql);
+        }
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            for (int i = 1; i <= params.size(); i++) {
+                pstmt.setObject(i, params.get(i - 1));
+            }
+
+            List<TheATMDTO> list = new ArrayList<>();
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+
+                    TheATMDTO theATM = new TheATMDTO();
+
+                    theATM.setMaThe(rs.getInt("ma_the"));
+                    theATM.setSoThe(rs.getString("so_the"));
+                    theATM.setTenThe(rs.getString("ten_the"));
+                    theATM.setMaKhachHang(rs.getInt("kh.ma_khach_hang"));
+                    theATM.setHoTenKH(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    theATM.setMaTaiKhoanKH(rs.getInt("the.ma_tk_khach_hang"));
+                    theATM.setNgayTao(rs.getDate("the.ngay_tao"));
+                    theATM.setThoiHanThe(rs.getDate("the.thoi_han_the"));
+                    theATM.setMaPIN(rs.getString("the.ma_PIN"));
+                    theATM.setMaLoaiThe(rs.getInt("the.ma_loai_the"));
+                    theATM.setTenLoaiThe(rs.getString("loaithe.ten_loai_the"));
+                    theATM.setMaTrangThai(rs.getInt("the.ma_trang_thai"));
+                    theATM.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+
+                    list.add(theATM);
+                }
+
+                return list;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean changePIN(TheATMDTO theATM) {
         String sql = "UPDATE tbl_the_atm SET ma_PIN = ? WHERE ma_the = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -307,20 +413,26 @@ public class TheATMDAO {
             pstmt.setInt(2, theATM.getMaThe());
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    public boolean giaHanThe(TheATMDTO theATM) throws Exception {
+    public boolean giaHanThe(TheATMDTO theATM) {
         String sql = "UPDATE tbl_the_atm SET thoi_han_the = ? WHERE ma_the = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
             java.sql.Date dateThoiHan = new Date(theATM.getThoiHanThe().getTime());
             pstmt.setDate(1, dateThoiHan);
-                
+
             pstmt.setInt(2, theATM.getMaThe());
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 }

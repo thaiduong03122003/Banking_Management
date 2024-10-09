@@ -70,48 +70,48 @@ public class GiaoDichDAO {
             }
         }
     }
+
     //==================17/9
-      public List<GiaoDichDTO> getMaxGiaoDich() throws Exception {
-        String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.*,Max(so_tien) FROM tbl_giao_dich gd"
-            + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
-            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
-            + " LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien"
-            + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
-            + " LEFT JOIN tbl_trang_thai tt ON gd.ma_trang_thai = tt.ma_trang_thai"
-            + " LEFT JOIN tbl_loai_giao_dich lgd ON gd.ma_loai_giao_dich = lgd.ma_loai_giao_dich";
-            
+    public List<GiaoDichDTO> getMaxGiaoDich() throws Exception {
+        String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.*, "
+            + "MAX(so_tien) AS max_so_tien FROM tbl_giao_dich gd "
+            + "LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang "
+            + "LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang "
+            + "LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien "
+            + "LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien "
+            + "LEFT JOIN tbl_trang_thai tt ON gd.ma_trang_thai = tt.ma_trang_thai "
+            + "LEFT JOIN tbl_loai_giao_dich lgd ON gd.ma_loai_giao_dich = lgd.ma_loai_giao_dich "
+            + "GROUP BY gd.ma_giao_dich, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.ten_trang_thai, lgd.ten_loai_giao_dich "
+            + "ORDER BY CAST(so_tien AS DECIMAL) DESC";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-
             List<GiaoDichDTO> list = new ArrayList<>();
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     GiaoDichDTO giaoDich = new GiaoDichDTO();
                     giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
-                    giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
+                    giaoDich.setMaTaiKhoanKH(rs.getInt("ma_tk_khach_hang"));
                     giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
                     giaoDich.setSoTien(rs.getString("so_tien"));
-                    giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
-                    giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
-                    giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    giaoDich.setMaTaiKhoanNV(rs.getInt("ma_tk_nhan_vien"));
+                    giaoDich.setMaLoaiGiaoDich(rs.getInt("ma_loai_giao_dich"));
+                    giaoDich.setTenKhachHang(rs.getString("ho_dem") + " " + rs.getString("ten"));
                     giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
                     giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
-                    giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
+                    giaoDich.setMaTrangThai(rs.getInt("ma_trang_thai"));
                     giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+                    giaoDich.setSoTaiKhoan(rs.getString("so_tai_khoan"));
 
                     list.add(giaoDich);
-                     return list;
                 }
             }
             return list;
         }
     }
-    //===================17/9
 
     public List<GiaoDichDTO> selectAll() throws Exception {
-        String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
+        String sql = "SELECT gd.*, lgd.*, tkkh.*, kh.*, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
             + " LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien"
@@ -138,6 +138,8 @@ public class GiaoDichDAO {
                     giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
                     giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
                     giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+                    giaoDich.setMaTrangThaiTKKH(rs.getInt("tkkh.ma_trang_thai"));
+                    giaoDich.setBiXoa(rs.getInt("kh.bi_xoa"));
 
                     list.add(giaoDich);
                 }
@@ -145,8 +147,48 @@ public class GiaoDichDAO {
             return list;
         }
     }
-    
-    public List<GiaoDichDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maKhachHang, int maNhanVien, int maTaiKhoanKH, int maLoaiGiaoDich) throws Exception {
+
+    public GiaoDichDTO selectById(int maGiaoDich) {
+        String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, tkkh.ten_tai_khoan, kh.ma_khach_hang, kh.ho_dem, kh.ten, nv.ma_nhan_vien, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
+            + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien"
+            + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
+            + " LEFT JOIN tbl_trang_thai tt ON gd.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_giao_dich lgd ON gd.ma_loai_giao_dich = lgd.ma_loai_giao_dich"
+            + " WHERE gd.ma_giao_dich = ?";
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            pstmt.setInt(1, maGiaoDich);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    GiaoDichDTO giaoDich = new GiaoDichDTO();
+                    giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
+                    giaoDich.setMaKhachHang(rs.getInt("kh.ma_khach_hang"));
+                    giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
+                    giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
+                    giaoDich.setSoTien(rs.getString("so_tien"));
+                    giaoDich.setNoiDungGiaoDich(rs.getString("noi_dung_giao_dich"));
+                    giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
+                    giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
+                    giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
+                    giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
+                    giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
+                    giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+
+                    return giaoDich;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<GiaoDichDTO> filter(java.sql.Date dateFrom, java.sql.Date dateTo, int maKhachHang, int maNhanVien, int maTaiKhoanKH, int maLoaiGiaoDich) {
         String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -166,16 +208,26 @@ public class GiaoDichDAO {
             params.add(dateTo);
         }
 
+        if (dateFrom != null && dateTo == null) {
+            conditionalClause.append(" AND gd.ngay_giao_dich > ?");
+            params.add(dateFrom);
+        }
+
+        if (dateFrom == null && dateTo != null) {
+            conditionalClause.append(" AND gd.ngay_giao_dich < ?");
+            params.add(dateTo);
+        }
+
         if (maKhachHang != 0) {
             conditionalClause.append(" AND kh.ma_khach_hang = ?");
             params.add(maKhachHang);
         }
-        
+
         if (maNhanVien != 0) {
             conditionalClause.append(" AND nv.ma_nhan_vien = ?");
             params.add(maNhanVien);
         }
-        
+
         if (maTaiKhoanKH != 0) {
             conditionalClause.append(" AND gd.ma_tk_khach_hang = ?");
             params.add(maTaiKhoanKH);
@@ -195,34 +247,98 @@ public class GiaoDichDAO {
                 pstmt.setObject(i, params.get(i - 1));
             }
 
-            List<GiaoDichDTO> list = new ArrayList<>();
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (!rs.next()) {
-                    list = null;
-                } else {
-                    do {
-                        GiaoDichDTO giaoDich = new GiaoDichDTO();
-                        giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
-                        giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
-                        giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
-                        giaoDich.setSoTien(rs.getString("so_tien"));
-                        giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
-                        giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
-                        giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
-                        giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
-                        giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
-                        giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
-                        giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                        giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+                List<GiaoDichDTO> list = new ArrayList<>();
 
-                        list.add(giaoDich);
-                    } while (rs.next());
+                while (rs.next()) {
+
+                    GiaoDichDTO giaoDich = new GiaoDichDTO();
+                    giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
+                    giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
+                    giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
+                    giaoDich.setSoTien(rs.getString("so_tien"));
+                    giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
+                    giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
+                    giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
+                    giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
+                    giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
+                    giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+
+                    list.add(giaoDich);
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                list = null;
+
+                return list;
             }
-            return list;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+        return null;
+    }
+    
+    public List<GiaoDichDTO> searchByInputType(String typeName, String inputValue) {
+        String sql = "SELECT gd.*, lgd.*, tkkh.*, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
+            + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_tai_khoan_nhan_vien tknv ON gd.ma_tk_nhan_vien = tknv.ma_tk_nhan_vien"
+            + " LEFT JOIN tbl_nhan_vien nv ON tknv.ma_nhan_vien = nv.ma_nhan_vien"
+            + " LEFT JOIN tbl_trang_thai tt ON gd.ma_trang_thai = tt.ma_trang_thai"
+            + " LEFT JOIN tbl_loai_giao_dich lgd ON gd.ma_loai_giao_dich = lgd.ma_loai_giao_dich"
+            + " WHERE ma_giao_dich != ?";
+
+        StringBuilder conditionalClause = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(0);
+
+        if (typeName.equals("name")) {
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ? OR tkkh.ten_tai_khoan LIKE ?)");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("accountNum")) {
+            conditionalClause.append(" AND tkkh.so_tai_khoan LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (conditionalClause.length() > 0) {
+            sql += conditionalClause.toString();
+        }
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            for (int i = 1; i <= params.size(); i++) {
+                pstmt.setObject(i, params.get(i - 1));
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                List<GiaoDichDTO> list = new ArrayList<>();
+
+                while (rs.next()) {
+
+                    GiaoDichDTO giaoDich = new GiaoDichDTO();
+                    giaoDich.setMaGiaoDich(rs.getInt("ma_giao_dich"));
+                    giaoDich.setMaTaiKhoanKH(rs.getInt("gd.ma_tk_khach_hang"));
+                    giaoDich.setNgayGiaoDich(rs.getDate("ngay_giao_dich"));
+                    giaoDich.setSoTien(rs.getString("so_tien"));
+                    giaoDich.setMaTaiKhoanNV(rs.getInt("gd.ma_tk_nhan_vien"));
+                    giaoDich.setMaLoaiGiaoDich(rs.getInt("gd.ma_loai_giao_dich"));
+                    giaoDich.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    giaoDich.setTenNhanVien(rs.getString("nv.ho_dem") + " " + rs.getString("nv.ten"));
+                    giaoDich.setTenLoaiGiaoDich(rs.getString("lgd.ten_loai_giao_dich"));
+                    giaoDich.setMaTrangThai(rs.getInt("gd.ma_trang_thai"));
+                    giaoDich.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    giaoDich.setSoTaiKhoan(rs.getString("tkkh.so_tai_khoan"));
+
+                    list.add(giaoDich);
+                }
+
+                return list;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

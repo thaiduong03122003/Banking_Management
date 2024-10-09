@@ -3,25 +3,21 @@ package quanlynganhang.DTO;
 import java.util.Date;
 
 public class TaiKhoanNVDTO {
-    private int maTKNV, maNhanVien, maTrangThai;
-    private String tenDangNhap, matKhau, maPIN, tenTrangThai, tenNhanVien;
+    private int maTKNV, maNhanVien, maTrangThai, maChucVu, tinhTrangDangNhap;
+    private String tenDangNhap, matKhau, tenTrangThai, tenNhanVien, tenChucVu;
     private Date ngayTaoTK;
 
     public TaiKhoanNVDTO() {
     }
 
-    public TaiKhoanNVDTO(int maTKNV, int maNhanVien, int maTrangThai, String tenDangNhap, String matKhau, String maPIN, String tenTrangThai, String tenNhanVien, Date ngayTaoTK) {
-        this.maTKNV = maTKNV;
-        this.maNhanVien = maNhanVien;
-        this.maTrangThai = maTrangThai;
-        this.tenDangNhap = tenDangNhap;
-        this.matKhau = matKhau;
-        this.maPIN = maPIN;
-        this.tenTrangThai = tenTrangThai;
-        this.tenNhanVien = tenNhanVien;
-        this.ngayTaoTK = ngayTaoTK;
+    public int getTinhTrangDangNhap() {
+        return tinhTrangDangNhap;
     }
 
+    public void setTinhTrangDangNhap(int tinhTrangDangNhap) {
+        this.tinhTrangDangNhap = tinhTrangDangNhap;
+    }
+    
     public int getMaTKNV() {
         return maTKNV;
     }
@@ -46,6 +42,14 @@ public class TaiKhoanNVDTO {
         this.maTrangThai = maTrangThai;
     }
 
+    public int getMaChucVu() {
+        return maChucVu;
+    }
+
+    public void setMaChucVu(int maChucVu) {
+        this.maChucVu = maChucVu;
+    }
+
     public String getTenDangNhap() {
         return tenDangNhap;
     }
@@ -62,14 +66,6 @@ public class TaiKhoanNVDTO {
         this.matKhau = matKhau;
     }
 
-    public String getMaPIN() {
-        return maPIN;
-    }
-
-    public void setMaPIN(String maPIN) {
-        this.maPIN = maPIN;
-    }
-
     public String getTenTrangThai() {
         return tenTrangThai;
     }
@@ -84,6 +80,14 @@ public class TaiKhoanNVDTO {
 
     public void setTenNhanVien(String tenNhanVien) {
         this.tenNhanVien = tenNhanVien;
+    }
+
+    public String getTenChucVu() {
+        return tenChucVu;
+    }
+
+    public void setTenChucVu(String tenChucVu) {
+        this.tenChucVu = tenChucVu;
     }
 
     public Date getNgayTaoTK() {

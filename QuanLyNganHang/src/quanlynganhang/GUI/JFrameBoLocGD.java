@@ -28,7 +28,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     private boolean isFiltered;
     private FormDSGiaoDich formDSGiaoDich;
     private FormatDate fDate;
-    
+
     public JFrameBoLocGD(FormDSGiaoDich formDSGiaoDich) {
         this.formDSGiaoDich = formDSGiaoDich;
         giaoDichBUS = new GiaoDichBUS();
@@ -36,7 +36,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
         taiKhoanKHBUS = new TaiKhoanKHBUS();
         isFiltered = false;
         fDate = new FormatDate();
-        
+
         initComponents();
         loadLoaiGiaoDich();
         rdbAllNgayGDActionPerformed(null);
@@ -44,25 +44,25 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
         rdbAllNVActionPerformed(null);
         rdbAllTKKHActionPerformed(null);
         rdbAllLoaiGDActionPerformed(null);
-        
+
         txtNgayBatDau.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Bắt đầu");
         txtNgayKetThuc.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Kết thúc");
     }
-    
+
     public void dienIdKH(int maKhachHang) {
         this.maKhachHang = maKhachHang;
         lbMaKH.setText("Id: " + maKhachHang);
         loadTKKH();
-        
+
         rdbAllTKKH.setEnabled(true);
         rdbChonTKKH.setEnabled(true);
     }
-    
+
     public void dienIdNV(int maNhanVien) {
         this.maNhanVien = maNhanVien;
         lbMaNV.setText("Id: " + maNhanVien);
     }
-    
+
     private void loadTKKH() {
         Map<Integer, String> map = new HashMap<>();
         map = taiKhoanKHBUS.convertListTKNguonToMap(maKhachHang);
@@ -76,7 +76,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
 
         cbxTKKH.setModel(model);
     }
-    
+
     private void loadLoaiGiaoDich() {
         Map<Integer, String> map = new HashMap<>();
         map = loaiGiaoDichBUS.convertListLoaiGDToMap();
@@ -90,7 +90,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
 
         cbxLoaiGD.setModel(model);
     }
-    
+
     private void checkFilterStatus() {
         if (rdbAllNgayGD.isSelected() && rdbAllKH.isSelected() && rdbAllNV.isSelected() && rdbAllTKKH.isSelected() && rdbAllLoaiGD.isSelected()) {
             isFiltered = false;
@@ -98,60 +98,66 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
             isFiltered = true;
         }
     }
-    
-    private List<GiaoDichDTO> chonTieuChiLoc() throws ParseException, Exception {
-        
 
+    private List<GiaoDichDTO> chonTieuChiLoc() {
         Date dateFrom, dateTo;
+
         if (rdbAllNgayGD.isSelected()) {
             dateFrom = null;
             dateTo = null;
         } else {
-            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
-                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
-                return null;
-            } else {
+            if (!txtNgayBatDau.getText().trim().isEmpty() && !txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText()) && InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
                 dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
                 dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
-                
+
                 if (!InputValidation.kiemTraTrinhTuNhapNgay(dateFrom, dateTo)) {
                     MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
                     return null;
                 }
+
+            } else if (!txtNgayBatDau.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText().trim())) {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = null;
+            } else if (!txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayKetThuc.getText().trim())) {
+                dateFrom = null;
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+            } else {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
             }
         }
-        
+
         int maKH;
         if (rdbAllKH.isSelected()) {
             maKH = 0;
         } else {
             if (lbMaKH.getText().equals("(Chưa có)")) {
                 MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
-                maKH = 0;
+                return null;
             } else {
                 maKH = maKhachHang;
             }
         }
-        
+
         int maNV;
         if (rdbAllNV.isSelected()) {
             maNV = 0;
         } else {
             if (lbMaNV.getText().equals("(Chưa có)")) {
                 MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên!");
-                maNV = 0;
+                return null;
             } else {
                 maNV = maNhanVien;
             }
         }
-        
+
         int maTKKH;
         if (rdbAllTKKH.isSelected()) {
             maTKKH = 0;
         } else {
             if (cbxTKKH.getSelectedIndex() == 0) {
                 MessageBox.showErrorMessage(null, "Vui lòng chọn tài khoản khách hàng!");
-                maTKKH = 0;
+                return null;
             } else {
                 maTKKH = maTaiKhoanKH;
             }
@@ -161,13 +167,18 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
         if (rdbAllLoaiGD.isSelected()) {
             idLoaiGD = 0;
         } else {
-            idLoaiGD = maLoaiGiaoDich;
+            if (cbxLoaiGD.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn loại giao dịch!");
+                return null;
+            } else {
+                idLoaiGD = maLoaiGiaoDich;
+            }
         }
 
         return giaoDichBUS.locGiaoDich(dateFrom, dateTo, maKH, maNV, maTKKH, idLoaiGD);
     }
-    
-    public List<GiaoDichDTO> listGDBoLoc() throws Exception {
+
+    public List<GiaoDichDTO> listGDBoLoc() {
         return chonTieuChiLoc();
     }
 
@@ -705,12 +716,12 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbChonNgayGDActionPerformed
 
     private void rdbAllKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbAllKHActionPerformed
-        if(rdbAllKH.isSelected()) {
+        if (rdbAllKH.isSelected()) {
             maKhachHang = 0;
             btnChonKH.setVisible(false);
             lbMaKH.setText("(Chưa chọn)");
             lbMaKH.setVisible(false);
-            
+
             rdbAllTKKH.setSelected(true);
             rdbAllTKKH.setEnabled(false);
             rdbChonTKKH.setEnabled(false);
@@ -719,14 +730,14 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbAllKHActionPerformed
 
     private void rdbChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbChonKHActionPerformed
-        if(rdbChonKH.isSelected()) {
+        if (rdbChonKH.isSelected()) {
             btnChonKH.setVisible(true);
             lbMaKH.setVisible(true);
         }
     }//GEN-LAST:event_rdbChonKHActionPerformed
 
     private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH", true);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);
@@ -792,7 +803,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxTKKHItemStateChanged
 
     private void rdbAllNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbAllNVActionPerformed
-        if(rdbAllNV.isSelected()) {
+        if (rdbAllNV.isSelected()) {
             maNhanVien = 0;
             btnChonNV.setVisible(false);
             lbMaNV.setText("(Chưa chọn)");
@@ -801,14 +812,14 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbAllNVActionPerformed
 
     private void rdbChonNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbChonNVActionPerformed
-        if(rdbChonNV.isSelected()) {
+        if (rdbChonNV.isSelected()) {
             btnChonNV.setVisible(true);
             lbMaNV.setVisible(true);
         }
     }//GEN-LAST:event_rdbChonNVActionPerformed
 
     private void btnChonNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonNVActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV", true);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);
@@ -819,21 +830,18 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
-        try {
-            if (chonTieuChiLoc() != null) {
-                checkFilterStatus();
+        List<GiaoDichDTO> listLocGD = chonTieuChiLoc();
+        
+        if (listLocGD != null) {
+            checkFilterStatus();
 
-                formDSGiaoDich.loadDSGiaoDich(isFiltered, chonTieuChiLoc());
-                this.dispose();
-            } else {
-                MessageBox.showInformationMessage(null, "", "Không có thông tin giao dịch nào phù hợp");
+            if (listLocGD.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Không có giao dịch nào phù hợp!");
                 return;
             }
-
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            
+            formDSGiaoDich.loadDSGiaoDich(isFiltered, false, chonTieuChiLoc());
+            this.dispose();
         }
     }//GEN-LAST:event_btnLocActionPerformed
 
@@ -843,13 +851,13 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
         rdbAllNV.setSelected(true);
         rdbAllTKKH.setSelected(true);
         rdbAllLoaiGD.setSelected(true);
-        
+
         rdbAllNgayGDActionPerformed(null);
         rdbAllKHActionPerformed(null);
         rdbAllNVActionPerformed(null);
         rdbAllTKKHActionPerformed(null);
         rdbAllLoaiGDActionPerformed(null);
-        
+
         btnLocActionPerformed(null);
     }//GEN-LAST:event_btnResetActionPerformed
 
@@ -883,7 +891,7 @@ public class JFrameBoLocGD extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-              
+
             }
         });
     }

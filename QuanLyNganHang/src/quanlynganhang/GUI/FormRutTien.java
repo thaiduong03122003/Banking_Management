@@ -15,6 +15,8 @@ import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.TietKiemBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
+import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.GiaoDichDTO;
 import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
@@ -65,10 +67,6 @@ public class FormRutTien extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPSoTienRut.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        jPPINCode.putClientProperty(FlatClientProperties.STYLE, ""
-            + "background:$BodyPanel.background;");
-//        jPThongTinGD.putClientProperty(FlatClientProperties.STYLE, ""
-//            + "background:$BodyPanel.background;");
         jPFooterCus.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPCusNameInfo.putClientProperty(FlatClientProperties.STYLE, ""
@@ -134,7 +132,7 @@ public class FormRutTien extends javax.swing.JPanel {
                 lbSoDu.setText("Số dư hiện có trong tài khoản");
 
                 this.soDu = new BigInteger(taiKhoanKH.getSoDu());
-                pwfSoDu.setText("" + taiKhoanKH.getSoDu());
+                pwfSoDu.setText(FormatNumber.convertNumToVND(new BigInteger(taiKhoanKH.getSoDu())));
 
                 lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
                 lbMaTKKH.setText("" + taiKhoanKH.getMaTKKH());
@@ -168,18 +166,17 @@ public class FormRutTien extends javax.swing.JPanel {
 
     private void rutTien() {
         boolean isSuccess = true;
-        BigInteger soTien;
+        BigInteger soTien = new BigInteger("0");
         StringBuilder error = new StringBuilder();
         error.append("");
 
         GiaoDichDTO giaoDich = new GiaoDichDTO();
 
-        String maPIN = String.valueOf(pwfMaPINNV.getPassword());
         if (txtSoTienRut.getText().isEmpty()) {
             error.append("Vui lòng nhập đầy đủ thông tin");
         } else {
             try {
-                soTien = new BigInteger(txtSoTienRut.getText());
+                soTien = new BigInteger(txtSoTienRut.getText().trim().replace(",", ""));
                 if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
                     error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
                 }
@@ -190,10 +187,6 @@ public class FormRutTien extends javax.swing.JPanel {
             } catch (NumberFormatException ne) {
                 error.append("\nVui lòng nhập đúng số tiền giao dịch!");
             }
-
-//            if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
-//                error.append("\nSai mã PIN");
-//            }
         }
 
         if (error.isEmpty()) {
@@ -214,7 +207,7 @@ public class FormRutTien extends javax.swing.JPanel {
                         giaoDich.setSoTien(soTienLai);
 
                         if (giaoDichBUS.chuyenTienLaiTKVeTK(giaoDich)) {
-                            if ((soDu.toString()).equals(txtSoTienRut.getText())) {
+                            if ((soDu.toString()).equals(soTien.toString())) {
                                 System.out.println("Rut het tien trong tai khoan!");
 
                                 isSuccess = tietKiemBUS.updateTrangThai(tietKiem.getMaGuiTK());
@@ -241,7 +234,7 @@ public class FormRutTien extends javax.swing.JPanel {
 
                 giaoDich.setSoTien(tienRut.toString());
             } else {
-                giaoDich.setSoTien(txtSoTienRut.getText());
+                giaoDich.setSoTien(soTien.toString());
             }
 
             if (isSuccess) {
@@ -264,6 +257,16 @@ public class FormRutTien extends javax.swing.JPanel {
             }
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
+        }
+    }
+    
+    private void onCodeTextChanged() {
+        String currency = txtSoTienRut.getText().trim().replace(",", "");
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtSoTienRut.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
         }
     }
 
@@ -302,9 +305,6 @@ public class FormRutTien extends javax.swing.JPanel {
         jPFooterCus = new javax.swing.JPanel();
         btnRutTien = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
-        jPPINCode = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        pwfMaPINNV = new javax.swing.JPasswordField();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
@@ -391,6 +391,11 @@ public class FormRutTien extends javax.swing.JPanel {
         txtSoTienRut.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtSoTienRutFocusLost(evt);
+            }
+        });
+        txtSoTienRut.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSoTienRutKeyReleased(evt);
             }
         });
 
@@ -532,32 +537,6 @@ public class FormRutTien extends javax.swing.JPanel {
             }
         });
 
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
-        );
-        jLabel15.setText("Mã PIN của nhân viên thực hiện giao dịch");
-
-        javax.swing.GroupLayout jPPINCodeLayout = new javax.swing.GroupLayout(jPPINCode);
-        jPPINCode.setLayout(jPPINCodeLayout);
-        jPPINCodeLayout.setHorizontalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(97, Short.MAX_VALUE))
-        );
-        jPPINCodeLayout.setVerticalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout jPCustomerInfoLayout = new javax.swing.GroupLayout(jPCustomerInfo);
         jPCustomerInfo.setLayout(jPCustomerInfoLayout);
         jPCustomerInfoLayout.setHorizontalGroup(
@@ -574,8 +553,7 @@ public class FormRutTien extends javax.swing.JPanel {
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jPSoTienRut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(jPThongTinGD, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -593,9 +571,7 @@ public class FormRutTien extends javax.swing.JPanel {
                 .addComponent(jPSoDu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPSoTienRut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(86, 86, 86)
                 .addComponent(jPThongTinGD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -989,11 +965,11 @@ public class FormRutTien extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtSoTienRutFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienRutFocusLost
-        lbSoTienRut.setText("" + txtSoTienRut.getText() + " VND");
+
     }//GEN-LAST:event_txtSoTienRutFocusLost
 
     private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
-        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH");
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH", true);
         chonTKKH.setResizable(false);
         chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonTKKH.setVisible(true);
@@ -1011,6 +987,10 @@ public class FormRutTien extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnRutTienActionPerformed
 
+    private void txtSoTienRutKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoTienRutKeyReleased
+        onCodeTextChanged();
+    }//GEN-LAST:event_txtSoTienRutKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
@@ -1021,7 +1001,6 @@ public class FormRutTien extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -1047,7 +1026,6 @@ public class FormRutTien extends javax.swing.JPanel {
     private javax.swing.JPanel jPFooterCus;
     private javax.swing.JPanel jPGender;
     private javax.swing.JPanel jPIdCentizenCard;
-    private javax.swing.JPanel jPPINCode;
     private javax.swing.JPanel jPPhoneNum;
     private javax.swing.JPanel jPSoDu;
     private javax.swing.JPanel jPSoTienRut;
@@ -1063,7 +1041,6 @@ public class FormRutTien extends javax.swing.JPanel {
     private javax.swing.JLabel lbTenNV;
     private javax.swing.JLabel lbTitle;
     private javax.swing.JLabel lbtienRut;
-    private javax.swing.JPasswordField pwfMaPINNV;
     private javax.swing.JPasswordField pwfSoDu;
     private javax.swing.JRadioButton rdbKhac;
     private javax.swing.JRadioButton rdbNam;

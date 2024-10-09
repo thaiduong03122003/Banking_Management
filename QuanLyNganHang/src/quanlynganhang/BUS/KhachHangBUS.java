@@ -40,23 +40,14 @@ public class KhachHangBUS {
     }
 
     public List<KhachHangDTO> getDSKhachHang(int biXoa) {
-        try {
-            return khachHangDAO.selectAll(biXoa);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return khachHangDAO.selectAll(biXoa);
     }
 
-    public Object[][] doiSangObjectKhachHang(int biXoa, boolean isFiltered, List<KhachHangDTO> listKH) throws Exception {
+    public Object[][] doiSangObjectKhachHang(int biXoa, boolean isFiltered, boolean isSearched, List<KhachHangDTO> listKH) {
         FormatDate fDate = new FormatDate();
         List<KhachHangDTO> list = new ArrayList<>();
 
-        if (isFiltered) {
-            list = listKH;
-        } else {
-            list = getDSKhachHang(biXoa);
-        }
+        list = (isFiltered || isSearched) ? listKH : getDSKhachHang(biXoa);
 
         String diaChi = "";
         Object[][] data = new Object[list.size()][10];
@@ -71,82 +62,60 @@ public class KhachHangBUS {
             data[rowIndex][6] = khachHang.getEmail();
             data[rowIndex][7] = khachHang.getSdt();
             data[rowIndex][8] = khachHang.getCccd();
-            
+
             if (khachHang.getNoXau() == 0) {
                 data[rowIndex][9] = "Không";
             } else {
                 data[rowIndex][9] = "Có";
             }
-    
+
             rowIndex++;
         }
         return data;
     }
 
     public int addKhachHang(KhachHangDTO khachHang, int biXoa) {
-        try {
-            return khachHangDAO.insert(khachHang, biXoa);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return 0;
-        }
+        return khachHangDAO.insert(khachHang, biXoa);
     }
 
     public boolean updateKhachHang(KhachHangDTO khachHang, int biXoa) {
-        try {
-            return khachHangDAO.update(khachHang, biXoa);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return khachHangDAO.update(khachHang, biXoa);
     }
 
     public boolean deleteKhachHang(int maKhachHang) {
-        try {
-            return khachHangDAO.delete(maKhachHang);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return khachHangDAO.delete(maKhachHang);
     }
 
     public boolean restoreKhachHang(int maKhachHang) {
-        try {
-            return khachHangDAO.restore(maKhachHang);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return khachHangDAO.restore(maKhachHang);
     }
 
     public KhachHangDTO getKhachHangById(int maKhachHang, int biXoa) {
-        try {
-            return khachHangDAO.selectById(maKhachHang, biXoa);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return khachHangDAO.selectById(maKhachHang, biXoa);
     }
 
-    public List<KhachHangDTO> locKhachHang(String gender, java.util.Date dateFrom, java.util.Date dateTo, int provinceId, int districtId, int wardId, int noXau) throws Exception {
+    public List<KhachHangDTO> locKhachHang(String gender, java.util.Date dateFrom, java.util.Date dateTo, int provinceId, int districtId, int wardId, int noXau) {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
 
         if (dateFrom != null && dateTo != null) {
             dateBatDau = new Date(dateFrom.getTime());
             dateKetThuc = new Date(dateTo.getTime());
+        } else if (dateFrom != null && dateTo == null) {
+            dateBatDau = new Date(dateFrom.getTime());
+        } else if (dateFrom == null && dateTo != null) {
+            dateKetThuc = new Date(dateTo.getTime());
         }
 
         return khachHangDAO.filter(0, gender, dateBatDau, dateKetThuc, provinceId, districtId, wardId, noXau);
     }
-    
+
+    public List<KhachHangDTO> timKiemTheoLoai(int biXoa, String typeName, String inputValue) {
+        return khachHangDAO.searchByInputType(biXoa, typeName, inputValue);
+    }
+
     public boolean xoaNoXau(int maKhachHang) {
-        try {
-            return khachHangDAO.xoaNoXau(maKhachHang);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return khachHangDAO.xoaNoXau(maKhachHang);
     }
 
     public void xuatExcel(File file, String userName, List<KhachHangDTO> list) throws FileNotFoundException, IOException {
@@ -206,51 +175,5 @@ public class KhachHangBUS {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    }
-
-    public List<KhachHangDTO> nhapExcel(File file) throws IOException {
-        List<KhachHangDTO> list = new ArrayList<>();
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String sheetName = workbook.getSheetName(0);
-            if (!sheetName.equals("Danh sách khách hàng")) {
-                return null;
-            } else {
-                Row row;
-                try {
-                    int value = (int) sheet.getRow(4).getCell(0).getNumericCellValue();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
-                    row = sheet.getRow(i);
-
-                    try {
-                        KhachHangDTO khachHang = new KhachHangDTO();
-                        khachHang.setMaKH((int) row.getCell(0).getNumericCellValue());
-                        khachHang.setHoDem(row.getCell(1).getStringCellValue());
-                        khachHang.setTen(row.getCell(2).getStringCellValue());
-                        khachHang.setGioiTinh(row.getCell(3).getStringCellValue());
-                        khachHang.setNgaySinh(fDate.toDate(row.getCell(4).getStringCellValue()));
-                        khachHang.setMaPhuongXa((int) row.getCell(5).getNumericCellValue());
-                        khachHang.setDiaChi(row.getCell(6).getStringCellValue());
-                        khachHang.setEmail(row.getCell(7).getStringCellValue());
-                        khachHang.setSdt(row.getCell(8).getStringCellValue());
-                        khachHang.setCccd(row.getCell(9).getStringCellValue());
-                        khachHang.setAnhDaiDien(row.getCell(10).getStringCellValue());
-                        khachHang.setNoXau((int) row.getCell(11).getNumericCellValue());
-                        khachHang.setBiXoa((int) row.getCell(12).getNumericCellValue());
-
-                        list.add(khachHang);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return list;
-            }
-        }
     }
 }

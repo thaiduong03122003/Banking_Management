@@ -26,7 +26,8 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     private TaiKhoanKHDTO taiKhoanKH;
     private FormatDate fDate;
     private int loaiThe;
-    
+    private boolean isAutoGenerate;
+
     public FormMoTheGhiNo(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
         this.taiKhoanNV = taiKhoanNV;
         taiKhoanKHBUS = new TaiKhoanKHBUS();
@@ -34,7 +35,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         theATMBUS = new TheATMBUS();
         fDate = new FormatDate();
         loaiThe = 1;
-        
+
         initComponents();
         initCustomUI();
     }
@@ -76,10 +77,10 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             + "background:$BodyPanel.background;");
         jPPhoneNum.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
-        
+
         pwfMaPIN.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
-        
+
         txtSoThe.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 12 số");
         pwfMaPIN.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 6 số");
         txtSTK.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
@@ -91,21 +92,21 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         txtSdt.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         jPRankCard.setVisible(false);
     }
-    
+
     public void dienThongTinTKKH(int maTaiKhoanKH) {
         TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKH);
-        
+
         if (taiKhoanKH != null) {
             if (taiKhoanKH.getMaLoaiTaiKhoan() != 1 && taiKhoanKH.getMaLoaiTaiKhoan() != 2) {
                 MessageBox.showErrorMessage(null, "Không thể tạo thẻ cho tài khoản này!");
-            }else if (taiKhoanKH.getMaTrangThai() != 6) {
+            } else if (taiKhoanKH.getMaTrangThai() != 6) {
                 MessageBox.showErrorMessage(null, "Vui lòng kích hoạt tài khoản trước khi sử dụng!");
             } else {
                 this.taiKhoanKH = taiKhoanKH;
                 txtTenThe.setText(taiKhoanKH.getTenTaiKhoan());
-                
+
                 KhachHangDTO khachHang = khachHangBUS.getKhachHangById(taiKhoanKH.getMaKhachHang(), 0);
-                
+
                 if (khachHang != null) {
                     lbHotenKH.setText(taiKhoanKH.getTenKhachHang());
                     lbMaTK.setText("" + taiKhoanKH.getMaTKKH());
@@ -116,7 +117,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
                     txtLoaiTK.setText(taiKhoanKH.getTenLoaiTaiKhoan());
                     txtDiaChi.setText(khachHang.getDiaChi());
                     txtSdt.setText(khachHang.getSdt());
-                    
+
                     if (khachHang.getGioiTinh().equals("Nam")) {
                         rdbNam.setSelected(true);
                     } else if (khachHang.getGioiTinh().equals("Nữ")) {
@@ -130,37 +131,54 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void taoThe() {
-        
+
         StringBuilder error = new StringBuilder();
         error.append("");
         String maPIN = String.valueOf(pwfMaPIN.getPassword());
-        
-        if (txtSoThe.getText().isEmpty() || txtTenThe.getText().isEmpty() || maPIN.isEmpty()) {
+        TheATMDTO theATM = new TheATMDTO();
+
+        if (txtTenThe.getText().isEmpty() || (txtSoThe.getText().isEmpty() && !isAutoGenerate) || maPIN.isEmpty()) {
             error.append("\nVui lòng điền đầu đủ thông tin!");
         } else {
-            
-            if (!InputValidation.kiemTraCCCD(txtSoThe.getText())) {
-                error.append("\nSố thẻ không hợp lệ!");
+
+            if (!isAutoGenerate) {
+                if (InputValidation.kiemTraCCCD(txtSoThe.getText())) {
+                    theATM.setSoThe(txtSoThe.getText().trim());
+                } else {
+                    error.append("\nMã số thẻ không hợp lệ");
+                }
+            } else {
+                String soTheMoi = theATMBUS.taoSoTheTuDong();
+
+                if (soTheMoi.equals("")) {
+                    error.append("\nMã số thẻ bị lỗi");
+                } else {
+                    txtSoThe.setText(soTheMoi);
+                    theATM.setSoThe(soTheMoi);
+                }
             }
-            
+
+            if (!InputValidation.kiemTraTen(txtTenThe.getText())) {
+                error.append("\nTên in trên thẻ không hợp lệ");
+            }
+
             if (!InputValidation.kiemTraMaPIN(maPIN)) {
                 error.append("\nMã PIN không hợp lệ");
             }
         }
-        
+
         if (error.isEmpty()) {
-            TheATMDTO theATM = new TheATMDTO();
-            
-            theATM.setSoThe(txtSoThe.getText());
-            theATM.setTenThe(txtTenThe.getText());
+
+            theATM.setSoThe(txtSoThe.getText().trim());
+            theATM.setTenThe(txtTenThe.getText().trim());
             theATM.setMaPIN(MaHoaMatKhauBUS.encryptPassword(maPIN));
             theATM.setNgayTao(fDate.getToday());
             theATM.setThoiHanThe(fDate.addMonth(60));
             theATM.setMaTaiKhoanKH(taiKhoanKH.getMaTKKH());
             theATM.setMaLoaiThe(loaiThe);
-            
+
             if (theATMBUS.addTheATM(theATM) != 0) {
                 MessageBox.showInformationMessage(null, "", "Tạo thẻ ghi nợ thành công!");
             } else {
@@ -170,7 +188,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
         }
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -190,6 +208,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         jPCardNum = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         txtSoThe = new javax.swing.JTextField();
+        btnTaoMa = new javax.swing.JButton();
         jPYOB = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         pwfMaPIN = new javax.swing.JPasswordField();
@@ -255,7 +274,14 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel3.setIcon(new FlatSVGIcon("quanlynganhang/icon/id_bankcard_label.svg")
         );
-        jLabel3.setText("Mã thẻ");
+        jLabel3.setText("Mã số thẻ");
+
+        btnTaoMa.setText("Tạo mã");
+        btnTaoMa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoMaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPCardNumLayout = new javax.swing.GroupLayout(jPCardNum);
         jPCardNum.setLayout(jPCardNumLayout);
@@ -264,9 +290,14 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             .addGroup(jPCardNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPCardNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtSoThe, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPCardNumLayout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPCardNumLayout.createSequentialGroup()
+                        .addComponent(txtSoThe)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnTaoMa, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPCardNumLayout.setVerticalGroup(
             jPCardNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,7 +305,9 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtSoThe, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPCardNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnTaoMa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtSoThe, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -475,7 +508,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
                     .addComponent(txtTenThe)
                     .addGroup(jPCardNameLayout.createSequentialGroup()
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 54, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPCardNameLayout.setVerticalGroup(
@@ -501,21 +534,21 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPCardType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(lbTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
-                        .addComponent(btnChonTKKH, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                                 .addComponent(jPPhysicalCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jPRankCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 58, Short.MAX_VALUE))
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
-                        .addComponent(jPCardNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPCardName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jPCardNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnChonTKKH, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPCardName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPCustomerInfoLayout.setVerticalGroup(
@@ -935,7 +968,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void rdbNoiDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbNoiDiaActionPerformed
-        if(rdbNoiDia.isSelected()) {
+        if (rdbNoiDia.isSelected()) {
             loaiThe = 1;
             jPRankCard.setVisible(false);
             revalidate();
@@ -943,7 +976,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     }//GEN-LAST:event_rdbNoiDiaActionPerformed
 
     private void rdbQuocTeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbQuocTeActionPerformed
-        if(rdbQuocTe.isSelected()) {
+        if (rdbQuocTe.isSelected()) {
             loaiThe = 2;
             jPRankCard.setVisible(true);
             revalidate();
@@ -951,7 +984,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     }//GEN-LAST:event_rdbQuocTeActionPerformed
 
     private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
-        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH");
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản khách hàng", "DSTKKH", true);
         chonTKKH.setResizable(false);
         chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonTKKH.setVisible(true);
@@ -969,6 +1002,18 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnTaoTheActionPerformed
 
+    private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
+        if (btnTaoMa.getText().equals("Tạo mã")) {
+            txtSoThe.setEnabled(false);
+            isAutoGenerate = true;
+            btnTaoMa.setText("Hủy tạo");
+        } else {
+            txtSoThe.setEnabled(true);
+            isAutoGenerate = false;
+            btnTaoMa.setText("Tạo mã");
+        }
+    }//GEN-LAST:event_btnTaoMaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
@@ -976,6 +1021,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupPhysicalCard;
     private javax.swing.ButtonGroup btnGroupRankCard;
+    private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnTaoThe;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

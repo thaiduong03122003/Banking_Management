@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.DiaChiBUS;
@@ -25,6 +27,7 @@ import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.XuLyAnhBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.DiaChiDTO;
@@ -129,7 +132,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             + "showRevealButton:true;");
 
         txtSoTaiKhoan.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập đủ 12 số");
-        txtTien.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu là 100.000 VND");
+        txtTien.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tối thiểu là 100,000 VND");
 
         cbxQuanHuyen.setEnabled(false);
         cbxPhuongXa.setEnabled(false);
@@ -222,7 +225,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         }
     }
 
-    private int themKhachHang() throws ParseException {
+    private int themKhachHang() {
         StringBuilder error = new StringBuilder();
         error.append("");
 
@@ -442,7 +445,11 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             }
         }
 
-        taiKhoanKH.setTenTaiKhoan(txtTenTaiKhoan.getText());
+        if (InputValidation.kiemTraTen(txtTenTaiKhoan.getText())) {
+            taiKhoanKH.setTenTaiKhoan(txtTenTaiKhoan.getText().trim());
+        } else {
+            error.append("\nTên tài khoản không hợp lệ");
+        }
 
         if (cbxLoaiTaiKhoan.getSelectedIndex() == 0) {
             taiKhoanKH.setMaLoaiTaiKhoan(1);
@@ -458,10 +465,10 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         }
 
         try {
-            BigInteger soTien = new BigInteger(txtTien.getText());
+            BigInteger soTien = new BigInteger(txtTien.getText().trim().replace(",", ""));
 
             if (soTien.compareTo(minSoDu) >= 0) {
-                soTienGD = txtTien.getText();
+                soTienGD = soTien.toString();
                 taiKhoanKH.setSoDu("0");
             } else {
                 error.append("\nSố tiền phải lớn hơn hoặc bằng 100.000 VND");
@@ -494,6 +501,16 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
+        }
+    }
+    
+    private void onCodeTextChanged() {
+        String currency = txtTien.getText().trim().replace(",", "");
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtTien.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
         }
     }
 
@@ -1076,6 +1093,14 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
                 txtTienFocusLost(evt);
             }
         });
+        txtTien.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtTienKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTienKeyReleased(evt);
+            }
+        });
 
         lbMoneyType.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lbMoneyType.setText("VND");
@@ -1250,7 +1275,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void txtTienFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtTienFocusLost
-        // Hàm xử lý dịnh dạng tiền tệ
+        
     }//GEN-LAST:event_txtTienFocusLost
 
     private void cbxTinhThanhItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTinhThanhItemStateChanged
@@ -1359,17 +1384,11 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
     private void btnLuuKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLuuKHActionPerformed
         if (quyenThem1 == 1) {
-            try {
                 int maKhachHang = themKhachHang();
                 if (maKhachHang != 0) {
                     MessageBox.showInformationMessage(null, "", "Thêm khách hàng thành công");
                     dienThongTinKH(maKhachHang);
-                } else {
-                    MessageBox.showInformationMessage(null, "", "Thêm khách hàng thất bại!");
                 }
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
         } else {
             ChiaQuyenBUS.showError();
             return;
@@ -1377,7 +1396,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     }//GEN-LAST:event_btnLuuKHActionPerformed
 
     private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH", true);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);
@@ -1388,8 +1407,6 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             if (MessageBox.showConfirmMessage(this, "Xác nhận tạo tài khoản?") == JOptionPane.YES_OPTION) {
                 if (themTaiKhoanKH()) {
                     MessageBox.showInformationMessage(null, "", "Tạo tài khoản khách hàng thành công!");
-                } else {
-                    MessageBox.showErrorMessage(null, "Tạo tài khoản khách hàng thất bại!");
                 }
             } else {
                 return;
@@ -1411,6 +1428,14 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
             btnAutoGenerateSTK.setText("Tạo số tài khoản tự động");
         }
     }//GEN-LAST:event_btnAutoGenerateSTKActionPerformed
+
+    private void txtTienKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienKeyPressed
+        
+    }//GEN-LAST:event_txtTienKeyPressed
+
+    private void txtTienKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienKeyReleased
+        onCodeTextChanged();
+    }//GEN-LAST:event_txtTienKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

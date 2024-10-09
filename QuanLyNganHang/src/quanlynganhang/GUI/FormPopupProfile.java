@@ -5,11 +5,14 @@
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import javax.swing.SwingWorker;
+import quanlynganhang.BUS.DangNhapBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.adminUI.JFrameChiTietTKNV;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 /**
  *
@@ -19,17 +22,20 @@ public class FormPopupProfile extends javax.swing.JPanel {
 
     private TaiKhoanNVDTO taiKhoanNV;
     private NhanVienBUS nhanVienBUS;
+    private DangNhapBUS dangNhapBUS;
     private Application app;
     private ApplicationAdmin appAdmin;
-    private int quyenSua, quyenXoa;
+    private int maDangNhap, quyenSua, quyenXoa;
 
-    public FormPopupProfile(TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin, int quyenSua, int quyenXoa) {
+    public FormPopupProfile(int maDangNhap, TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin, int quyenSua, int quyenXoa) {
         this.taiKhoanNV = taiKhoanNV;
         this.app = app;
         this.appAdmin = appAdmin;
+        this.maDangNhap = maDangNhap;
         this.quyenSua = quyenSua;
         this.quyenXoa = quyenXoa;
         nhanVienBUS = new NhanVienBUS();
+        dangNhapBUS = new DangNhapBUS();
         initComponents();
         jPPopupProfile.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
@@ -135,9 +141,61 @@ public class FormPopupProfile extends javax.swing.JPanel {
 
     private void btnDangXuatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangXuatActionPerformed
         if (app != null) {
-            app.dispose();
+            btnDangXuat.setEnabled(false);
+            btnDangXuat.setText("Đang đăng xuất...");
+            SwingWorker<Boolean, Void> logOutWorker = new SwingWorker<Boolean, Void>() {
+                @Override
+                protected Boolean doInBackground() {
+                    return dangNhapBUS.dangXuat(maDangNhap);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        if (get()) {
+                            app.dispose();
+                        } else {
+                            MessageBox.showErrorMessage(null, "Đăng xuất thất bại! Vui lòng thử đóng hoặc dừng ứng dụng");
+                        }
+                    } catch (Exception e) {
+                        MessageBox.showErrorMessage(null, "Có lỗi xảy ra trong quá trình đăng xuất.");
+                        e.printStackTrace();
+                    }
+                    
+                    btnDangXuat.setEnabled(true);
+                    btnDangXuat.setText("Đăng xuất");
+                }
+            };
+            logOutWorker.execute();
+        } else if (appAdmin != null) {
+            btnDangXuat.setEnabled(false);
+            btnDangXuat.setText("Đang đăng xuất...");
+            SwingWorker<Boolean, Void> logOutWorker = new SwingWorker<Boolean, Void>() {
+                @Override
+                protected Boolean doInBackground() {
+                    return dangNhapBUS.dangXuat(maDangNhap);
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        if (get()) {
+                            appAdmin.dispose();
+                        } else {
+                            MessageBox.showErrorMessage(null, "Đăng xuất thất bại! Vui lòng thử đóng hoặc dừng ứng dụng");
+                        }
+                    } catch (Exception e) {
+                        MessageBox.showErrorMessage(null, "Có lỗi xảy ra trong quá trình đăng xuất.");
+                        e.printStackTrace();
+                    }
+                    
+                    btnDangXuat.setEnabled(true);
+                    btnDangXuat.setText("Đăng xuất");
+                }
+            };
+            logOutWorker.execute();
         } else {
-            appAdmin.dispose();
+            MessageBox.showErrorMessage(null, "Không tìm thấy ứng dụng để đóng.");
         }
 
         JFrameDangNhap dangNhap = new JFrameDangNhap();

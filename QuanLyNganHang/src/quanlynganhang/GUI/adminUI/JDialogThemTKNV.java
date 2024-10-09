@@ -38,8 +38,6 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
     private void initCustomUI() {
         pwfMatKhau.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
-        pwfMaPIN.putClientProperty(FlatClientProperties.STYLE, ""
-            + "showRevealButton:true;");
     }
     
     private boolean dienThongTin() {
@@ -48,7 +46,17 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         error.append("");
         
         TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
-        taiKhoanNV.setTenDangNhap(txtTenTK.getText());
+        
+        String tenDangNhap = txtTenTK.getText().trim();
+        if (!tenDangNhap.isEmpty()) {
+            if (InputValidation.kiemTraTen(tenDangNhap)) {
+                taiKhoanNV.setTenDangNhap(tenDangNhap);
+            } else {
+                error.append("\nTên đăng nhập không hợp lệ!");
+            }
+        } else {
+            error.append("\nTên đăng nhập không được để trống!");
+        }
         
         String password = String.valueOf(pwfMatKhau.getPassword());
         if (InputValidation.kiemTraMatKhau(password)) {
@@ -57,17 +65,10 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
             error.append("\nMật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
         }
         
-        String pinCode = String.valueOf(pwfMaPIN.getPassword());
-        if (InputValidation.kiemTraMaPIN(pinCode)) {
-            taiKhoanNV.setMaPIN(MaHoaMatKhauBUS.encryptPassword(pinCode));
-        } else {
-            error.append("\nMã PIN có độ dài 6 ký tự, chỉ chứa các ký tự số!");
-        }
-        
         taiKhoanNV.setNgayTaoTK(fDate.getToday());
         taiKhoanNV.setMaNhanVien(maNhanVien);
         if (error.isEmpty()) {
-            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV);
+            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV) != 0;
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -103,9 +104,6 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         jPCardNum4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         pwfMatKhau = new javax.swing.JPasswordField();
-        jPCardNum5 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        pwfMaPIN = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -123,7 +121,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -164,7 +162,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                 .addComponent(btnClose)
                 .addGap(18, 18, 18)
                 .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(280, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,7 +251,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                 .addGroup(jPCardNum4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPCardNum4Layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 56, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(pwfMatKhau))
                 .addContainerGap())
         );
@@ -264,34 +262,6 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pwfMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel8.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
-        );
-        jLabel8.setText("Mã PIN đăng nhập");
-
-        javax.swing.GroupLayout jPCardNum5Layout = new javax.swing.GroupLayout(jPCardNum5);
-        jPCardNum5.setLayout(jPCardNum5Layout);
-        jPCardNum5Layout.setHorizontalGroup(
-            jPCardNum5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPCardNum5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(65, 65, 65))
-            .addGroup(jPCardNum5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pwfMaPIN)
-                .addContainerGap())
-        );
-        jPCardNum5Layout.setVerticalGroup(
-            jPCardNum5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPCardNum5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pwfMaPIN, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -306,9 +276,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                     .addComponent(jPCardNum3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPCardNum4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPCardNum5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(239, 239, 239))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -318,8 +286,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPCardNum3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPCardNum4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPCardNum5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPCardNum4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -398,11 +365,9 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPCardNum;
     private javax.swing.JPanel jPCardNum3;
     private javax.swing.JPanel jPCardNum4;
-    private javax.swing.JPanel jPCardNum5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -410,7 +375,6 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPasswordField pwfMaPIN;
     private javax.swing.JPasswordField pwfMatKhau;
     private javax.swing.JTextField txtMaNV;
     private javax.swing.JTextField txtTenTK;

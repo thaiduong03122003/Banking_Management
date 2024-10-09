@@ -328,6 +328,12 @@ public class FormChoVayVon extends javax.swing.JPanel {
                 }
             }
 
+            if (InputValidation.kiemTraTen(txtTenTKVay.getText())) {
+                taiKhoanKH.setTenTaiKhoan(txtTenTKVay.getText());
+            } else {
+                error.append("\nTên tài khoản vay không hợp lệ");
+            }
+
             if (error.isEmpty()) {
                 if (isVayTinChap == 1 && !vayVonBUS.kiemTraDieuKienVay(txtThuNhap.getText(), txtTienVay.getText(), maThoiHan)) {
                     MessageBox.showErrorMessage(null, "Thu nhập của người này không đủ điều kiện để vay!");
@@ -339,7 +345,6 @@ public class FormChoVayVon extends javax.swing.JPanel {
                     taiKhoanKH.setSoDu("0");
                     taiKhoanKH.setMaLoaiTaiKhoan(4);
                     taiKhoanKH.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
-                    taiKhoanKH.setTenTaiKhoan(txtTenTKVay.getText());
                     taiKhoanKH.setMaTrangThai(6);
 
                     int maTKKH = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanKH);
@@ -356,11 +361,7 @@ public class FormChoVayVon extends javax.swing.JPanel {
                         vayVon.setMaTaiKhoanKH(maTKKH);
                         vayVon.setSoTienVay(txtTienVay.getText());
                         vayVon.setMaTrangThai(8);
-                        try {
-                            vayVon.setNgayTraNo(ngayTraNo == "" ? fDate.addMonth(1) : fDate.toDate(ngayTraNo));
-                        } catch (ParseException ex) {
-                            ex.printStackTrace();
-                        }
+                        vayVon.setNgayTraNo(ngayTraNo == "" ? fDate.addMonth(1) : fDate.toDate(ngayTraNo));
                         vayVon.setNgayHetThoiHan(fDate.addMonth(thoiHan.getSoThoiHan()));
                         vayVon.setDuNoGoc(txtTienVay.getText());
 
@@ -385,7 +386,7 @@ public class FormChoVayVon extends javax.swing.JPanel {
                             MessageBox.showErrorMessage(null, "Tạo khoản vay thất bại!");
                         }
                     } else {
-                        MessageBox.showErrorMessage(null, "Tạo tài khoản vay thất bại!");
+                        MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
                     }
                 }
             } else {
@@ -1261,7 +1262,7 @@ public class FormChoVayVon extends javax.swing.JPanel {
     }//GEN-LAST:event_rdbVayCoDBActionPerformed
 
     private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH", true);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);

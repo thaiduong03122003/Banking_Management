@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -44,10 +45,10 @@ public class TheATMBUS {
         }
     }
 
-    public Object[][] doiSangObjectThe(boolean isFiltered, List<TheATMDTO> listThe) {
+    public Object[][] doiSangObjectThe(boolean isFiltered, boolean isSearched, List<TheATMDTO> listThe) {
         List<TheATMDTO> list = new ArrayList<>();
 
-        if (isFiltered) {
+        if (isFiltered || isSearched) {
             list = listThe;
         } else {
             list = getDSThe();
@@ -125,12 +126,16 @@ public class TheATMBUS {
         }
     }
 
-    public List<TheATMDTO> locThe(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maLoaiThe, int maTrangThai) throws Exception {
+    public List<TheATMDTO> locThe(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maLoaiThe, int maTrangThai) {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
 
         if (dateFrom != null && dateTo != null) {
             dateBatDau = new Date(dateFrom.getTime());
+            dateKetThuc = new Date(dateTo.getTime());
+        } else if (dateFrom != null && dateTo == null) {
+            dateBatDau = new Date(dateFrom.getTime());
+        } else if (dateFrom == null && dateTo != null) {
             dateKetThuc = new Date(dateTo.getTime());
         }
 
@@ -180,6 +185,15 @@ public class TheATMBUS {
         }
         return null;
     }
+    
+    public List<TheATMDTO> timKiemTheoLoai(String typeName, String inputValue) {
+        try {
+            return theATMDAO.searchByInputType(typeName, inputValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public void xuatExcel(File file, String userName, List<TheATMDTO> list) throws FileNotFoundException, IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -226,44 +240,31 @@ public class TheATMBUS {
         workbook.close();
         outputStream.close();
     }
+    
+    public TheATMDTO getTheATMBySoThe(String soThe) {
+        return theATMDAO.selectByCardNum(soThe);
+    }
+    
+    public String taoSoTheTuDong() {
+        String soThe = theATMDAO.getNewSoThe();
 
-    public List<TheATMDTO> nhapExcel(File file) throws IOException {
-        List<TheATMDTO> list = new ArrayList<>();
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
+        if (soThe.isEmpty()) {
+            soThe = "100000000011";
+        }
 
-            String sheetName = workbook.getSheetName(0);
-            if (!sheetName.equals("Danh sách thẻ của khách hàng")) {
-                return null;
+        BigInteger newSoThe = new BigInteger(soThe);
+
+        boolean flag = true;
+        int count = 1;
+        while (flag) {
+            newSoThe = newSoThe.add(new BigInteger("" + count));
+
+            if (getTheATMBySoThe(newSoThe.toString()) != null) {
+                count++;
             } else {
-                Row row;
-                try {
-                    int value = (int) sheet.getRow(4).getCell(0).getNumericCellValue();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
-                    row = sheet.getRow(i);
-
-                    try {
-                        TheATMDTO theATM = new TheATMDTO();
-                        theATM.setMaThe((int) row.getCell(0).getNumericCellValue());
-                        theATM.setSoThe(row.getCell(1).getStringCellValue());
-                        theATM.setHoTenKH(row.getCell(2).getStringCellValue());
-                        theATM.setNgayTao(fDate.toDate(row.getCell(3).getStringCellValue()));
-                        theATM.setThoiHanThe(fDate.toDate(row.getCell(4).getStringCellValue()));
-                        theATM.setTenLoaiThe(row.getCell(5).getStringCellValue());
-                        theATM.setTenTrangThai(row.getCell(6).getStringCellValue());
-
-                        list.add(theATM);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return list;
+                flag = false;
             }
         }
+        return newSoThe.toString();
     }
 }

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Sep 18, 2024 at 10:31 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: localhost:3306
+-- Thời gian đã tạo: Th10 09, 2024 lúc 01:29 AM
+-- Phiên bản máy phục vụ: 8.0.29
+-- Phiên bản PHP: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,37 +18,37 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `banking_db`
+-- Cơ sở dữ liệu: `banking_db`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_chuc_vu`
+-- Cấu trúc bảng cho bảng `tbl_chuc_vu`
 --
 
 CREATE TABLE `tbl_chuc_vu` (
-  `ma_chuc_vu` int(11) NOT NULL,
-  `ten_chuc_vu` varchar(255) DEFAULT NULL,
-  `mo_ta` text DEFAULT NULL,
-  `admin` int(11) DEFAULT NULL,
-  `thong_ke` int(11) DEFAULT NULL,
-  `khach_hang` varchar(10) DEFAULT NULL,
-  `nhan_vien` varchar(10) DEFAULT NULL,
-  `tk_khach_hang` varchar(10) DEFAULT NULL,
-  `tk_nhan_vien` varchar(10) DEFAULT NULL,
-  `the` varchar(10) DEFAULT NULL,
-  `giao_dich` int(11) DEFAULT NULL,
-  `gui_tiet_kiem` int(11) DEFAULT NULL,
-  `vay_von` int(11) DEFAULT NULL,
-  `vay_tin_dung` int(11) DEFAULT NULL,
-  `phan_quyen` int(11) DEFAULT NULL,
-  `them_chuc_vu` int(11) DEFAULT NULL,
-  `bi_xoa` int(11) DEFAULT NULL
+  `ma_chuc_vu` int NOT NULL,
+  `ten_chuc_vu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mo_ta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `admin` int DEFAULT NULL,
+  `thong_ke` int DEFAULT NULL,
+  `khach_hang` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nhan_vien` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tk_khach_hang` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tk_nhan_vien` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `the` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `giao_dich` int DEFAULT NULL,
+  `gui_tiet_kiem` int DEFAULT NULL,
+  `vay_von` int DEFAULT NULL,
+  `vay_tin_dung` int DEFAULT NULL,
+  `phan_quyen` int DEFAULT NULL,
+  `them_chuc_vu` int DEFAULT NULL,
+  `bi_xoa` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_chuc_vu`
+-- Đang đổ dữ liệu cho bảng `tbl_chuc_vu`
 --
 
 INSERT INTO `tbl_chuc_vu` (`ma_chuc_vu`, `ten_chuc_vu`, `mo_ta`, `admin`, `thong_ke`, `khach_hang`, `nhan_vien`, `tk_khach_hang`, `tk_nhan_vien`, `the`, `giao_dich`, `gui_tiet_kiem`, `vay_von`, `vay_tin_dung`, `phan_quyen`, `them_chuc_vu`, `bi_xoa`) VALUES
@@ -57,148 +57,349 @@ INSERT INTO `tbl_chuc_vu` (`ma_chuc_vu`, `ten_chuc_vu`, `mo_ta`, `admin`, `thong
 (5, 'Quản trị viên', 'Quản lý nhân viên', 1, 1, '1-1-0-0-0', '1-1-1-1-1', '1-1-0-0-0', '1-1-1-1-1', '1-1-0-0-0', 1, 0, 0, 0, 1, 1, 0),
 (7, 'Giao dịch viên Quầy A', 'Làm việc ở quầy A', 0, 1, '1-1-1-1-1', '0-0-0-0-0', '1-1-1-1-1', '0-0-0-0-0', '1-1-1-1-1', 1, 1, 1, 1, NULL, NULL, 1),
 (8, 'Giao dịch viên quầy C', 'Làm việc tại quầy B', 0, 1, '1-1-1-0-0', '0-0-0-0-0', '1-1-1-1-1', '0-0-0-0-0', '1-1-0-0-0', 1, 1, 1, 1, NULL, NULL, 1),
-(9, 'Kiểm soát viên', '', 1, 1, '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', 0, 0, 0, 0, 0, 0, 1),
-(10, 'Giao dịch viên thực tập', 'Dành cho thực tập viên', 0, 0, '1-1-0-0-0', '0-0-0-0-0', '1-1-0-0-0', '0-0-0-0-0', '1-1-0-0-0', 0, 0, 0, 0, 0, 0, 1);
+(9, 'Kiểm soát viên', '', 1, 1, '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', '1-1-0-0-0', 0, 0, 0, 0, 0, 0, 0),
+(10, 'Giao dịch viên thực tập', 'Dành cho thực tập viên', 0, 0, '1-1-0-0-0', '0-0-0-0-0', '1-1-0-0-0', '0-0-0-0-0', '1-1-0-0-0', 0, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_dich_vu_chuyen_tien`
+-- Cấu trúc bảng cho bảng `tbl_dang_nhap`
+--
+
+CREATE TABLE `tbl_dang_nhap` (
+  `ma_dang_nhap` int NOT NULL,
+  `ma_tk_nhan_vien` int DEFAULT NULL,
+  `tinh_trang_dang_nhap` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_dang_nhap`
+--
+
+INSERT INTO `tbl_dang_nhap` (`ma_dang_nhap`, `ma_tk_nhan_vien`, `tinh_trang_dang_nhap`) VALUES
+(5, 4, 0),
+(6, 10, 0),
+(7, 6, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `tbl_dich_vu_chuyen_tien`
 --
 
 CREATE TABLE `tbl_dich_vu_chuyen_tien` (
-  `ma_chuyen_tien` int(11) NOT NULL,
-  `ma_tk_nguoi_nhan` int(11) DEFAULT NULL,
-  `ma_ngan_hang` int(11) DEFAULT NULL,
-  `ma_giao_dich` int(11) DEFAULT NULL
+  `ma_chuyen_tien` int NOT NULL,
+  `ma_tk_nguoi_nhan` int DEFAULT NULL,
+  `ma_ngan_hang` int DEFAULT NULL,
+  `ma_giao_dich` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_dich_vu_chuyen_tien`
+--
+
+INSERT INTO `tbl_dich_vu_chuyen_tien` (`ma_chuyen_tien`, `ma_tk_nguoi_nhan`, `ma_ngan_hang`, `ma_giao_dich`) VALUES
+(2, 4, 1, NULL),
+(3, NULL, 1, NULL),
+(4, 6, 1, NULL),
+(5, NULL, 1, NULL),
+(6, NULL, 1, NULL),
+(7, NULL, 1, NULL),
+(8, NULL, 1, NULL),
+(9, NULL, 1, NULL),
+(10, NULL, 1, NULL),
+(11, NULL, 1, NULL),
+(12, NULL, 1, NULL),
+(13, NULL, 1, NULL),
+(14, NULL, 1, NULL),
+(15, NULL, 1, NULL),
+(16, NULL, 1, NULL),
+(17, 5, 1, NULL),
+(18, NULL, 1, NULL),
+(19, NULL, 1, NULL),
+(20, NULL, 1, NULL),
+(21, NULL, 1, NULL),
+(22, NULL, 1, NULL),
+(23, NULL, 1, NULL),
+(24, 4, 1, NULL),
+(25, NULL, 1, NULL),
+(26, 6, 1, 279),
+(27, 39, 1, 280),
+(28, 40, 1, 281),
+(29, 38, 1, 299),
+(30, 43, 1, 300),
+(31, 47, 1, 327),
+(32, 48, 1, 328),
+(33, 49, 1, 329);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_dich_vu_gui_tiet_kiem`
+-- Cấu trúc bảng cho bảng `tbl_dich_vu_gui_tiet_kiem`
 --
 
 CREATE TABLE `tbl_dich_vu_gui_tiet_kiem` (
-  `ma_gui_tk` int(11) NOT NULL,
-  `ma_ky_han` int(11) DEFAULT NULL,
-  `hinh_thuc_gia_han` varchar(255) DEFAULT NULL,
-  `ma_tk_khach_hang` int(11) DEFAULT NULL,
-  `ma_tk_nguon_tien` varchar(255) DEFAULT NULL,
-  `hinh_thuc_nhan_lai` varchar(255) DEFAULT NULL,
+  `ma_gui_tk` int NOT NULL,
+  `ma_ky_han` int DEFAULT NULL,
+  `hinh_thuc_gia_han` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_tk_khach_hang` int DEFAULT NULL,
+  `ma_tk_nguon_tien` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `hinh_thuc_nhan_lai` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_mo_tk` date DEFAULT NULL,
   `ngay_nhan_lai` date DEFAULT NULL,
-  `so_tien_goc` int(11) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `so_tien_goc` int DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_dich_vu_gui_tiet_kiem`
+--
+
+INSERT INTO `tbl_dich_vu_gui_tiet_kiem` (`ma_gui_tk`, `ma_ky_han`, `hinh_thuc_gia_han`, `ma_tk_khach_hang`, `ma_tk_nguon_tien`, `hinh_thuc_nhan_lai`, `ngay_mo_tk`, `ngay_nhan_lai`, `so_tien_goc`, `ma_trang_thai`) VALUES
+(8, 3, 'Gia hạn với số tiền gốc', 39, '38', 'Chuyển về tài khoản tiết kiệm', '2025-09-10', '2025-12-10', 20000000, 10),
+(9, 2, 'Gia hạn với cả gốc và lãi', 40, '38', 'Chuyển về tài khoản tiết kiệm', '2025-10-10', '2025-11-10', 20261281, 10),
+(10, 2, 'Gia hạn với cả gốc và lãi', 43, '41', 'Chuyển về tài khoản tiết kiệm', '2025-10-10', '2025-11-10', 49640149, 10),
+(11, 2, 'Gia hạn với số tiền gốc', 48, NULL, 'Chuyển về tài khoản tiết kiệm', '2025-03-15', '2025-04-15', 12886700, 10),
+(12, 2, 'Không gia hạn', 49, NULL, 'Chuyển về tài khoản tiết kiệm', '2024-09-29', '2024-10-29', 1000000, 11);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_dich_vu_vay_von`
+-- Cấu trúc bảng cho bảng `tbl_dich_vu_vay_von`
 --
 
 CREATE TABLE `tbl_dich_vu_vay_von` (
-  `ma_vay_von` int(11) NOT NULL,
-  `so_tien_vay` int(11) DEFAULT NULL,
-  `ma_thoi_han` int(11) DEFAULT NULL,
+  `ma_vay_von` int NOT NULL,
+  `so_tien_vay` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_thoi_han` int DEFAULT NULL,
   `ngay_het_thoi_han` date DEFAULT NULL,
   `ngay_tra_no` date DEFAULT NULL,
-  `tai_san_dam_bao` int(11) DEFAULT NULL,
-  `anh_minh_chung` varchar(255) DEFAULT NULL,
-  `ma_tk_khach_hang` int(11) DEFAULT NULL,
-  `du_no_goc` varchar(255) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `tai_san_dam_bao` int DEFAULT NULL,
+  `anh_minh_chung` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_tk_khach_hang` int DEFAULT NULL,
+  `du_no_goc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_dich_vu_vay_von`
+--
+
+INSERT INTO `tbl_dich_vu_vay_von` (`ma_vay_von`, `so_tien_vay`, `ma_thoi_han`, `ngay_het_thoi_han`, `ngay_tra_no`, `tai_san_dam_bao`, `anh_minh_chung`, `ma_tk_khach_hang`, `du_no_goc`, `ma_trang_thai`) VALUES
+(15, '100000000', 1, '2025-10-09', '2024-11-09', 1, '1725923558864.jpg', 55, '100000000', 8);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_giao_dich`
+-- Cấu trúc bảng cho bảng `tbl_giao_dich`
 --
 
 CREATE TABLE `tbl_giao_dich` (
-  `ma_giao_dich` int(11) NOT NULL,
-  `ma_tk_khach_hang` int(11) DEFAULT NULL,
+  `ma_giao_dich` int NOT NULL,
+  `ma_tk_khach_hang` int DEFAULT NULL,
   `ngay_giao_dich` date DEFAULT NULL,
-  `so_tien` varchar(255) DEFAULT NULL,
-  `noi_dung_giao_dich` text DEFAULT NULL,
-  `ma_tk_nhan_vien` int(11) DEFAULT NULL,
-  `ma_loai_giao_dich` int(11) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `so_tien` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `noi_dung_giao_dich` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `ma_tk_nhan_vien` int DEFAULT NULL,
+  `ma_loai_giao_dich` int DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_giao_dich`
+--
+
+INSERT INTO `tbl_giao_dich` (`ma_giao_dich`, `ma_tk_khach_hang`, `ngay_giao_dich`, `so_tien`, `noi_dung_giao_dich`, `ma_tk_nhan_vien`, `ma_loai_giao_dich`, `ma_trang_thai`) VALUES
+(248, 36, '2024-09-10', '60000000', 'Chuyển về vay vốn về số tài khoản 176545676523', 6, 7, 4),
+(249, 36, '2024-09-10', '6052584', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(250, 36, '2024-09-10', '5994512', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(251, 36, '2024-09-10', '5936440', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(252, 36, '2024-09-10', '5878368', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(253, 36, '2024-09-10', '5820296', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(254, 36, '2024-09-10', '5762224', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(255, 36, '2024-09-10', '5704152', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(256, 36, '2024-09-10', '5646080', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(257, 36, '2024-09-10', '5588008', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(258, 36, '2024-09-10', '5529936', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(259, 36, '2024-09-10', '4000000', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(260, 36, '2024-09-10', '1556500', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(261, 36, '2024-09-10', '5413792', 'Khách hàng 6 trả khoản vay kỳ 0', 6, 6, 4),
+(262, 37, '2024-09-10', '50000000', 'Chuyển về vay vốn về số tài khoản 156789876545', 6, 7, 4),
+(263, 37, '2024-09-10', '4421309', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(264, 37, '2024-09-10', '4372916', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(265, 37, '2024-09-10', '4599167', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(266, 37, '2024-09-10', '4491488', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(267, 37, '2024-09-10', '4502381', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(268, 37, '2024-09-10', '4424345', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(269, 37, '2024-09-10', '4346309', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(270, 37, '2024-09-10', '4386845', 'Khách hàng 5 trả khoản vay kỳ 0', 6, 6, 4),
+(271, 37, '2024-09-10', '4338452', 'Khách hàng 5 trả khoản vay kỳ 9', 6, 6, 4),
+(272, 37, '2024-09-10', '4319702', 'Khách hàng 5 trả khoản vay kỳ 6', 6, 6, 4),
+(273, 37, '2024-09-10', '4391666', 'Khách hàng 5 trả khoản vay kỳ 8', 6, 6, 4),
+(274, 37, '2024-09-10', '4402559', 'Khách hàng 5 trả khoản vay kỳ 7', 6, 6, 4),
+(275, 37, '2024-09-10', '4413452', 'Khách hàng 5 trả khoản vay kỳ 6', 6, 6, 4),
+(276, 37, '2024-09-10', '4335416', 'Khách hàng 5 trả khoản vay kỳ 9', 6, 6, 4),
+(277, 38, '2024-09-10', '1000000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 156789876546', 6, 4, 4),
+(278, 38, '2024-09-10', '50000000', 'Nạp tiền vào tài khoản cho khách hàng Nguyễn Thị Như Ý', 5, 4, 4),
+(279, 38, '2024-09-10', '10000000', 'cafe', 5, 1, 4),
+(280, 38, '2024-09-10', '20000000', 'Khách hàng Nguyễn Thị Như Ý gửi tiết kiệm', 6, 5, 4),
+(281, 38, '2024-09-10', '20000000', 'Khách hàng Nguyễn Thị Như Ý gửi tiết kiệm', 6, 5, 4),
+(282, 39, '2025-09-10', '109698', 'Chuyển tiền lãi tiết kiệm về tài khoản 187654312345', 6, 5, 4),
+(283, 39, '2025-09-10', '108493', 'Chuyển tiền lãi tiết kiệm về tài khoản 187654312345', 6, 5, 4),
+(284, 39, '2025-09-10', '110904', 'Chuyển tiền lãi tiết kiệm về tài khoản 187654312345', 6, 5, 4),
+(285, 40, '2025-09-10', '19726', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(286, 40, '2025-09-10', '20403', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(287, 40, '2025-09-10', '19765', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(288, 40, '2025-09-10', '20444', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(289, 40, '2025-09-10', '20465', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(290, 40, '2025-09-10', '18503', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(291, 40, '2025-09-10', '20505', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(292, 40, '2025-09-10', '19863', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(293, 40, '2025-09-10', '20546', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(294, 40, '2025-09-10', '19903', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(295, 40, '2025-09-10', '20587', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(296, 41, '2024-09-10', '100000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 123454323655', 6, 4, 4),
+(297, 42, '2024-09-10', '1000000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 123454323656', 6, 4, 4),
+(298, 41, '2024-09-10', '50000000', 'Nạp tiền vào tài khoản cho khách hàng Bùi Anh Thư', 5, 4, 4),
+(299, 41, '2024-09-10', '500000', 'cafe', 5, 1, 4),
+(300, 41, '2024-09-10', '49000000', 'Khách hàng Bùi Anh Thư gửi tiết kiệm', 6, 5, 4),
+(301, 43, '2025-09-10', '48328', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(302, 43, '2025-09-10', '49988', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(303, 43, '2025-09-10', '48425', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(304, 43, '2025-09-10', '50089', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(305, 43, '2025-09-10', '50140', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(306, 43, '2025-09-10', '45334', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(307, 43, '2025-09-10', '50237', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(308, 43, '2025-09-10', '48666', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(309, 43, '2025-09-10', '50338', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(310, 43, '2025-09-10', '48764', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(311, 43, '2025-09-10', '50439', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(312, 44, '2024-09-10', '50000000', 'Chuyển về vay vốn về số tài khoản 198765476123', 6, 7, 4),
+(313, 44, '2024-11-10', '3000000', 'Khách hàng 8 trả khoản vay kỳ 1', 6, 6, 4),
+(314, 39, '2025-11-10', '110904', 'Chuyển tiền lãi tiết kiệm về tài khoản 187654312345', 6, 5, 4),
+(315, 40, '2025-11-10', '20608', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(316, 40, '2025-11-10', '19963', 'Chuyển tiền lãi tiết kiệm về tài khoản 123454323654', 6, 5, 4),
+(317, 43, '2025-11-10', '50490', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(318, 43, '2025-11-10', '48911', 'Chuyển tiền lãi tiết kiệm về tài khoản 126576123454', 6, 5, 4),
+(319, 44, '2025-11-10', '1504382', 'Khách hàng 8 trả khoản vay kỳ 1', 6, 6, 4),
+(320, 44, '2025-11-10', '4000000', 'Khách hàng 8 trả khoản vay kỳ 2', 6, 6, 4),
+(321, 44, '2025-11-10', '725752', 'Khách hàng 8 trả khoản vay kỳ 2', 6, 6, 4),
+(322, 44, '2025-11-10', '4679315', 'Khách hàng 8 trả khoản vay kỳ 3', 6, 6, 4),
+(323, 45, '2024-09-11', '500000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 198765476124', 6, 4, 4),
+(324, 45, '2024-09-11', '1000000', 'Nạp tiền vào tài khoản cho khách hàng Luong Tuan  Giai', 5, 4, 4),
+(325, 46, '2024-09-11', '12000000', 'Chuyển về vay vốn về số tài khoản 123456789067', 6, 7, 4),
+(326, 46, '2024-11-11', '1054000', 'Khách hàng 9 trả khoản vay kỳ 1', 6, 6, 4),
+(327, NULL, '2024-09-15', '10000000', 'Khách hàng Luong Tuan  Giai gửi tiết kiệm', 6, 5, 4),
+(328, NULL, '2024-09-15', '12886700', 'Khách hàng Luong Tuan  Giai gửi tiết kiệm', 6, 5, 4),
+(329, NULL, '2024-09-29', '1000000', 'Khách hàng Đặng Văn Toàn gửi tiết kiệm', 6, 5, 4),
+(330, 50, '2024-09-29', '10000000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 123456789071', 6, 4, 4),
+(331, 48, '2024-11-29', '12710', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(332, 48, '2024-11-29', '13133', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(333, 49, '2024-11-29', '986', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789070', 6, 5, 4),
+(334, 51, '2024-09-29', '10000000', 'Chuyển về vay vốn về số tài khoản 123456789072', 6, 7, 4),
+(335, 48, '2024-12-29', '12710', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(336, 48, '2025-03-29', '13133', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(337, 48, '2025-03-29', '13133', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(338, 48, '2025-03-29', '11862', 'Chuyển tiền lãi tiết kiệm về tài khoản 123456789069', 6, 5, 4),
+(339, 52, '2024-09-29', '10000000', 'Chuyển về vay vốn về số tài khoản 123456789073', 6, 7, 4),
+(340, 54, '2024-10-09', '1000000', 'Chuyển tiền vào tài khoản lần đầu cho tài khoản 100000000001', 6, 4, 4),
+(341, 55, '2024-10-09', '100000000', 'Chuyển về vay vốn về số tài khoản 100000000002', 6, 7, 4),
+(342, 4, '2024-10-09', '1000000', 'Nạp tiền vào tài khoản cho khách hàng Võ Phương Anh', 5, 4, 4);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_khach_hang`
+-- Cấu trúc bảng cho bảng `tbl_khach_hang`
 --
 
 CREATE TABLE `tbl_khach_hang` (
-  `ma_khach_hang` int(11) NOT NULL,
-  `ho_dem` varchar(255) DEFAULT NULL,
-  `ten` varchar(10) DEFAULT NULL,
-  `gioi_tinh` varchar(10) DEFAULT NULL,
+  `ma_khach_hang` int NOT NULL,
+  `ho_dem` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ten` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `gioi_tinh` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_sinh` date DEFAULT NULL,
-  `so_nha` varchar(255) DEFAULT NULL,
-  `ma_phuong_xa` int(11) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `so_dien_thoai` varchar(20) DEFAULT NULL,
-  `cccd` varchar(20) DEFAULT NULL,
-  `anh_dai_dien` varchar(255) DEFAULT NULL,
-  `no_xau` int(11) DEFAULT NULL,
-  `bi_xoa` int(11) DEFAULT NULL
+  `so_nha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_phuong_xa` int DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `so_dien_thoai` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cccd` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `anh_dai_dien` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `no_xau` int DEFAULT NULL,
+  `bi_xoa` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_khach_hang`
+--
+
+INSERT INTO `tbl_khach_hang` (`ma_khach_hang`, `ho_dem`, `ten`, `gioi_tinh`, `ngay_sinh`, `so_nha`, `ma_phuong_xa`, `email`, `so_dien_thoai`, `cccd`, `anh_dai_dien`, `no_xau`, `bi_xoa`) VALUES
+(1, 'Nguyễn Văn', 'An', 'Nữ', '2003-03-04', '123 An Dương Vươngg', 8499, 'aa@gmail.com', '0123456709', '098654321234', '1725923396726.jpg', 0, 1),
+(2, 'Đặng Văn', 'Toàn', 'Nam', '2003-05-15', '123 Đường 3/2', 8852, 'toan@gmail.com', '0987654321', '098564325412', '1714757034802.jpg', 1, 1),
+(3, 'Trần Võ Ngọc', 'Hân', 'Nữ', '2003-03-12', '122 Võ Văn Kiệt', 7303, 'ngochan1203@gmail.com', '0135786423', '012365781234', '1725922531676.jpg', 0, 0),
+(4, 'Võ Phương', 'Anh', 'Nữ', '2002-04-12', '123 Võ Văn Kiệt', 6684, 'phuonganh@gmail.com', '0345781231', '012345678945', '1714735741424.jpg', 0, 0),
+(5, 'Trần Văn', 'Phúc', 'Nam', '2009-01-12', '122 Đường số 2', 3636, 'phucphuc@gmail.com', '0567543167', '158645387598', '1715763823545.jpg', 0, 0),
+(6, 'Nguyễn Văn', 'Tiên', 'Nam', '2012-02-12', '111', 7046, 'dd@gmail.com', '0978123456', '123456780912', '1725635542557.jpg', 0, 0),
+(7, 'Nguyễn Thị Như', 'Ý', 'Nữ', '2004-01-12', '111', 10, 'yyy@gmail.com', '0987654123', '137658763412', '1725922684179.jpg', 0, 0),
+(8, 'Bùi Anh', 'Thư', 'Nữ', '2004-04-12', '111', 8818, 'thuthu@gmail.com', '0987465312', '187654367565', '1725923558864.jpg', 0, 0),
+(9, 'Luong Tuan ', 'Giai', 'Nam', '2004-04-01', '273 An Duong Vuong', 8870, 'tuangiai52@gmail.com', '0936186930', '079204006663', '1726045017083.jpg', 0, 1),
+(10, 'Đặng Trần ', 'Nam', 'Nam', '2003-12-03', 'ddq', 32, 'gggg@gmail.com', '0987654321', '098765432134', 'no_image.png', 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_khoa_tai_khoan`
+-- Cấu trúc bảng cho bảng `tbl_khoa_tai_khoan`
 --
 
 CREATE TABLE `tbl_khoa_tai_khoan` (
-  `ma_khoa_tk` int(11) NOT NULL,
-  `ma_tk_nhan_vien` int(11) DEFAULT NULL,
-  `ma_tk_khach_hang` int(11) DEFAULT NULL,
-  `ly_do_khoa` varchar(255) DEFAULT NULL,
+  `ma_khoa_tk` int NOT NULL,
+  `ma_tai_khoan` int DEFAULT NULL,
+  `ly_do_khoa` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_mo_khoa` date DEFAULT NULL,
-  `loai_tai_khoan` varchar(255) DEFAULT NULL,
-  `mo_khoa` int(11) DEFAULT NULL
+  `loai_tai_khoan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mo_khoa` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_khoa_tai_khoan`
+--
+
+INSERT INTO `tbl_khoa_tai_khoan` (`ma_khoa_tk`, `ma_tai_khoan`, `ly_do_khoa`, `ngay_mo_khoa`, `loai_tai_khoan`, `mo_khoa`) VALUES
+(7, 39, '', '2024-10-09', 'TKKH', 1),
+(8, 39, '', '2024-10-09', 'TKKH', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_kho_tien`
+-- Cấu trúc bảng cho bảng `tbl_kho_tien`
 --
 
 CREATE TABLE `tbl_kho_tien` (
-  `ma_kho_tien` int(11) NOT NULL,
-  `tien_tai_khoan` varchar(255) DEFAULT NULL,
-  `tien_mat` varchar(255) DEFAULT NULL
+  `ma_kho_tien` int NOT NULL,
+  `tien_tai_khoan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tien_mat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_kho_tien`
+-- Đang đổ dữ liệu cho bảng `tbl_kho_tien`
 --
 
 INSERT INTO `tbl_kho_tien` (`ma_kho_tien`, `tien_tai_khoan`, `tien_mat`) VALUES
-(1, '94611043122', '24224507575');
+(1, '94477965455', '24237507575');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_ky_han_gui`
+-- Cấu trúc bảng cho bảng `tbl_ky_han_gui`
 --
 
 CREATE TABLE `tbl_ky_han_gui` (
-  `ma_ky_han` int(11) NOT NULL,
-  `so_ky_han` int(11) DEFAULT NULL,
+  `ma_ky_han` int NOT NULL,
+  `so_ky_han` int DEFAULT NULL,
   `lai_suat` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_ky_han_gui`
+-- Đang đổ dữ liệu cho bảng `tbl_ky_han_gui`
 --
 
 INSERT INTO `tbl_ky_han_gui` (`ma_ky_han`, `so_ky_han`, `lai_suat`) VALUES
@@ -212,36 +413,36 @@ INSERT INTO `tbl_ky_han_gui` (`ma_ky_han`, `so_ky_han`, `lai_suat`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_ky_tra_no`
+-- Cấu trúc bảng cho bảng `tbl_ky_tra_no`
 --
 
 CREATE TABLE `tbl_ky_tra_no` (
-  `ma_ky_tra_no` int(11) NOT NULL,
-  `ma_vay_von` int(11) DEFAULT NULL,
-  `ky_tra_no` int(11) DEFAULT NULL,
+  `ma_ky_tra_no` int NOT NULL,
+  `ma_vay_von` int DEFAULT NULL,
+  `ky_tra_no` int DEFAULT NULL,
   `thoi_gian` date DEFAULT NULL,
-  `so_tien_da_tra` varchar(255) DEFAULT NULL,
-  `tien_con_thieu` varchar(255) DEFAULT NULL,
-  `tien_no_goc` varchar(255) DEFAULT NULL,
-  `tien_lai` varchar(255) DEFAULT NULL,
-  `tien_phat` varchar(255) DEFAULT NULL,
+  `so_tien_da_tra` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tien_con_thieu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tien_no_goc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tien_lai` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tien_phat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_tra_no` date DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_loai_giao_dich`
+-- Cấu trúc bảng cho bảng `tbl_loai_giao_dich`
 --
 
 CREATE TABLE `tbl_loai_giao_dich` (
-  `ma_loai_giao_dich` int(11) NOT NULL,
-  `ten_loai_giao_dich` varchar(255) DEFAULT NULL
+  `ma_loai_giao_dich` int NOT NULL,
+  `ten_loai_giao_dich` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_loai_giao_dich`
+-- Đang đổ dữ liệu cho bảng `tbl_loai_giao_dich`
 --
 
 INSERT INTO `tbl_loai_giao_dich` (`ma_loai_giao_dich`, `ten_loai_giao_dich`) VALUES
@@ -256,16 +457,16 @@ INSERT INTO `tbl_loai_giao_dich` (`ma_loai_giao_dich`, `ten_loai_giao_dich`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_loai_tai_khoan`
+-- Cấu trúc bảng cho bảng `tbl_loai_tai_khoan`
 --
 
 CREATE TABLE `tbl_loai_tai_khoan` (
-  `ma_loai_tai_khoan` int(11) NOT NULL,
-  `ten_loai_tai_khoan` varchar(255) DEFAULT NULL
+  `ma_loai_tai_khoan` int NOT NULL,
+  `ten_loai_tai_khoan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_loai_tai_khoan`
+-- Đang đổ dữ liệu cho bảng `tbl_loai_tai_khoan`
 --
 
 INSERT INTO `tbl_loai_tai_khoan` (`ma_loai_tai_khoan`, `ten_loai_tai_khoan`) VALUES
@@ -277,17 +478,17 @@ INSERT INTO `tbl_loai_tai_khoan` (`ma_loai_tai_khoan`, `ten_loai_tai_khoan`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_loai_the_atm`
+-- Cấu trúc bảng cho bảng `tbl_loai_the_atm`
 --
 
 CREATE TABLE `tbl_loai_the_atm` (
-  `ma_loai_the` int(11) NOT NULL,
-  `ten_loai_the` varchar(255) DEFAULT NULL,
-  `mo_ta` text DEFAULT NULL
+  `ma_loai_the` int NOT NULL,
+  `ten_loai_the` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mo_ta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_loai_the_atm`
+-- Đang đổ dữ liệu cho bảng `tbl_loai_the_atm`
 --
 
 INSERT INTO `tbl_loai_the_atm` (`ma_loai_the`, `ten_loai_the`, `mo_ta`) VALUES
@@ -299,17 +500,17 @@ INSERT INTO `tbl_loai_the_atm` (`ma_loai_the`, `ten_loai_the`, `mo_ta`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_ngan_hang`
+-- Cấu trúc bảng cho bảng `tbl_ngan_hang`
 --
 
 CREATE TABLE `tbl_ngan_hang` (
-  `ma_ngan_hang` int(11) NOT NULL,
-  `ten_viet_tat` varchar(50) DEFAULT NULL,
-  `ten_day_du` varchar(255) DEFAULT NULL
+  `ma_ngan_hang` int NOT NULL,
+  `ten_viet_tat` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ten_day_du` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_ngan_hang`
+-- Đang đổ dữ liệu cho bảng `tbl_ngan_hang`
 --
 
 INSERT INTO `tbl_ngan_hang` (`ma_ngan_hang`, `ten_viet_tat`, `ten_day_du`) VALUES
@@ -335,48 +536,56 @@ INSERT INTO `tbl_ngan_hang` (`ma_ngan_hang`, `ten_viet_tat`, `ten_day_du`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_nhan_vien`
+-- Cấu trúc bảng cho bảng `tbl_nhan_vien`
 --
 
 CREATE TABLE `tbl_nhan_vien` (
-  `ma_nhan_vien` int(11) NOT NULL,
-  `ho_dem` varchar(255) DEFAULT NULL,
-  `ten` varchar(10) DEFAULT NULL,
-  `gioi_tinh` varchar(10) DEFAULT NULL,
+  `ma_nhan_vien` int NOT NULL,
+  `ho_dem` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ten` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `gioi_tinh` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_sinh` date DEFAULT NULL,
-  `ma_phuong_xa` int(11) DEFAULT NULL,
-  `so_nha` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `so_dien_thoai` varchar(20) DEFAULT NULL,
-  `cccd` varchar(20) DEFAULT NULL,
-  `anh_dai_dien` varchar(255) DEFAULT NULL,
-  `ma_chuc_vu` int(11) DEFAULT NULL,
+  `ma_phuong_xa` int DEFAULT NULL,
+  `so_nha` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `so_dien_thoai` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cccd` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `anh_dai_dien` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_chuc_vu` int DEFAULT NULL,
   `ngay_vao_lam` date DEFAULT NULL,
-  `bi_xoa` int(11) DEFAULT NULL
+  `bi_xoa` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_nhan_vien`
+-- Đang đổ dữ liệu cho bảng `tbl_nhan_vien`
 --
 
 INSERT INTO `tbl_nhan_vien` (`ma_nhan_vien`, `ho_dem`, `ten`, `gioi_tinh`, `ngay_sinh`, `ma_phuong_xa`, `so_nha`, `email`, `so_dien_thoai`, `cccd`, `anh_dai_dien`, `ma_chuc_vu`, `ngay_vao_lam`, `bi_xoa`) VALUES
-(8, 'Lại Thị', 'Vân', 'Nữ', '2003-12-12', 8519, '43 Ngô Quyền', 'van@gmail.com', '0123576423', '123456754312', '1714325579317.jpeg', 5, '2024-04-23', 0),
-(12, 'Nhai Nhai', 'Nhai', 'Nữ', '2000-12-12', 8974, '55544', 'ok@gmail.com', '0976789757', '123456789012', '1726643021892.jpg', 2, '2024-09-18', 0);
+(2, 'Nguyễn', 'Ann', 'Nữ', '2002-04-04', 9027, '123 An Dương Vương', 'aaaa@gmail.com', '0548631321', '098765434561', '1715852573457.jpeg', 2, '2024-03-12', 0),
+(3, 'Trần Thị', 'Ba', 'Nữ', '2003-02-12', 1907, '124 Khu Phố 6', 'bbbbb@gmail.com', '0973521565', '023485761345', '1713819651368.jpeg', 1, '2024-03-12', 0),
+(4, 'Trần Văn', 'Quyết', 'Khác', '1995-03-11', 5, '123 Tôn Thất Thuyết', 'qqq@gmail.com', '0983124654', '087576372413', '1713822317002.jpg', 1, '2024-04-17', 0),
+(5, 'Đỗ Thị', 'Nhài', 'Nữ', '2003-12-21', 1644, '123 An Dương Vương', 'nhaidothi@gmail.com', '0976543256', '037564749586', '1713849602710.jpg', 2, '2024-04-18', 0),
+(6, 'Trần Thị Kim', 'Dung', 'Nữ', '2002-03-12', 1674, '123 An Dương Vương', 'kimdung@gmail.com', '0653456861', '056764537612', '1714464661298.jpg', 1, '2024-04-18', 1),
+(7, 'Bùi Văn', 'San', 'Nam', '1998-02-12', 1704, '142 Hưng Văn Đồng', 'sss@gmail.com', '0387657436', '298765471312', '1713822700941.jpg', 1, '2024-04-23', 0),
+(8, 'Lại Thị', 'Vân', 'Nữ', '2003-12-12', 8519, '43 Ngô Quyền', 'thaiduongnguyen0312@gmail.com', '0123576423', '123456754312', '1714325579317.jpeg', 5, '2024-04-23', 0),
+(9, 'Trần Duy', 'Thái', 'Nam', '2002-03-12', 8372, '32 Âu Dương Lân', 'thai@gmail.com', '0876543254', '075645321456', '1713855929168.jpg', 1, '2024-04-23', 0),
+(10, 'Nguyễn Thị Như', 'Tiên', 'Nữ', '2003-02-12', 10534, '111 Ngô Tất Tố', 'yy@gmail.com', '0987656412', '097654635123', '1725537488450.jpg', 2, '2024-09-05', 0),
+(11, 'Dương Văn', 'Huy', 'Nam', '2002-02-12', 6788, '222', 'huy@gmail.com', '0123456764', '123456787342', '1725637081947.jpg', 5, '2024-09-06', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_phan_quyen`
+-- Cấu trúc bảng cho bảng `tbl_phan_quyen`
 --
 
 CREATE TABLE `tbl_phan_quyen` (
-  `ma_quyen` int(11) NOT NULL,
-  `ten_quyen` varchar(255) DEFAULT NULL,
-  `mo_ta` text DEFAULT NULL
+  `ma_quyen` int NOT NULL,
+  `ten_quyen` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mo_ta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_phan_quyen`
+-- Đang đổ dữ liệu cho bảng `tbl_phan_quyen`
 --
 
 INSERT INTO `tbl_phan_quyen` (`ma_quyen`, `ten_quyen`, `mo_ta`) VALUES
@@ -389,17 +598,17 @@ INSERT INTO `tbl_phan_quyen` (`ma_quyen`, `ten_quyen`, `mo_ta`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_phuong_xa`
+-- Cấu trúc bảng cho bảng `tbl_phuong_xa`
 --
 
 CREATE TABLE `tbl_phuong_xa` (
-  `wardId` int(11) NOT NULL,
-  `wardName` varchar(255) NOT NULL,
-  `districtId` int(11) NOT NULL
+  `wardId` int NOT NULL,
+  `wardName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `districtId` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_phuong_xa`
+-- Đang đổ dữ liệu cho bảng `tbl_phuong_xa`
 --
 
 INSERT INTO `tbl_phuong_xa` (`wardId`, `wardName`, `districtId`) VALUES
@@ -10993,17 +11202,17 @@ INSERT INTO `tbl_phuong_xa` (`wardId`, `wardName`, `districtId`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_quan_huyen`
+-- Cấu trúc bảng cho bảng `tbl_quan_huyen`
 --
 
 CREATE TABLE `tbl_quan_huyen` (
-  `districtId` int(11) NOT NULL,
-  `districtName` varchar(255) NOT NULL,
-  `provinceId` int(11) NOT NULL
+  `districtId` int NOT NULL,
+  `districtName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `provinceId` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_quan_huyen`
+-- Đang đổ dữ liệu cho bảng `tbl_quan_huyen`
 --
 
 INSERT INTO `tbl_quan_huyen` (`districtId`, `districtName`, `provinceId`) VALUES
@@ -11710,80 +11919,119 @@ INSERT INTO `tbl_quan_huyen` (`districtId`, `districtName`, `provinceId`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_tai_khoan_khach_hang`
+-- Cấu trúc bảng cho bảng `tbl_tai_khoan_khach_hang`
 --
 
 CREATE TABLE `tbl_tai_khoan_khach_hang` (
-  `ma_tk_khach_hang` int(11) NOT NULL,
-  `so_tai_khoan` varchar(20) DEFAULT NULL,
-  `ten_tai_khoan` varchar(255) DEFAULT NULL,
-  `mat_khau` varchar(255) DEFAULT NULL,
+  `ma_tk_khach_hang` int NOT NULL,
+  `so_tai_khoan` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ten_tai_khoan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mat_khau` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_tao_tk` date DEFAULT NULL,
-  `so_du` varchar(255) DEFAULT NULL,
-  `ma_loai_tai_khoan` int(11) DEFAULT NULL,
-  `ma_ngan_hang` int(11) DEFAULT 1,
-  `ma_khach_hang` int(11) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL,
-  `bi_xoa` int(11) DEFAULT NULL
+  `so_du` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_loai_tai_khoan` int DEFAULT NULL,
+  `ma_ngan_hang` int DEFAULT '1',
+  `ma_khach_hang` int DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_tai_khoan_khach_hang`
+--
+
+INSERT INTO `tbl_tai_khoan_khach_hang` (`ma_tk_khach_hang`, `so_tai_khoan`, `ten_tai_khoan`, `mat_khau`, `ngay_tao_tk`, `so_du`, `ma_loai_tai_khoan`, `ma_ngan_hang`, `ma_khach_hang`, `ma_trang_thai`) VALUES
+(4, '146709713564', 'VO PHUONG ANH', '643c2cfe5456fca26923dbc2a1d81865', '2024-05-04', '3991150000', 1, 1, 4, 6),
+(5, '190190230561', 'Công ty Thương mại cổ phần SCJ Chi nhánh Tân Phú', '75427bdd69d812923e03aed2bf8ba2fe', '2024-05-04', '23900000', 2, 3, 2, 6),
+(6, '190190230562', 'DANG VAN TOAN', '75427bdd69d812923e03aed2bf8ba2fe', '2024-05-04', '15000000', 1, 1, 2, 2),
+(36, '176545676523', 'NGUYEN VAN TIEN VAY VON', '202cb962ac59075b964b07152d234b70', '2024-09-10', '60000000', 4, 1, 6, 1),
+(37, '156789876545', 'TRAN VAN PHUC VAY VON', '202cb962ac59075b964b07152d234b70', '2024-09-10', '50000000', 4, 1, 5, 6),
+(38, '156789876546', 'NGUYEN THI NHU Y', 'cb8ec1af6170d2e77dbdf5b0a0aec0a2', '2024-09-10', '1500000', 1, 1, 7, 2),
+(39, '187654312345', 'NHU Y GTK', '202cb962ac59075b964b07152d234b70', '2024-09-10', '20439999', 3, 1, 7, 6),
+(40, '123454323654', 'YYYGTK', '202cb962ac59075b964b07152d234b70', '2024-09-10', '20261281', 3, 1, 7, 6),
+(41, '123454323655', 'BUI ANH THU', '682278d2c950112953deee210e54b7ac', '2024-09-10', '600000', 1, 1, 8, 6),
+(42, '123454323656', 'NHU YYY', 'cb8ec1af6170d2e77dbdf5b0a0aec0a2', '2024-09-10', '1000000', 1, 1, 7, 2),
+(43, '126576123454', 'BUI ANH THU GTK', '202cb962ac59075b964b07152d234b70', '2024-09-10', '49640149', 3, 1, 8, 6),
+(44, '198765476123', 'BUI ANH THU VAY VON', '202cb962ac59075b964b07152d234b70', '2024-09-10', '50000000', 4, 1, 8, 6),
+(45, '198765476124', 'tuangiai0104', '499d733522f7562734a7bba1ea8b54f3', '2024-09-11', '1500000', 1, 1, 9, 6),
+(46, '123456789067', 'Tuan Giai', '202cb962ac59075b964b07152d234b70', '2024-09-11', '12000000', 4, 1, 9, 6),
+(47, '123456789068', 'LUONG TUAN GIAI GTK', '202cb962ac59075b964b07152d234b70', '2024-09-15', '10000000', 3, 1, 9, 6),
+(48, '123456789069', 'LUONG TUAN GIAI GTTK', '202cb962ac59075b964b07152d234b70', '2024-09-15', '12963381', 3, 1, 9, 6),
+(49, '123456789070', 'DANG VAN TOANNN', '202cb962ac59075b964b07152d234b70', '2024-09-29', '1000986', 3, 1, 2, 6),
+(50, '123456789071', 'TUANN GIAIIA', '36143708460ecba64d5a20cef86f133b', '2024-09-29', '10000000', 1, 1, 9, 7),
+(51, '123456789072', 'HAN DI VV', '202cb962ac59075b964b07152d234b70', '2024-09-29', '10000000', 4, 1, 3, 6),
+(52, '123456789073', 'TIEN DI VV', '202cb962ac59075b964b07152d234b70', '2024-09-29', '10000000', 4, 1, 6, 6),
+(53, '100000000000', 'Hệ thống', '47fb1d09111f017d067438e8a50e7c1a', '2024-10-07', '0', 1, 1, NULL, 6),
+(54, '100000000001', 'TH U', '682278d2c950112953deee210e54b7ac', '2024-10-09', '1000000', 1, 1, 8, 7),
+(55, '100000000002', 'VAYVAY', '202cb962ac59075b964b07152d234b70', '2024-10-09', '100000000', 4, 1, 8, 7);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_tai_khoan_nhan_vien`
+-- Cấu trúc bảng cho bảng `tbl_tai_khoan_nhan_vien`
 --
 
 CREATE TABLE `tbl_tai_khoan_nhan_vien` (
-  `ma_tk_nhan_vien` int(11) NOT NULL,
-  `ten_dang_nhap` varchar(255) DEFAULT NULL,
-  `mat_khau` varchar(255) DEFAULT NULL,
-  `ma_PIN_dang_nhap` varchar(255) DEFAULT NULL,
+  `ma_tk_nhan_vien` int NOT NULL,
+  `ten_dang_nhap` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mat_khau` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_tao_tk` date DEFAULT NULL,
-  `ma_nhan_vien` int(11) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `ma_nhan_vien` int DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_tai_khoan_nhan_vien`
+-- Đang đổ dữ liệu cho bảng `tbl_tai_khoan_nhan_vien`
 --
 
-INSERT INTO `tbl_tai_khoan_nhan_vien` (`ma_tk_nhan_vien`, `ten_dang_nhap`, `mat_khau`, `ma_PIN_dang_nhap`, `ngay_tao_tk`, `ma_nhan_vien`, `ma_trang_thai`) VALUES
-(4, 'laithivan1111', '7b7811f92aba603f21fd6ea11e912177', 'e10adc3949ba59abbe56e057f20f883e', '2024-04-28', 8, 6),
-(10, 'nhainhai123', '65d0a1d2e0c652acf6f796c96ae00685', 'e10adc3949ba59abbe56e057f20f883e', '2024-09-18', 12, 6);
+INSERT INTO `tbl_tai_khoan_nhan_vien` (`ma_tk_nhan_vien`, `ten_dang_nhap`, `mat_khau`, `ngay_tao_tk`, `ma_nhan_vien`, `ma_trang_thai`) VALUES
+(4, 'laithivan1111', '4848f1b265214eb7bd3c5262223e31fd', '2024-04-28', 8, 6),
+(5, 'dungin11', '4342d051f03f241f3d0c6dc077037eeb', '2024-04-29', 6, 2),
+(6, 'nhainhai123', '65d0a1d2e0c652acf6f796c96ae00685', '2024-04-29', 5, 6),
+(7, 'nguyenann', '5f67ad094959a71747f437086d262f87', '2024-05-16', 2, 7),
+(8, 'nhutien11112', '037e15700af946cc4898f1cc8b0ef62e', '2024-09-05', 10, 6),
+(9, 'huyhuy1111', 'f49af8b9c0428a51294b4b613b4842c8', '2024-09-06', 11, 6),
+(10, 'thai  nam', '498eb2b9f6f72ec6cb53462aedf37c29', '2024-10-08', 9, 7);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_the_atm`
+-- Cấu trúc bảng cho bảng `tbl_the_atm`
 --
 
 CREATE TABLE `tbl_the_atm` (
-  `ma_the` int(11) NOT NULL,
-  `so_the` varchar(20) DEFAULT NULL,
-  `ten_the` varchar(255) DEFAULT NULL,
+  `ma_the` int NOT NULL,
+  `so_the` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ten_the` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ngay_tao` date DEFAULT NULL,
   `thoi_han_the` date DEFAULT NULL,
-  `ma_PIN` varchar(255) DEFAULT NULL,
-  `ma_tk_khach_hang` int(11) DEFAULT NULL,
-  `ma_loai_the` int(11) DEFAULT NULL,
-  `ma_trang_thai` int(11) DEFAULT NULL
+  `ma_PIN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ma_tk_khach_hang` int DEFAULT NULL,
+  `ma_loai_the` int DEFAULT NULL,
+  `ma_trang_thai` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tbl_the_atm`
+--
+
+INSERT INTO `tbl_the_atm` (`ma_the`, `so_the`, `ten_the`, `ngay_tao`, `thoi_han_the`, `ma_PIN`, `ma_tk_khach_hang`, `ma_loai_the`, `ma_trang_thai`) VALUES
+(9, '100000000012', 'VO PHUONG ANH', '2024-10-09', '2029-12-09', 'e10adc3949ba59abbe56e057f20f883e', 4, 1, 7);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_thoi_han_vay`
+-- Cấu trúc bảng cho bảng `tbl_thoi_han_vay`
 --
 
 CREATE TABLE `tbl_thoi_han_vay` (
-  `ma_thoi_han` int(11) NOT NULL,
-  `so_thoi_han` int(11) DEFAULT NULL,
+  `ma_thoi_han` int NOT NULL,
+  `so_thoi_han` int DEFAULT NULL,
   `lai_suat` double DEFAULT NULL,
-  `loai_hinh_vay` int(11) DEFAULT NULL
+  `loai_hinh_vay` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_thoi_han_vay`
+-- Đang đổ dữ liệu cho bảng `tbl_thoi_han_vay`
 --
 
 INSERT INTO `tbl_thoi_han_vay` (`ma_thoi_han`, `so_thoi_han`, `lai_suat`, `loai_hinh_vay`) VALUES
@@ -11797,16 +12045,16 @@ INSERT INTO `tbl_thoi_han_vay` (`ma_thoi_han`, `so_thoi_han`, `lai_suat`, `loai_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_tinh_thanh`
+-- Cấu trúc bảng cho bảng `tbl_tinh_thanh`
 --
 
 CREATE TABLE `tbl_tinh_thanh` (
-  `provinceId` int(11) NOT NULL,
-  `provinceName` varchar(255) NOT NULL
+  `provinceId` int NOT NULL,
+  `provinceName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_tinh_thanh`
+-- Đang đổ dữ liệu cho bảng `tbl_tinh_thanh`
 --
 
 INSERT INTO `tbl_tinh_thanh` (`provinceId`, `provinceName`) VALUES
@@ -11877,17 +12125,17 @@ INSERT INTO `tbl_tinh_thanh` (`provinceId`, `provinceName`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_trang_thai`
+-- Cấu trúc bảng cho bảng `tbl_trang_thai`
 --
 
 CREATE TABLE `tbl_trang_thai` (
-  `ma_trang_thai` int(11) NOT NULL,
-  `ten_trang_thai` varchar(255) DEFAULT NULL,
-  `danh_muc` varchar(255) DEFAULT NULL
+  `ma_trang_thai` int NOT NULL,
+  `ten_trang_thai` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `danh_muc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_trang_thai`
+-- Đang đổ dữ liệu cho bảng `tbl_trang_thai`
 --
 
 INSERT INTO `tbl_trang_thai` (`ma_trang_thai`, `ten_trang_thai`, `danh_muc`) VALUES
@@ -11907,17 +12155,24 @@ INSERT INTO `tbl_trang_thai` (`ma_trang_thai`, `ten_trang_thai`, `danh_muc`) VAL
 (15, 'Trả thiếu', 'Vay vốn');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `tbl_chuc_vu`
+-- Chỉ mục cho bảng `tbl_chuc_vu`
 --
 ALTER TABLE `tbl_chuc_vu`
   ADD PRIMARY KEY (`ma_chuc_vu`);
 
 --
--- Indexes for table `tbl_dich_vu_chuyen_tien`
+-- Chỉ mục cho bảng `tbl_dang_nhap`
+--
+ALTER TABLE `tbl_dang_nhap`
+  ADD PRIMARY KEY (`ma_dang_nhap`),
+  ADD KEY `ma_tk_nhan_vien` (`ma_tk_nhan_vien`);
+
+--
+-- Chỉ mục cho bảng `tbl_dich_vu_chuyen_tien`
 --
 ALTER TABLE `tbl_dich_vu_chuyen_tien`
   ADD PRIMARY KEY (`ma_chuyen_tien`),
@@ -11926,7 +12181,7 @@ ALTER TABLE `tbl_dich_vu_chuyen_tien`
   ADD KEY `ma_ngan_hang` (`ma_ngan_hang`);
 
 --
--- Indexes for table `tbl_dich_vu_gui_tiet_kiem`
+-- Chỉ mục cho bảng `tbl_dich_vu_gui_tiet_kiem`
 --
 ALTER TABLE `tbl_dich_vu_gui_tiet_kiem`
   ADD PRIMARY KEY (`ma_gui_tk`),
@@ -11935,7 +12190,7 @@ ALTER TABLE `tbl_dich_vu_gui_tiet_kiem`
   ADD KEY `ma_trang_thai` (`ma_trang_thai`);
 
 --
--- Indexes for table `tbl_dich_vu_vay_von`
+-- Chỉ mục cho bảng `tbl_dich_vu_vay_von`
 --
 ALTER TABLE `tbl_dich_vu_vay_von`
   ADD PRIMARY KEY (`ma_vay_von`),
@@ -11944,7 +12199,7 @@ ALTER TABLE `tbl_dich_vu_vay_von`
   ADD KEY `ma_thoi_han` (`ma_thoi_han`);
 
 --
--- Indexes for table `tbl_giao_dich`
+-- Chỉ mục cho bảng `tbl_giao_dich`
 --
 ALTER TABLE `tbl_giao_dich`
   ADD PRIMARY KEY (`ma_giao_dich`),
@@ -11954,34 +12209,33 @@ ALTER TABLE `tbl_giao_dich`
   ADD KEY `ma_trang_thai` (`ma_trang_thai`);
 
 --
--- Indexes for table `tbl_khach_hang`
+-- Chỉ mục cho bảng `tbl_khach_hang`
 --
 ALTER TABLE `tbl_khach_hang`
   ADD PRIMARY KEY (`ma_khach_hang`),
   ADD KEY `ma_phuong_xa` (`ma_phuong_xa`);
 
 --
--- Indexes for table `tbl_khoa_tai_khoan`
+-- Chỉ mục cho bảng `tbl_khoa_tai_khoan`
 --
 ALTER TABLE `tbl_khoa_tai_khoan`
   ADD PRIMARY KEY (`ma_khoa_tk`),
-  ADD KEY `ma_tk_khach_hang` (`ma_tk_khach_hang`),
-  ADD KEY `ma_tk_nhan_vien` (`ma_tk_nhan_vien`);
+  ADD KEY `ma_tk_nhan_vien` (`ma_tai_khoan`);
 
 --
--- Indexes for table `tbl_kho_tien`
+-- Chỉ mục cho bảng `tbl_kho_tien`
 --
 ALTER TABLE `tbl_kho_tien`
   ADD PRIMARY KEY (`ma_kho_tien`);
 
 --
--- Indexes for table `tbl_ky_han_gui`
+-- Chỉ mục cho bảng `tbl_ky_han_gui`
 --
 ALTER TABLE `tbl_ky_han_gui`
   ADD PRIMARY KEY (`ma_ky_han`);
 
 --
--- Indexes for table `tbl_ky_tra_no`
+-- Chỉ mục cho bảng `tbl_ky_tra_no`
 --
 ALTER TABLE `tbl_ky_tra_no`
   ADD PRIMARY KEY (`ma_ky_tra_no`),
@@ -11989,31 +12243,31 @@ ALTER TABLE `tbl_ky_tra_no`
   ADD KEY `ma_trang_thai` (`ma_trang_thai`);
 
 --
--- Indexes for table `tbl_loai_giao_dich`
+-- Chỉ mục cho bảng `tbl_loai_giao_dich`
 --
 ALTER TABLE `tbl_loai_giao_dich`
   ADD PRIMARY KEY (`ma_loai_giao_dich`);
 
 --
--- Indexes for table `tbl_loai_tai_khoan`
+-- Chỉ mục cho bảng `tbl_loai_tai_khoan`
 --
 ALTER TABLE `tbl_loai_tai_khoan`
   ADD PRIMARY KEY (`ma_loai_tai_khoan`);
 
 --
--- Indexes for table `tbl_loai_the_atm`
+-- Chỉ mục cho bảng `tbl_loai_the_atm`
 --
 ALTER TABLE `tbl_loai_the_atm`
   ADD PRIMARY KEY (`ma_loai_the`);
 
 --
--- Indexes for table `tbl_ngan_hang`
+-- Chỉ mục cho bảng `tbl_ngan_hang`
 --
 ALTER TABLE `tbl_ngan_hang`
   ADD PRIMARY KEY (`ma_ngan_hang`);
 
 --
--- Indexes for table `tbl_nhan_vien`
+-- Chỉ mục cho bảng `tbl_nhan_vien`
 --
 ALTER TABLE `tbl_nhan_vien`
   ADD PRIMARY KEY (`ma_nhan_vien`),
@@ -12021,27 +12275,27 @@ ALTER TABLE `tbl_nhan_vien`
   ADD KEY `ma_chuc_vu` (`ma_chuc_vu`);
 
 --
--- Indexes for table `tbl_phan_quyen`
+-- Chỉ mục cho bảng `tbl_phan_quyen`
 --
 ALTER TABLE `tbl_phan_quyen`
   ADD PRIMARY KEY (`ma_quyen`);
 
 --
--- Indexes for table `tbl_phuong_xa`
+-- Chỉ mục cho bảng `tbl_phuong_xa`
 --
 ALTER TABLE `tbl_phuong_xa`
   ADD PRIMARY KEY (`wardId`),
   ADD KEY `districtId` (`districtId`);
 
 --
--- Indexes for table `tbl_quan_huyen`
+-- Chỉ mục cho bảng `tbl_quan_huyen`
 --
 ALTER TABLE `tbl_quan_huyen`
   ADD PRIMARY KEY (`districtId`),
   ADD KEY `provinceId` (`provinceId`);
 
 --
--- Indexes for table `tbl_tai_khoan_khach_hang`
+-- Chỉ mục cho bảng `tbl_tai_khoan_khach_hang`
 --
 ALTER TABLE `tbl_tai_khoan_khach_hang`
   ADD PRIMARY KEY (`ma_tk_khach_hang`),
@@ -12051,7 +12305,7 @@ ALTER TABLE `tbl_tai_khoan_khach_hang`
   ADD KEY `ma_ngan_hang` (`ma_ngan_hang`);
 
 --
--- Indexes for table `tbl_tai_khoan_nhan_vien`
+-- Chỉ mục cho bảng `tbl_tai_khoan_nhan_vien`
 --
 ALTER TABLE `tbl_tai_khoan_nhan_vien`
   ADD PRIMARY KEY (`ma_tk_nhan_vien`),
@@ -12059,7 +12313,7 @@ ALTER TABLE `tbl_tai_khoan_nhan_vien`
   ADD KEY `ma_trang_thai` (`ma_trang_thai`);
 
 --
--- Indexes for table `tbl_the_atm`
+-- Chỉ mục cho bảng `tbl_the_atm`
 --
 ALTER TABLE `tbl_the_atm`
   ADD PRIMARY KEY (`ma_the`),
@@ -12068,177 +12322,189 @@ ALTER TABLE `tbl_the_atm`
   ADD KEY `ma_trang_thai` (`ma_trang_thai`);
 
 --
--- Indexes for table `tbl_thoi_han_vay`
+-- Chỉ mục cho bảng `tbl_thoi_han_vay`
 --
 ALTER TABLE `tbl_thoi_han_vay`
   ADD PRIMARY KEY (`ma_thoi_han`);
 
 --
--- Indexes for table `tbl_tinh_thanh`
+-- Chỉ mục cho bảng `tbl_tinh_thanh`
 --
 ALTER TABLE `tbl_tinh_thanh`
   ADD PRIMARY KEY (`provinceId`);
 
 --
--- Indexes for table `tbl_trang_thai`
+-- Chỉ mục cho bảng `tbl_trang_thai`
 --
 ALTER TABLE `tbl_trang_thai`
   ADD PRIMARY KEY (`ma_trang_thai`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `tbl_chuc_vu`
+-- AUTO_INCREMENT cho bảng `tbl_chuc_vu`
 --
 ALTER TABLE `tbl_chuc_vu`
-  MODIFY `ma_chuc_vu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ma_chuc_vu` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `tbl_dich_vu_chuyen_tien`
+-- AUTO_INCREMENT cho bảng `tbl_dang_nhap`
+--
+ALTER TABLE `tbl_dang_nhap`
+  MODIFY `ma_dang_nhap` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `tbl_dich_vu_chuyen_tien`
 --
 ALTER TABLE `tbl_dich_vu_chuyen_tien`
-  MODIFY `ma_chuyen_tien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `ma_chuyen_tien` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
--- AUTO_INCREMENT for table `tbl_dich_vu_gui_tiet_kiem`
+-- AUTO_INCREMENT cho bảng `tbl_dich_vu_gui_tiet_kiem`
 --
 ALTER TABLE `tbl_dich_vu_gui_tiet_kiem`
-  MODIFY `ma_gui_tk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ma_gui_tk` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `tbl_dich_vu_vay_von`
+-- AUTO_INCREMENT cho bảng `tbl_dich_vu_vay_von`
 --
 ALTER TABLE `tbl_dich_vu_vay_von`
-  MODIFY `ma_vay_von` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `ma_vay_von` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT for table `tbl_giao_dich`
+-- AUTO_INCREMENT cho bảng `tbl_giao_dich`
 --
 ALTER TABLE `tbl_giao_dich`
-  MODIFY `ma_giao_dich` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=329;
+  MODIFY `ma_giao_dich` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=343;
 
 --
--- AUTO_INCREMENT for table `tbl_khach_hang`
+-- AUTO_INCREMENT cho bảng `tbl_khach_hang`
 --
 ALTER TABLE `tbl_khach_hang`
-  MODIFY `ma_khach_hang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ma_khach_hang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `tbl_khoa_tai_khoan`
+-- AUTO_INCREMENT cho bảng `tbl_khoa_tai_khoan`
 --
 ALTER TABLE `tbl_khoa_tai_khoan`
-  MODIFY `ma_khoa_tk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ma_khoa_tk` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `tbl_kho_tien`
+-- AUTO_INCREMENT cho bảng `tbl_kho_tien`
 --
 ALTER TABLE `tbl_kho_tien`
-  MODIFY `ma_kho_tien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ma_kho_tien` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `tbl_ky_han_gui`
+-- AUTO_INCREMENT cho bảng `tbl_ky_han_gui`
 --
 ALTER TABLE `tbl_ky_han_gui`
-  MODIFY `ma_ky_han` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ma_ky_han` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `tbl_ky_tra_no`
+-- AUTO_INCREMENT cho bảng `tbl_ky_tra_no`
 --
 ALTER TABLE `tbl_ky_tra_no`
-  MODIFY `ma_ky_tra_no` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
+  MODIFY `ma_ky_tra_no` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=271;
 
 --
--- AUTO_INCREMENT for table `tbl_loai_giao_dich`
+-- AUTO_INCREMENT cho bảng `tbl_loai_giao_dich`
 --
 ALTER TABLE `tbl_loai_giao_dich`
-  MODIFY `ma_loai_giao_dich` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ma_loai_giao_dich` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `tbl_loai_tai_khoan`
+-- AUTO_INCREMENT cho bảng `tbl_loai_tai_khoan`
 --
 ALTER TABLE `tbl_loai_tai_khoan`
-  MODIFY `ma_loai_tai_khoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ma_loai_tai_khoan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `tbl_loai_the_atm`
+-- AUTO_INCREMENT cho bảng `tbl_loai_the_atm`
 --
 ALTER TABLE `tbl_loai_the_atm`
-  MODIFY `ma_loai_the` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ma_loai_the` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `tbl_ngan_hang`
+-- AUTO_INCREMENT cho bảng `tbl_ngan_hang`
 --
 ALTER TABLE `tbl_ngan_hang`
-  MODIFY `ma_ngan_hang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `ma_ngan_hang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `tbl_nhan_vien`
+-- AUTO_INCREMENT cho bảng `tbl_nhan_vien`
 --
 ALTER TABLE `tbl_nhan_vien`
-  MODIFY `ma_nhan_vien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `ma_nhan_vien` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `tbl_phan_quyen`
+-- AUTO_INCREMENT cho bảng `tbl_phan_quyen`
 --
 ALTER TABLE `tbl_phan_quyen`
-  MODIFY `ma_quyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ma_quyen` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `tbl_phuong_xa`
+-- AUTO_INCREMENT cho bảng `tbl_phuong_xa`
 --
 ALTER TABLE `tbl_phuong_xa`
-  MODIFY `wardId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16384;
+  MODIFY `wardId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16384;
 
 --
--- AUTO_INCREMENT for table `tbl_quan_huyen`
+-- AUTO_INCREMENT cho bảng `tbl_quan_huyen`
 --
 ALTER TABLE `tbl_quan_huyen`
-  MODIFY `districtId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1024;
+  MODIFY `districtId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1024;
 
 --
--- AUTO_INCREMENT for table `tbl_tai_khoan_khach_hang`
+-- AUTO_INCREMENT cho bảng `tbl_tai_khoan_khach_hang`
 --
 ALTER TABLE `tbl_tai_khoan_khach_hang`
-  MODIFY `ma_tk_khach_hang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `ma_tk_khach_hang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
--- AUTO_INCREMENT for table `tbl_tai_khoan_nhan_vien`
+-- AUTO_INCREMENT cho bảng `tbl_tai_khoan_nhan_vien`
 --
 ALTER TABLE `tbl_tai_khoan_nhan_vien`
-  MODIFY `ma_tk_nhan_vien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ma_tk_nhan_vien` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `tbl_the_atm`
+-- AUTO_INCREMENT cho bảng `tbl_the_atm`
 --
 ALTER TABLE `tbl_the_atm`
-  MODIFY `ma_the` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ma_the` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `tbl_thoi_han_vay`
+-- AUTO_INCREMENT cho bảng `tbl_thoi_han_vay`
 --
 ALTER TABLE `tbl_thoi_han_vay`
-  MODIFY `ma_thoi_han` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ma_thoi_han` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `tbl_tinh_thanh`
+-- AUTO_INCREMENT cho bảng `tbl_tinh_thanh`
 --
 ALTER TABLE `tbl_tinh_thanh`
-  MODIFY `provinceId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `provinceId` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
--- AUTO_INCREMENT for table `tbl_trang_thai`
+-- AUTO_INCREMENT cho bảng `tbl_trang_thai`
 --
 ALTER TABLE `tbl_trang_thai`
-  MODIFY `ma_trang_thai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ma_trang_thai` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `tbl_dich_vu_chuyen_tien`
+-- Các ràng buộc cho bảng `tbl_dang_nhap`
+--
+ALTER TABLE `tbl_dang_nhap`
+  ADD CONSTRAINT `tbl_dang_nhap_ibfk_1` FOREIGN KEY (`ma_tk_nhan_vien`) REFERENCES `tbl_tai_khoan_nhan_vien` (`ma_tk_nhan_vien`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `tbl_dich_vu_chuyen_tien`
 --
 ALTER TABLE `tbl_dich_vu_chuyen_tien`
   ADD CONSTRAINT `tbl_dich_vu_chuyen_tien_ibfk_1` FOREIGN KEY (`ma_giao_dich`) REFERENCES `tbl_giao_dich` (`ma_giao_dich`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -12246,7 +12512,7 @@ ALTER TABLE `tbl_dich_vu_chuyen_tien`
   ADD CONSTRAINT `tbl_dich_vu_chuyen_tien_ibfk_3` FOREIGN KEY (`ma_ngan_hang`) REFERENCES `tbl_ngan_hang` (`ma_ngan_hang`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_dich_vu_gui_tiet_kiem`
+-- Các ràng buộc cho bảng `tbl_dich_vu_gui_tiet_kiem`
 --
 ALTER TABLE `tbl_dich_vu_gui_tiet_kiem`
   ADD CONSTRAINT `tbl_dich_vu_gui_tiet_kiem_ibfk_1` FOREIGN KEY (`ma_ky_han`) REFERENCES `tbl_ky_han_gui` (`ma_ky_han`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -12254,7 +12520,7 @@ ALTER TABLE `tbl_dich_vu_gui_tiet_kiem`
   ADD CONSTRAINT `tbl_dich_vu_gui_tiet_kiem_ibfk_4` FOREIGN KEY (`ma_trang_thai`) REFERENCES `tbl_trang_thai` (`ma_trang_thai`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_dich_vu_vay_von`
+-- Các ràng buộc cho bảng `tbl_dich_vu_vay_von`
 --
 ALTER TABLE `tbl_dich_vu_vay_von`
   ADD CONSTRAINT `tbl_dich_vu_vay_von_ibfk_3` FOREIGN KEY (`ma_tk_khach_hang`) REFERENCES `tbl_tai_khoan_khach_hang` (`ma_tk_khach_hang`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -12262,7 +12528,7 @@ ALTER TABLE `tbl_dich_vu_vay_von`
   ADD CONSTRAINT `tbl_dich_vu_vay_von_ibfk_5` FOREIGN KEY (`ma_thoi_han`) REFERENCES `tbl_thoi_han_vay` (`ma_thoi_han`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_giao_dich`
+-- Các ràng buộc cho bảng `tbl_giao_dich`
 --
 ALTER TABLE `tbl_giao_dich`
   ADD CONSTRAINT `tbl_giao_dich_ibfk_1` FOREIGN KEY (`ma_tk_khach_hang`) REFERENCES `tbl_tai_khoan_khach_hang` (`ma_tk_khach_hang`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -12271,46 +12537,39 @@ ALTER TABLE `tbl_giao_dich`
   ADD CONSTRAINT `tbl_giao_dich_ibfk_4` FOREIGN KEY (`ma_trang_thai`) REFERENCES `tbl_trang_thai` (`ma_trang_thai`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_khach_hang`
+-- Các ràng buộc cho bảng `tbl_khach_hang`
 --
 ALTER TABLE `tbl_khach_hang`
   ADD CONSTRAINT `tbl_khach_hang_ibfk_1` FOREIGN KEY (`ma_phuong_xa`) REFERENCES `tbl_phuong_xa` (`wardId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_khoa_tai_khoan`
---
-ALTER TABLE `tbl_khoa_tai_khoan`
-  ADD CONSTRAINT `tbl_khoa_tai_khoan_ibfk_1` FOREIGN KEY (`ma_tk_khach_hang`) REFERENCES `tbl_tai_khoan_khach_hang` (`ma_tk_khach_hang`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `tbl_khoa_tai_khoan_ibfk_2` FOREIGN KEY (`ma_tk_nhan_vien`) REFERENCES `tbl_tai_khoan_nhan_vien` (`ma_tk_nhan_vien`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Constraints for table `tbl_ky_tra_no`
+-- Các ràng buộc cho bảng `tbl_ky_tra_no`
 --
 ALTER TABLE `tbl_ky_tra_no`
   ADD CONSTRAINT `tbl_ky_tra_no_ibfk_1` FOREIGN KEY (`ma_vay_von`) REFERENCES `tbl_dich_vu_vay_von` (`ma_vay_von`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tbl_ky_tra_no_ibfk_2` FOREIGN KEY (`ma_trang_thai`) REFERENCES `tbl_trang_thai` (`ma_trang_thai`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_nhan_vien`
+-- Các ràng buộc cho bảng `tbl_nhan_vien`
 --
 ALTER TABLE `tbl_nhan_vien`
   ADD CONSTRAINT `tbl_nhan_vien_ibfk_1` FOREIGN KEY (`ma_phuong_xa`) REFERENCES `tbl_phuong_xa` (`wardId`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tbl_nhan_vien_ibfk_2` FOREIGN KEY (`ma_chuc_vu`) REFERENCES `tbl_chuc_vu` (`ma_chuc_vu`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_phuong_xa`
+-- Các ràng buộc cho bảng `tbl_phuong_xa`
 --
 ALTER TABLE `tbl_phuong_xa`
-  ADD CONSTRAINT `tbl_phuong_xa_ibfk_1` FOREIGN KEY (`districtId`) REFERENCES `tbl_quan_huyen` (`districtId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tbl_phuong_xa_ibfk_1` FOREIGN KEY (`districtId`) REFERENCES `tbl_quan_huyen` (`districtId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_quan_huyen`
+-- Các ràng buộc cho bảng `tbl_quan_huyen`
 --
 ALTER TABLE `tbl_quan_huyen`
-  ADD CONSTRAINT `tbl_quan_huyen_ibfk_1` FOREIGN KEY (`provinceId`) REFERENCES `tbl_tinh_thanh` (`provinceId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tbl_quan_huyen_ibfk_1` FOREIGN KEY (`provinceId`) REFERENCES `tbl_tinh_thanh` (`provinceId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_tai_khoan_khach_hang`
+-- Các ràng buộc cho bảng `tbl_tai_khoan_khach_hang`
 --
 ALTER TABLE `tbl_tai_khoan_khach_hang`
   ADD CONSTRAINT `tbl_tai_khoan_khach_hang_ibfk_1` FOREIGN KEY (`ma_khach_hang`) REFERENCES `tbl_khach_hang` (`ma_khach_hang`) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -12319,14 +12578,14 @@ ALTER TABLE `tbl_tai_khoan_khach_hang`
   ADD CONSTRAINT `tbl_tai_khoan_khach_hang_ibfk_4` FOREIGN KEY (`ma_ngan_hang`) REFERENCES `tbl_ngan_hang` (`ma_ngan_hang`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_tai_khoan_nhan_vien`
+-- Các ràng buộc cho bảng `tbl_tai_khoan_nhan_vien`
 --
 ALTER TABLE `tbl_tai_khoan_nhan_vien`
   ADD CONSTRAINT `tbl_tai_khoan_nhan_vien_ibfk_1` FOREIGN KEY (`ma_nhan_vien`) REFERENCES `tbl_nhan_vien` (`ma_nhan_vien`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tbl_tai_khoan_nhan_vien_ibfk_2` FOREIGN KEY (`ma_trang_thai`) REFERENCES `tbl_trang_thai` (`ma_trang_thai`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_the_atm`
+-- Các ràng buộc cho bảng `tbl_the_atm`
 --
 ALTER TABLE `tbl_the_atm`
   ADD CONSTRAINT `tbl_the_atm_ibfk_1` FOREIGN KEY (`ma_tk_khach_hang`) REFERENCES `tbl_tai_khoan_khach_hang` (`ma_tk_khach_hang`) ON DELETE SET NULL ON UPDATE CASCADE,

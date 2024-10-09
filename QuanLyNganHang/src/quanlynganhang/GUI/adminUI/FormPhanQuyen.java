@@ -750,7 +750,7 @@ public class FormPhanQuyen extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnChonNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonNVActionPerformed
-        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV");
+        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV", true);
         chonNV.setResizable(false);
         chonNV.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonNV.setVisible(true);

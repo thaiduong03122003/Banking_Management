@@ -3,33 +3,41 @@ package quanlynganhang.DTO;
 import java.util.Date;
 
 public class GiaoDichDTO {
-    private int maGiaoDich, maTaiKhoanKH, maTaiKhoanNV, maLoaiGiaoDich, maTrangThai;
+    private int maGiaoDich, maKhachHang, maTaiKhoanKH, maTaiKhoanNV, maLoaiGiaoDich, maTrangThai, maTrangThaiTKKH, biXoa;
     private String tenKhachHang, tenNhanVien, noiDungGiaoDich, tenLoaiGiaoDich, tenTrangThai, soTien, soTaiKhoan;
     private Date ngayGiaoDich;
 
     public GiaoDichDTO() {
     }
 
-    public GiaoDichDTO(String soTaiKhoan, int maGiaoDich, int maTaiKhoanKH, int maTaiKhoanNV, int maLoaiGiaoDich, int maTrangThai, String soTien, String tenKhachHang, String tenNhanVien, String noiDungGiaoDich, String tenLoaiGiaoDich, String tenTrangThai, Date ngayGiaoDich) {
-        this.soTaiKhoan = soTaiKhoan;
-        this.maGiaoDich = maGiaoDich;
-        this.maTaiKhoanKH = maTaiKhoanKH;
-        this.maTaiKhoanNV = maTaiKhoanNV;
-        this.maLoaiGiaoDich = maLoaiGiaoDich;
-        this.maTrangThai = maTrangThai;
-        this.soTien = soTien;
-        this.tenKhachHang = tenKhachHang;
-        this.tenNhanVien = tenNhanVien;
-        this.noiDungGiaoDich = noiDungGiaoDich;
-        this.tenLoaiGiaoDich = tenLoaiGiaoDich;
-        this.tenTrangThai = tenTrangThai;
-        this.ngayGiaoDich = ngayGiaoDich;
+    public int getMaTrangThaiTKKH() {
+        return maTrangThaiTKKH;
     }
 
+    public void setMaTrangThaiTKKH(int maTrangThaiTKKH) {
+        this.maTrangThaiTKKH = maTrangThaiTKKH;
+    }
+
+    public int getBiXoa() {
+        return biXoa;
+    }
+
+    public void setBiXoa(int biXoa) {
+        this.biXoa = biXoa;
+    }
+    
     public int getMaGiaoDich() {
         return maGiaoDich;
     }
 
+    public int getMaKhachHang() {
+        return maKhachHang;
+    }
+
+    public void setMaKhachHang(int maKhachHang) {
+        this.maKhachHang = maKhachHang;
+    }
+    
     public void setMaGiaoDich(int maGiaoDich) {
         this.maGiaoDich = maGiaoDich;
     }
@@ -64,14 +72,6 @@ public class GiaoDichDTO {
 
     public void setMaTrangThai(int maTrangThai) {
         this.maTrangThai = maTrangThai;
-    }
-
-    public String getSoTien() {
-        return soTien;
-    }
-
-    public void setSoTien(String soTien) {
-        this.soTien = soTien;
     }
 
     public String getTenKhachHang() {
@@ -114,12 +114,12 @@ public class GiaoDichDTO {
         this.tenTrangThai = tenTrangThai;
     }
 
-    public Date getNgayGiaoDich() {
-        return ngayGiaoDich;
+    public String getSoTien() {
+        return soTien;
     }
 
-    public void setNgayGiaoDich(Date ngayGiaoDich) {
-        this.ngayGiaoDich = ngayGiaoDich;
+    public void setSoTien(String soTien) {
+        this.soTien = soTien;
     }
 
     public String getSoTaiKhoan() {
@@ -129,5 +129,12 @@ public class GiaoDichDTO {
     public void setSoTaiKhoan(String soTaiKhoan) {
         this.soTaiKhoan = soTaiKhoan;
     }
-    
+
+    public Date getNgayGiaoDich() {
+        return ngayGiaoDich;
+    }
+
+    public void setNgayGiaoDich(Date ngayGiaoDich) {
+        this.ngayGiaoDich = ngayGiaoDich;
+    }
 }

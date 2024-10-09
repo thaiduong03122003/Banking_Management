@@ -10,7 +10,8 @@ import java.util.List;
 import quanlynganhang.DTO.KhachHangDTO;
 
 public class KhachHangDAO {
-    public int insert(KhachHangDTO khachHang, int biXoa) throws Exception {
+
+    public int insert(KhachHangDTO khachHang, int biXoa) {
         if (selectByCCCD(khachHang.getCccd(), biXoa) != null) {
             return 0;
         } else {
@@ -44,12 +45,14 @@ public class KhachHangDAO {
                 }
 
                 return khachHang.getMaKH();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return 0;
         }
-
     }
 
-    private boolean updateExecute(KhachHangDTO khachHang) throws Exception {
+    private boolean updateExecute(KhachHangDTO khachHang) {
         String sql = "UPDATE tbl_khach_hang SET ho_dem = ?, ten = ?, gioi_tinh = ?, ngay_sinh = ?, ma_phuong_xa = ?, so_nha = ?, email = ?, so_dien_thoai = ?, cccd = ?, anh_dai_dien = ? WHERE ma_khach_hang = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -70,10 +73,13 @@ public class KhachHangDAO {
             pstmt.setInt(11, khachHang.getMaKH());
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    public boolean update(KhachHangDTO khachHang, int biXoa) throws Exception {
+    public boolean update(KhachHangDTO khachHang, int biXoa) {
 
         if (selectById(khachHang.getMaKH(), biXoa).getCccd().equals(khachHang.getCccd())) {
             return updateExecute(khachHang);
@@ -85,7 +91,7 @@ public class KhachHangDAO {
 
     }
 
-    public boolean delete(int maKhachHang) throws Exception {
+    public boolean delete(int maKhachHang) {
         String sql = "UPDATE tbl_khach_hang SET bi_xoa = ? WHERE ma_khach_hang = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -94,10 +100,13 @@ public class KhachHangDAO {
             pstmt.setInt(2, maKhachHang);
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    public boolean restore(int maKhachHang) throws Exception {
+    public boolean restore(int maKhachHang) {
         String sql = "UPDATE tbl_khach_hang SET bi_xoa = ? WHERE ma_khach_hang = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -106,10 +115,13 @@ public class KhachHangDAO {
             pstmt.setInt(2, maKhachHang);
 
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
-    public List<KhachHangDTO> selectAll(int biXoa) throws Exception {
+    public List<KhachHangDTO> selectAll(int biXoa) {
         String sql = "SELECT kh.*, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_khach_hang kh "
             + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
             + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
@@ -146,26 +158,29 @@ public class KhachHangDAO {
 
                     list.add(khachHang);
                 }
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public KhachHangDTO selectById(int maKhachHang, int biXoa) throws Exception {
+    public KhachHangDTO selectById(int maKhachHang, int biXoa) {
         String diaChi = "";
         String sql;
         if (biXoa == 2) {
             sql = "SELECT kh.*, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_khach_hang kh "
-            + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
-            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
-            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
-            + " WHERE ma_khach_hang = ?";
+                + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
+                + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+                + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+                + " WHERE ma_khach_hang = ?";
         } else {
             sql = "SELECT kh.*, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_khach_hang kh "
-            + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
-            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
-            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
-            + " WHERE ma_khach_hang = ? AND bi_xoa = ?";
+                + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
+                + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+                + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+                + " WHERE ma_khach_hang = ? AND bi_xoa = ?";
         }
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
@@ -190,7 +205,7 @@ public class KhachHangDAO {
                     khachHang.setSdt(rs.getString("so_dien_thoai"));
                     khachHang.setCccd(rs.getString("cccd"));
                     khachHang.setAnhDaiDien(rs.getString("anh_dai_dien"));
-                    
+
                     diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
 
                     khachHang.setDiaChi(diaChi);
@@ -200,11 +215,13 @@ public class KhachHangDAO {
                     return khachHang;
                 }
             }
-            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public KhachHangDTO selectByCCCD(String cccd, int biXoa) throws Exception {
+    public KhachHangDTO selectByCCCD(String cccd, int biXoa) {
         String sql = "SELECT * FROM tbl_khach_hang WHERE cccd = ? AND bi_xoa = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -220,11 +237,13 @@ public class KhachHangDAO {
                     return khachHang;
                 }
             }
-            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public List<KhachHangDTO> filter(int biXoa, String gender, java.sql.Date dateFrom, java.sql.Date dateTo, int provinceId, int districtId, int wardId, int noXau) throws Exception {
+    public List<KhachHangDTO> filter(int biXoa, String gender, java.sql.Date dateFrom, java.sql.Date dateTo, int provinceId, int districtId, int wardId, int noXau) {
         String sql = "SELECT kh.*, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_khach_hang kh "
             + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
             + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
@@ -243,6 +262,16 @@ public class KhachHangDAO {
         if (dateFrom != null && dateTo != null) {
             conditionalClause.append(" AND kh.ngay_sinh BETWEEN ? AND ?");
             params.add(dateFrom);
+            params.add(dateTo);
+        }
+
+        if (dateFrom != null && dateTo == null) {
+            conditionalClause.append(" AND kh.ngay_sinh > ?");
+            params.add(dateFrom);
+        }
+
+        if (dateFrom == null && dateTo != null) {
+            conditionalClause.append(" AND kh.ngay_sinh < ?");
             params.add(dateTo);
         }
 
@@ -269,52 +298,47 @@ public class KhachHangDAO {
         if (conditionalClause.length() > 0) {
             sql += conditionalClause.toString();
         }
-        System.out.println("Cau SQL: " + sql);
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
             for (int i = 1; i <= params.size(); i++) {
                 pstmt.setObject(i, params.get(i - 1));
-                System.out.println("Index:" + i + ", " + params.get(i - 1));
             }
 
             List<KhachHangDTO> list = new ArrayList<>();
             String diaChi = "";
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (!rs.next()) {
-                    list = null;
-                } else {
-                    do {
-                        KhachHangDTO khachHang = new KhachHangDTO();
-                        khachHang.setMaKH(rs.getInt("ma_khach_hang"));
-                        khachHang.setHoDem(rs.getString("ho_dem"));
-                        khachHang.setTen(rs.getString("ten"));
-                        khachHang.setGioiTinh(rs.getString("gioi_tinh"));
-                        khachHang.setNgaySinh(rs.getDate("ngay_sinh"));
-                        khachHang.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
-                        khachHang.setSoNha(rs.getString("so_nha"));
-                        khachHang.setEmail(rs.getString("email"));
-                        khachHang.setSdt(rs.getString("so_dien_thoai"));
-                        khachHang.setCccd(rs.getString("cccd"));
-                        khachHang.setAnhDaiDien(rs.getString("anh_dai_dien"));
-                        khachHang.setNoXau(rs.getInt("no_xau"));
+                while (rs.next()) {
+                    KhachHangDTO khachHang = new KhachHangDTO();
+                    khachHang.setMaKH(rs.getInt("ma_khach_hang"));
+                    khachHang.setHoDem(rs.getString("ho_dem"));
+                    khachHang.setTen(rs.getString("ten"));
+                    khachHang.setGioiTinh(rs.getString("gioi_tinh"));
+                    khachHang.setNgaySinh(rs.getDate("ngay_sinh"));
+                    khachHang.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
+                    khachHang.setSoNha(rs.getString("so_nha"));
+                    khachHang.setEmail(rs.getString("email"));
+                    khachHang.setSdt(rs.getString("so_dien_thoai"));
+                    khachHang.setCccd(rs.getString("cccd"));
+                    khachHang.setAnhDaiDien(rs.getString("anh_dai_dien"));
+                    khachHang.setNoXau(rs.getInt("no_xau"));
 
-                        diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
+                    diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
 
-                        khachHang.setDiaChi(diaChi);
+                    khachHang.setDiaChi(diaChi);
+                    khachHang.setBiXoa(rs.getInt("bi_xoa"));
 
-                        khachHang.setBiXoa(rs.getInt("bi_xoa"));
-                        list.add(khachHang);
-                    } while (rs.next());
+                    list.add(khachHang);
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                list = null;
+
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
-    
-    public boolean xoaNoXau(int maKhachHang) throws Exception {
+
+    public boolean xoaNoXau(int maKhachHang) {
         String sql = "UPDATE tbl_khach_hang SET no_xau = ? WHERE ma_khach_hang = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -322,6 +346,85 @@ public class KhachHangDAO {
             pstmt.setInt(1, 0);
             pstmt.setInt(2, maKhachHang);
             return pstmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
+    }
+
+    public List<KhachHangDTO> searchByInputType(int biXoa, String typeName, String inputValue) {
+        String sql = "SELECT kh.*, pr.provinceId, pr.provinceName, dt.districtId, dt.districtName, wa.wardId, wa.wardName FROM tbl_khach_hang kh "
+            + "LEFT JOIN tbl_phuong_xa wa ON kh.ma_phuong_xa = wa.wardId "
+            + "LEFT JOIN tbl_quan_huyen dt ON wa.districtId = dt.districtId "
+            + "LEFT JOIN tbl_tinh_thanh pr ON dt.provinceId = pr.provinceId "
+            + "WHERE bi_xoa = ? ";
+
+        StringBuilder conditionalClause = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(biXoa);
+
+        if (typeName.equals("name")) {
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ?)");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("phoneNumber")) {
+            conditionalClause.append(" AND kh.so_dien_thoai LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("email")) {
+            conditionalClause.append(" AND kh.email LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("cccd")) {
+            conditionalClause.append(" AND kh.cccd LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (conditionalClause.length() > 0) {
+            sql += conditionalClause.toString();
+        }
+        System.out.println("Cau SQL: " + sql);
+
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+            for (int i = 1; i <= params.size(); i++) {
+                pstmt.setObject(i, params.get(i - 1));
+            }
+
+            List<KhachHangDTO> list = new ArrayList<>();
+            String diaChi = "";
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+                    KhachHangDTO khachHang = new KhachHangDTO();
+                    khachHang.setMaKH(rs.getInt("ma_khach_hang"));
+                    khachHang.setHoDem(rs.getString("ho_dem"));
+                    khachHang.setTen(rs.getString("ten"));
+                    khachHang.setGioiTinh(rs.getString("gioi_tinh"));
+                    khachHang.setNgaySinh(rs.getDate("ngay_sinh"));
+                    khachHang.setMaPhuongXa(rs.getInt("ma_phuong_xa"));
+                    khachHang.setSoNha(rs.getString("so_nha"));
+                    khachHang.setEmail(rs.getString("email"));
+                    khachHang.setSdt(rs.getString("so_dien_thoai"));
+                    khachHang.setCccd(rs.getString("cccd"));
+                    khachHang.setAnhDaiDien(rs.getString("anh_dai_dien"));
+                    khachHang.setNoXau(rs.getInt("no_xau"));
+
+                    diaChi = rs.getString("so_nha") + ", " + rs.getString("wa.wardName") + ", " + rs.getString("dt.districtName") + ", " + rs.getString("pr.provinceName");
+
+                    khachHang.setDiaChi(diaChi);
+                    khachHang.setBiXoa(rs.getInt("bi_xoa"));
+
+                    list.add(khachHang);
+                }
+                return list;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

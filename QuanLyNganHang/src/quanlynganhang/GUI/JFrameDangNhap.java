@@ -7,6 +7,10 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import quanlynganhang.BUS.DangNhapBUS;
 import quanlynganhang.DTO.ChucVuDTO;
@@ -14,6 +18,8 @@ import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
 import quanlynganhang.GUI.model.message.MessageBox;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 public class JFrameDangNhap extends javax.swing.JFrame {
 
@@ -41,50 +47,183 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         if (txtTenDangNhap.getText().isEmpty() || matKhau.isEmpty()) {
             MessageBox.showErrorMessage(null, "Vui lòng nhập đầy đủ thông tin!");
         } else {
-            TaiKhoanNVDTO taiKhoanNV = dangNhapBUS.kiemTraDangNhap(txtTenDangNhap.getText(), matKhau);
-            if (taiKhoanNV != null) {
-                int isAdmin = dangNhapBUS.kiemTraChucVu(taiKhoanNV);
+            enableForm(false);
+            btnDangNhap.setText("Đang đăng nhập...");
+            SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+                @Override
+                protected Boolean doInBackground() {
+                    TaiKhoanNVDTO taiKhoanNV = dangNhapBUS.kiemTraDangNhap(txtTenDangNhap.getText(), matKhau);
+                    if (taiKhoanNV != null) {
+                        int isAdmin = dangNhapBUS.kiemTraChucVu(taiKhoanNV);
+                        Application app = null;
+                        ApplicationAdmin appAd = null;
 
-                FlatSVGIcon favicon = new FlatSVGIcon("quanlynganhang/icon/favicon.svg");
-                if (isAdmin == 0) {
+                        FlatSVGIcon favicon = new FlatSVGIcon("quanlynganhang/icon/favicon.svg");
+                        if (isAdmin == 0) {
 
-                    if (taiKhoanNV.getMaTrangThai() == 6) {
-                        this.dispose();
-                        Application app = new Application(taiKhoanNV);
+                            if (taiKhoanNV.getMaTrangThai() != 6) {
+                                MessageBox.showErrorMessage(null, "Vui lòng kích hoạt tài khoản");
+                                return false;
+                            }
+                            int idDangNhap = login(taiKhoanNV.getMaTKNV());
 
-                        app.setIconImage(favicon.getImage());
-                        app.setTitle("Quản lý ngân hàng");
-                        GlassPanePopup.install(app);
-                        app.setSelectedMenu(0, 0);
-                        app.setVisible(true);
-                        app.setResizable(false);
-                        app.setDefaultCloseOperation(Application.DISPOSE_ON_CLOSE);
+                            app = new Application(taiKhoanNV, idDangNhap);
+                            app.setIconImage(favicon.getImage());
+                            app.setTitle("Quản lý ngân hàng - Giao dịch viên");
+                            GlassPanePopup.install(app);
+                            app.setSelectedMenu(0, 0);
+                            app.setResizable(false);
+                            app.setDefaultCloseOperation(Application.DO_NOTHING_ON_CLOSE);
+
+                            app.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    if (MessageBox.showConfirmMessage(null, "Bạn có chắc chắn muốn thoát chương trình?") == JOptionPane.YES_OPTION) {
+                                        SwingWorker<Boolean, Void> logWorker = new SwingWorker<Boolean, Void>() {
+                                            @Override
+                                            protected Boolean doInBackground() {
+                                                return logout(idDangNhap);
+                                            }
+
+                                            @Override
+                                            protected void done() {
+                                                Boolean success;
+                                                try {
+                                                    success = get();
+                                                } catch (Exception ex) {
+                                                    success = null;
+                                                    ex.printStackTrace();
+                                                }
+                                                if (success != null && success) {
+                                                    SwingUtilities.invokeLater(() -> System.exit(0));
+                                                } else {
+                                                    MessageBox.showErrorMessage(null, "Không thể đóng chương trình, tình trạng check-out thất bại");
+                                                }
+                                            }
+                                        };
+                                        logWorker.execute();
+                                    }
+                                }
+                            });
+
+                        } else if (isAdmin == 1) {
+                            if (taiKhoanNV.getMaTrangThai() != 6) {
+                                MessageBox.showErrorMessage(null, "Vui lòng kích hoạt tài khoản");
+                                return false;
+                            }
+
+                            int idDangNhap = login(taiKhoanNV.getMaTKNV());
+
+                            appAd = new ApplicationAdmin(taiKhoanNV, idDangNhap);
+
+                            appAd.setIconImage(favicon.getImage());
+                            appAd.setTitle("Quản lý ngân hàng - Quản trị viên");
+                            GlassPanePopup.install(appAd);
+                            appAd.setSelectedMenu(0, 0);
+                            appAd.setResizable(false);
+                            appAd.setDefaultCloseOperation(ApplicationAdmin.DO_NOTHING_ON_CLOSE);
+
+                            appAd.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    if (MessageBox.showConfirmMessage(null, "Bạn có chắc chắn muốn thoát chương trình?") == JOptionPane.YES_OPTION) {
+                                        SwingWorker<Boolean, Void> logWorker = new SwingWorker<Boolean, Void>() {
+                                            @Override
+                                            protected Boolean doInBackground() {
+                                                return logout(idDangNhap);
+                                            }
+
+                                            @Override
+                                            protected void done() {
+                                                Boolean success;
+                                                try {
+                                                    success = get();
+                                                } catch (Exception ex) {
+                                                    success = null;
+                                                    ex.printStackTrace();
+                                                }
+                                                if (success != null && success) {
+                                                    SwingUtilities.invokeLater(() -> System.exit(0));
+                                                } else {
+                                                    MessageBox.showErrorMessage(null, "Không thể đóng chương trình, tình trạng check-out thất bại");
+                                                }
+                                            }
+                                        };
+                                        logWorker.execute();
+                                    }
+                                }
+                            });
+                        } else {
+                            MessageBox.showErrorMessage(null, "Có vẻ bạn chưa được phân quyền, vui lòng liên hệ đến quản trị viên để kích hoạt!");
+                            return false;
+                        }
+
+                        JFrameWelcome welcome = new JFrameWelcome(taiKhoanNV.getTenChucVu(), taiKhoanNV.getTenNhanVien());
+                        welcome.setDefaultCloseOperation(JFrameWelcome.DISPOSE_ON_CLOSE);
+                        welcome.setResizable(false);
+                        welcome.setVisible(true);
+
+                        Application appRef = app;
+                        ApplicationAdmin appAdRef = appAd;
+
+                        app = null;
+                        appAd = null;
+
+                        Timer timer = new Timer(2200, e -> {
+                            welcome.dispose();
+                            if (isAdmin == 1 && appAdRef != null) {
+                                appAdRef.setVisible(true);
+                            } else {
+                                appRef.setVisible(true);
+                            }
+                        });
+                        timer.setRepeats(false);
+                        timer.start();
+
+                        return true;
                     } else {
-                        MessageBox.showErrorMessage(null, "Vui lòng kích hoạt tài khoản");
+                        MessageBox.showErrorMessage(null, "Tên đăng nhập hoặc mật khẩu không chính xác!");
+                        return false;
                     }
-
-                } else if (isAdmin == 1) {
-                    if (taiKhoanNV.getMaTrangThai() == 6) {
-                        this.dispose();
-                        ApplicationAdmin app = new ApplicationAdmin(taiKhoanNV);
-
-                        app.setIconImage(favicon.getImage());
-                        app.setTitle("Quản lý ngân hàng - Quản trị viên");
-                        GlassPanePopup.install(app);
-                        app.setSelectedMenu(0, 0);
-                        app.setVisible(true);
-                        app.setResizable(true);
-                        app.setDefaultCloseOperation(ApplicationAdmin.DISPOSE_ON_CLOSE);
-                    } else {
-                        MessageBox.showErrorMessage(null, "Vui lòng kích hoạt tài khoản");
-                    }
-                } else {
-                    MessageBox.showErrorMessage(null, "Có vẻ bạn chưa được phân quyền, vui lòng liên hệ đến quản trị viên để kích hoạt!");
                 }
-            } else {
-                MessageBox.showErrorMessage(null, "Tên đăng nhập hoặc mật khẩu không chính xác!");
-            }
+
+                @Override
+                protected void done() {
+                    Boolean success;
+                    try {
+                        success = get();
+                    } catch (Exception ex) {
+                        success = null;
+                        ex.printStackTrace();
+                    }
+                    if (success) {
+                        exitLoginForm();
+                    }
+                    enableForm(true);
+                    btnDangNhap.setText("Đăng nhập");
+                }
+            };
+            worker.execute();
         }
+    }
+
+    private void enableForm(boolean isEnable) {
+        btnDangNhap.setEnabled(isEnable);
+        txtTenDangNhap.setEnabled(isEnable);
+        pwfMatKhau.setEnabled(isEnable);
+        btnQuenMatKhau.setEnabled(isEnable);
+    }
+
+    private int login(int maTaiKhoanNV) {
+        return dangNhapBUS.dangNhap(maTaiKhoanNV);
+    }
+
+    private boolean logout(int maDangNhap) {
+        return dangNhapBUS.dangXuat(maDangNhap);
+    }
+
+    private void exitLoginForm() {
+        this.dispose();
     }
 
     /** This method is called from within the constructor to
@@ -108,6 +247,7 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         txtTenDangNhap = new javax.swing.JTextField();
         pwfMatKhau = new javax.swing.JPasswordField();
+        btnQuenMatKhau = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -203,7 +343,7 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         txtTenDangNhap.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtTenDangNhap.setText("nhainhai123");
+        txtTenDangNhap.setText("laithivan1111");
         txtTenDangNhap.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtTenDangNhapKeyReleased(evt);
@@ -211,10 +351,21 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         });
 
         pwfMatKhau.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pwfMatKhau.setText("Nhai@123456");
+        pwfMatKhau.setText("Thai@123456");
         pwfMatKhau.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 pwfMatKhauKeyReleased(evt);
+            }
+        });
+
+        btnQuenMatKhau.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        btnQuenMatKhau.setForeground(new java.awt.Color(0, 102, 255));
+        btnQuenMatKhau.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        btnQuenMatKhau.setText("Quên mật khẩu?");
+        btnQuenMatKhau.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnQuenMatKhau.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnQuenMatKhauMouseClicked(evt);
             }
         });
 
@@ -224,9 +375,11 @@ public class JFrameDangNhap extends javax.swing.JFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap(71, Short.MAX_VALUE)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtTenDangNhap)
-                    .addComponent(pwfMatKhau, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE))
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtTenDangNhap)
+                        .addComponent(pwfMatKhau, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE))
+                    .addComponent(btnQuenMatKhau, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(72, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
@@ -236,7 +389,9 @@ public class JFrameDangNhap extends javax.swing.JFrame {
                 .addComponent(txtTenDangNhap, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(pwfMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnQuenMatKhau, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jPanel3.add(jPanel8, java.awt.BorderLayout.CENTER);
@@ -273,6 +428,17 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtTenDangNhapKeyReleased
 
+    private void btnQuenMatKhauMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnQuenMatKhauMouseClicked
+        this.dispose();
+
+        JFrameQuenMK quenMK = new JFrameQuenMK();
+        FlatSVGIcon favicon = new FlatSVGIcon("quanlynganhang/icon/favicon.svg");
+        quenMK.setIconImage(favicon.getImage());
+        quenMK.setResizable(false);
+        quenMK.setDefaultCloseOperation(JFrameQuenMK.DISPOSE_ON_CLOSE);
+        quenMK.setVisible(true);
+    }//GEN-LAST:event_btnQuenMatKhauMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -298,6 +464,7 @@ public class JFrameDangNhap extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDangNhap;
+    private javax.swing.JLabel btnQuenMatKhau;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

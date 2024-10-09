@@ -1,26 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package quanlynganhang.GUI.adminUI;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JDialogThemChucVu extends javax.swing.JDialog {
 
     private ChucVuBUS chucVuBUS;
 
-    /** Creates new form JDialogThemChucVu */
     public JDialogThemChucVu(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -177,12 +169,15 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
 
     }
 
-    private void convertDataToCheckbox(String quyen, JCheckBox checkBox, JCheckBox them, JCheckBox sua, JCheckBox xoa) {
+    private void convertDataToCheckbox(String quyen, JCheckBox checkBox, JCheckBox xem, JCheckBox them, JCheckBox sua, JCheckBox xoa, JPanel jPInfo) {
         String[] parts = quyen.split("-");
         if (parts[0].equals("0")) {
             checkBox.setSelected(false);
         } else {
             checkBox.setSelected(true);
+            jPInfo.setVisible(true);
+
+            xem.setSelected(true);
             if (parts[2].equals("1")) {
                 them.setSelected(true);
             } else {
@@ -190,13 +185,13 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             }
 
             if (parts[3].equals("1")) {
-                sua.setSelected(true);
+                sua.setSelected(true); 
             } else {
                 sua.setSelected(false);
             }
 
             if (parts[4].equals("1")) {
-                xoa.setSelected(true);
+                xoa.setSelected(true); 
             } else {
                 xoa.setSelected(false);
             }
@@ -261,11 +256,11 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxThemChucVu.setSelected(false);
         }
 
-        convertDataToCheckbox(chucVu.getqLKhachHang(), chxKhachHang, chxKHThem, chxKHSua, chxKHXoa);
-        convertDataToCheckbox(chucVu.getqLNhanVien(), chxNhanVien, chxNVThem, chxNVSua, chxNVXoa);
-        convertDataToCheckbox(chucVu.getqLTKKhachHang(), chxTKKhachHang, chxTKKHThem, chxTKKHSua, chxTKKHXoa);
-        convertDataToCheckbox(chucVu.getqLTKNhanVien(), chxTKNhanVien, chxTKNVThem, chxTKNVSua, chxTKNVXoa);
-        convertDataToCheckbox(chucVu.getqLThe(), chxThe, chxTheThem, chxTheSua, chxTheXoa);
+        convertDataToCheckbox(chucVu.getqLKhachHang(), chxKhachHang, chxKHXem, chxKHThem, chxKHSua, chxKHXoa, jPKhachHang);
+        convertDataToCheckbox(chucVu.getqLNhanVien(), chxNhanVien, chxNVXem, chxNVThem, chxNVSua, chxNVXoa, jPNhanVien);
+        convertDataToCheckbox(chucVu.getqLTKKhachHang(), chxTKKhachHang, chxTKKHXem, chxTKKHThem, chxTKKHSua, chxTKKHXoa, jPTKKhachHang);
+        convertDataToCheckbox(chucVu.getqLTKNhanVien(), chxTKNhanVien, chxTKNVXem, chxTKNVThem, chxTKNVSua, chxTKNVXoa, jPTKNhanVien);
+        convertDataToCheckbox(chucVu.getqLThe(), chxThe, chxTheXem, chxTheThem, chxTheSua, chxTheXoa, jPThe);
 
     }
 

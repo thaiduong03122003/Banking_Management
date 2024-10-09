@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package quanlynganhang.GUI.adminUI;
 
 import quanlynganhang.GUI.*;
@@ -10,6 +6,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,21 +24,20 @@ import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JFrameBoLocDSNV extends javax.swing.JFrame {
 
+    private FormatDate fDate;
     private FormDSNhanVien formDSNhanVien;
     private DiaChiBUS diaChiBUS;
     private ChucVuBUS chucVuBUS;
     private NhanVienBUS nhanVienBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa, maChucVu;
     private boolean isFiltered;
+    private int biXoa;
 
-    public JFrameBoLocDSNV(FormDSNhanVien formDSNhanVien) {
+    public JFrameBoLocDSNV(FormDSNhanVien formDSNhanVien, int biXoa) {
         this.formDSNhanVien = formDSNhanVien;
+        fDate = new FormatDate();
         diaChiBUS = new DiaChiBUS();
         chucVuBUS = new ChucVuBUS();
         nhanVienBUS = new NhanVienBUS();
@@ -50,6 +46,7 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         maPhuongXa = 0;
         maChucVu = 0;
         isFiltered = false;
+        this.biXoa = biXoa;
 
         initComponents();
         customUI();
@@ -135,7 +132,7 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         }
     }
 
-    private List<NhanVienDTO> chonTieuChiLoc() throws ParseException, Exception {
+    private List<NhanVienDTO> chonTieuChiLoc() {
         FormatDate fDate = new FormatDate();
 
         String gender;
@@ -150,23 +147,30 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         }
 
         Date dateFrom, dateTo;
+
         if (rdbAllNgaySinh.isSelected()) {
             dateFrom = null;
             dateTo = null;
         } else {
-            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
-                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
-                return null;
-            } else {
+            if (!txtNgayBatDau.getText().trim().isEmpty() && !txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText()) && InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
                 dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
                 dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
-                
+
                 if (!InputValidation.kiemTraTrinhTuNhapNgay(dateFrom, dateTo)) {
                     MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
                     return null;
                 }
-            }
 
+            } else if (!txtNgayBatDau.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText().trim())) {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = null;
+            } else if (!txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayKetThuc.getText().trim())) {
+                dateFrom = null;
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+            } else {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
+            }
         }
 
         int idTinh, idHuyen, idXa;
@@ -175,21 +179,32 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
             idHuyen = 0;
             idXa = 0;
         } else {
-            idTinh = maTinhThanh;
-            idHuyen = maQuanHuyen;
-            idXa = maPhuongXa;
+            if (cbxTinh.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn địa chỉ");
+                return null;
+            } else {
+                idTinh = maTinhThanh;
+                idHuyen = maQuanHuyen;
+                idXa = maPhuongXa;
+            }
+
         }
 
         int idChucVu;
         if (rdbAllChucVu.isSelected()) {
             idChucVu = 0;
         } else {
-            idChucVu = maChucVu;
+            if (cbxChucVu.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn chức vụ");
+                return null;
+            } else {
+                idChucVu = maChucVu;
+            }
         }
 
         return nhanVienBUS.locNhanVien(gender, dateFrom, dateTo, idTinh, idHuyen, idXa, idChucVu);
     }
-    
+
     public List<NhanVienDTO> listNVBoLoc() throws Exception {
         return chonTieuChiLoc();
     }
@@ -646,93 +661,98 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbChonChucVuActionPerformed
 
     private void cbxHuyenItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxHuyenItemStateChanged
-        String tenQuanHuyen = (String) cbxHuyen.getSelectedItem();
-        if (tenQuanHuyen.equals("Chọn quận/huyện")) {
-            cbxXa.setSelectedIndex(0);
-
-            cbxXa.setEnabled(false);
-            maQuanHuyen = 0;
-        } else {
-            maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
-
-            if (maQuanHuyen != 0) {
-                loadPhuongXa(maQuanHuyen.intValue());
-                cbxXa.setEnabled(true);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenQuanHuyen = (String) cbxHuyen.getSelectedItem();
+            if (tenQuanHuyen.equals("Chọn quận/huyện")) {
                 cbxXa.setSelectedIndex(0);
+
+                cbxXa.setEnabled(false);
+                maQuanHuyen = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của quận huyện thất bại!");
+                maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
+
+                if (maQuanHuyen != 0) {
+                    loadPhuongXa(maQuanHuyen.intValue());
+                    cbxXa.setEnabled(true);
+                    cbxXa.setSelectedIndex(0);
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của quận huyện thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxHuyenItemStateChanged
 
     private void cbxTinhItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTinhItemStateChanged
-        String tenTinhThanh = (String) cbxTinh.getSelectedItem();
-        if (tenTinhThanh.equals("Chọn thành phố/tỉnh")) {
-            cbxHuyen.setSelectedIndex(0);
-            cbxXa.setSelectedIndex(0);
-
-            cbxHuyen.setEnabled(false);
-            cbxXa.setEnabled(false);
-            maTinhThanh = 0;
-        } else {
-            maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
-
-            if (maTinhThanh != 0) {
-                loadQuanHuyen(maTinhThanh.intValue());
-                cbxHuyen.setEnabled(true);
-                cbxXa.setEnabled(false);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenTinhThanh = (String) cbxTinh.getSelectedItem();
+            if (tenTinhThanh.equals("Chọn thành phố/tỉnh")) {
                 cbxHuyen.setSelectedIndex(0);
                 cbxXa.setSelectedIndex(0);
+
+                cbxHuyen.setEnabled(false);
+                cbxXa.setEnabled(false);
+                maTinhThanh = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của tỉnh thành thất bại!");
+                maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
+
+                if (maTinhThanh != 0) {
+                    loadQuanHuyen(maTinhThanh.intValue());
+                    cbxHuyen.setEnabled(true);
+                    cbxXa.setEnabled(false);
+                    cbxHuyen.setSelectedIndex(0);
+                    cbxXa.setSelectedIndex(0);
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của tỉnh thành thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxTinhItemStateChanged
 
     private void cbxXaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxXaItemStateChanged
-        String tenPhuongXa = (String) cbxXa.getSelectedItem();
-        if (tenPhuongXa.equals("Chọn phường/xã")) {
-            maPhuongXa = 0;
-        } else {
-            maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
-
-            if (maPhuongXa != 0) {
-                System.out.println("Id xã: " + maPhuongXa + " - Id huyện: " + maQuanHuyen + " - Id tỉnh: " + maTinhThanh);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenPhuongXa = (String) cbxXa.getSelectedItem();
+            if (tenPhuongXa.equals("Chọn phường/xã")) {
+                maPhuongXa = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
+                maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
+
+                if (maPhuongXa != 0) {
+                    System.out.println("Id xã: " + maPhuongXa + " - Id huyện: " + maQuanHuyen + " - Id tỉnh: " + maTinhThanh);
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxXaItemStateChanged
 
     private void cbxChucVuItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxChucVuItemStateChanged
-        String tenChucVu = (String) cbxChucVu.getSelectedItem();
-        if (tenChucVu.equals("Chọn chức vụ")) {
-            maChucVu = 0;
-        } else {
-            maChucVu = chucVuBUS.getIdFromTenChucVu(tenChucVu);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenChucVu = (String) cbxChucVu.getSelectedItem();
+            if (tenChucVu.equals("Chọn chức vụ")) {
+                maChucVu = 0;
+            } else {
+                maChucVu = chucVuBUS.getIdFromTenChucVu(tenChucVu);
 
-            if (maChucVu == 0) {
-                MessageBox.showErrorMessage(null, "Lấy id của chức vụ thất bại!");
+                if (maChucVu == 0) {
+                    MessageBox.showErrorMessage(null, "Lấy id của chức vụ thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxChucVuItemStateChanged
 
     private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
-        try {
-            if (chonTieuChiLoc() != null) {
-                checkFilterStatus();
+        List<NhanVienDTO> listLocNV = chonTieuChiLoc();
 
-                formDSNhanVien.loadDSNhanVien(0, isFiltered, chonTieuChiLoc());
-                this.dispose();
-            } else {
-                MessageBox.showInformationMessage(null, "Lọc nhân viên", "Không có thông tin nhân viên nào phù hợp");
+        if (listLocNV != null) {
+            checkFilterStatus();
+
+            if (listLocNV.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Không có thông tin nhân viên nào phù hợp!");
                 return;
             }
 
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            formDSNhanVien.loadDSNhanVien(biXoa, isFiltered, false, listLocNV);
+            this.dispose();
         }
     }//GEN-LAST:event_btnLocActionPerformed
 
@@ -741,6 +761,18 @@ public class JFrameBoLocDSNV extends javax.swing.JFrame {
         rdbAllNgaySinh.setSelected(true);
         rdbAllDiaChi.setSelected(true);
         rdbAllChucVu.setSelected(true);
+        txtNgayBatDau.setText("");
+        txtNgayKetThuc.setText("");
+        txtNgayBatDau.setVisible(false);
+        txtNgayKetThuc.setVisible(false);
+        cbxXa.setSelectedIndex(0);
+        cbxHuyen.setSelectedIndex(0);
+        cbxTinh.setSelectedIndex(0);
+        cbxChucVu.setSelectedIndex(0);
+        cbxXa.setEnabled(false);
+        cbxHuyen.setEnabled(false);
+        cbxTinh.setEnabled(false);
+        cbxChucVu.setEnabled(false);
 
         btnLocActionPerformed(null);
     }//GEN-LAST:event_btnResetActionPerformed

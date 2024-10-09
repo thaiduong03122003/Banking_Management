@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class InputValidation {
@@ -14,11 +15,11 @@ public class InputValidation {
             return false;
         }
 
-        if (name.length() <= 0 || name.length() > 50) {
+        if (name.length() > 50) {
             return false;
         }
 
-        if (!Pattern.matches("[\\p{L}\\s]{1,}'?", name)) {
+        if (!Pattern.matches("^[\\p{L}]+( [\\p{L}]+)*$", name)) {
             return false;
         }
 
@@ -114,21 +115,31 @@ public class InputValidation {
 
     public static boolean kiemTraNgayKhoa(String dateString) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
             LocalDate ngayKhoa = LocalDate.parse(dateString, formatter);
             LocalDate today = LocalDate.now();
+            
             return ngayKhoa.isAfter(today);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
-    
+
     public static boolean kiemTraSoTien(String soTien) {
         if (soTien == null || soTien.trim().isEmpty()) {
             return false;
         } else {
             String regex = "[0-9]+";
+            return Pattern.matches(regex, soTien);
+        }
+    }
+
+    public static boolean kiemTraMaXacNhan(String soTien) {
+        if (soTien == null || soTien.trim().isEmpty()) {
+            return false;
+        } else {
+            String regex = "^\\d{6}$";
             return Pattern.matches(regex, soTien);
         }
     }
@@ -140,5 +151,20 @@ public class InputValidation {
         } else {
             return originalString;
         }
+    }
+
+    public static String anEmail(String email) {
+
+        String[] parts = email.split("@");
+        String localPart = parts[0];
+        String domainPart = parts[1];
+
+        if (localPart.length() <= 3) {
+            return email;
+        }
+
+        String anKytu = localPart.charAt(0) + "***" + localPart.substring(localPart.length() - 2);
+
+        return anKytu + "@" + domainPart;
     }
 }

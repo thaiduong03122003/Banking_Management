@@ -9,12 +9,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.GiaoDichBUS;
+import quanlynganhang.BUS.validation.InputValidation;
+import quanlynganhang.DAO.KhoaTaiKhoanDAO;
 import quanlynganhang.DAO.KyHanGuiTKDAO;
 import quanlynganhang.DAO.TaiKhoanKHDAO;
+import quanlynganhang.DAO.TaiKhoanNVDAO;
 import quanlynganhang.DAO.TietKiemDAO;
 import quanlynganhang.DAO.TraKhoanVayDAO;
 import quanlynganhang.DAO.VayVonDAO;
 import quanlynganhang.DTO.GiaoDichDTO;
+import quanlynganhang.DTO.KhoaTaiKhoanDTO;
 import quanlynganhang.DTO.KyHanGuiTKDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
@@ -32,6 +36,8 @@ public class KiemTraDuLieuBUS {
     private final TraKhoanVayDAO traVayDAO = new TraKhoanVayDAO();
     private final VayVonBUS vayVonBUS = new VayVonBUS();
     private final TraKhoanVayBUS traVayBUS = new TraKhoanVayBUS();
+    private final KhoaTaiKhoanDAO khoaTaiKhoanDAO = new KhoaTaiKhoanDAO();
+    private final TaiKhoanNVDAO taiKhoanNVDAO = new TaiKhoanNVDAO();
     private Date toDay;
 
     public KiemTraDuLieuBUS() {
@@ -59,13 +65,40 @@ public class KiemTraDuLieuBUS {
         return giaoDich;
     }
 
+    public void chayKiemTraKhoaTaiKhoan() {
+        List<KhoaTaiKhoanDTO> listKhoaTK = khoaTaiKhoanDAO.selectAllLocked();
+
+        if (listKhoaTK == null || listKhoaTK.isEmpty()) {
+            return;
+        }
+        
+        System.out.println("Dang kiem tra tai khoan khoa");
+        
+        for (KhoaTaiKhoanDTO khoaTK : listKhoaTK) {
+            if (!InputValidation.kiemTraNgayKhoa(fDate.toString(khoaTK.getNgayMoKhoa()))) {
+                System.out.println("Mo khoa!");
+                
+                khoaTaiKhoanDAO.unlock(khoaTK.getMaKhoaTK());
+                doiTrangThaiTaiKhoan(khoaTK.getMaTaiKhoan(), khoaTK.getLoaiTaiKhoan());
+            }
+        }
+    }
+    
+    private void doiTrangThaiTaiKhoan(int maTaiKhoan, String loaiTaiKhoan) {
+        if (loaiTaiKhoan.equals("TKKH")) {
+            taiKhoanKHDAO.switchStatus(maTaiKhoan, 6);
+        } else {
+            taiKhoanNVDAO.switchStatus(maTaiKhoan, 6);
+        }
+    }
+
     public void chayKiemTraTinhTrangGTK() {
         try {
             System.out.println("Dang kiem tra tinh trang!");
 
             List<TietKiemDTO> listTK = tietKiemDAO.selectAll();
             TaiKhoanKHDTO taiKhoanKH;
-            if (listTK != null) {
+            if (listTK != null && !listTK.isEmpty()) {
                 for (TietKiemDTO tietKiemItem : listTK) {
 
                     Date ktNgayNhanLai = tietKiemItem.getNgayNhanLai();
@@ -297,7 +330,6 @@ public class KiemTraDuLieuBUS {
 
         return result.toString();
     }
-
 
     private void xuLyTienPhat(VayVonDTO vayVon) {
         System.out.println("Dang xu ly tien phat");

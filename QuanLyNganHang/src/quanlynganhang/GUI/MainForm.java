@@ -19,7 +19,12 @@ import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import quanlynganhang.BUS.ChiaQuyenBUS;
+import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.BUS.DieuHuongMenuBUS;
+import quanlynganhang.BUS.NhanVienBUS;
+import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.adminUI.ApplicationAdmin;
 import quanlynganhang.GUI.model.menubar.Menu;
@@ -29,21 +34,28 @@ public class MainForm extends JLayeredPane {
     private Application app;
     private ApplicationAdmin appAdmin;
     private TaiKhoanNVDTO taiKhoanNV;
+    private NhanVienBUS nhanVienBUS;
+    private ChucVuBUS chucVuBUS;
+    private int quyenSua;
     
-    public MainForm(Menu menu, DieuHuongMenuBUS menuBUS, TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin) {
+    public MainForm(Menu menu, DieuHuongMenuBUS menuBUS, TaiKhoanNVDTO taiKhoanNV, Application app, ApplicationAdmin appAdmin, int maDangNhap, boolean isAdmin) {
         this.app = app;
         this.appAdmin = appAdmin;
         this.menu = menu;
         this.menuBUS = menuBUS;
         this.taiKhoanNV = taiKhoanNV;
         
-        init();
+        nhanVienBUS = new NhanVienBUS();
+        chucVuBUS = new ChucVuBUS();
+        
+        init(maDangNhap, isAdmin);
     }
 
-    private void init() {
+    private void init(int maDangNhap, boolean isAdmin) {
+        initData();
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setLayout(new MainFormLayout());
-        headerBar = new HeaderBar(taiKhoanNV, app, appAdmin);
+        headerBar = new HeaderBar(isAdmin, maDangNhap, taiKhoanNV, app, appAdmin, quyenSua, 0);
         panelBody = new JPanel(new BorderLayout());
         initMenuArrowIcon();
         menuButton.putClientProperty(FlatClientProperties.STYLE, ""
@@ -61,6 +73,14 @@ public class MainForm extends JLayeredPane {
         add(headerBar);
         add(panelBody);
         setMenuFull(false);
+    }
+    
+    private void initData() {
+        NhanVienDTO nhanVien = nhanVienBUS.getNhanVienById(taiKhoanNV.getMaNhanVien(), 0);
+
+        ChucVuDTO chucVu = chucVuBUS.getChucVuById(nhanVien.getMaChucVu());
+        
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKNhanVien(), 3);
     }
 
     @Override

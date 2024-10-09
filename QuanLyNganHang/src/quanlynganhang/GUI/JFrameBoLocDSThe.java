@@ -5,7 +5,6 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +15,12 @@ import quanlynganhang.BUS.TheATMBUS;
 import quanlynganhang.BUS.TrangThaiBUS;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.validation.InputValidation;
-import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.TheATMDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
 public class JFrameBoLocDSThe extends javax.swing.JFrame {
 
+    private FormatDate fDate;
     private TheATMBUS theATMBUS;
     private TrangThaiBUS trangThaiBUS;
     private int maKhachHang;
@@ -29,21 +28,22 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
     private boolean isFiltered;
     private Integer maLoaiThe, maTrangThai;
     private final String danhMuc = "Account and Card";
-    
+
     public JFrameBoLocDSThe(FormDSThe formDSThe) {
         this.formDSThe = formDSThe;
+        fDate = new FormatDate();
         theATMBUS = new TheATMBUS();
         trangThaiBUS = new TrangThaiBUS();
         isFiltered = false;
         maLoaiThe = 0;
         maTrangThai = 0;
-        
+
         initComponents();
         customUI();
         loadLoaiThe();
         loadTrangThai();
     }
-    
+
     public void dienIdKH(int maKhachHang) {
         this.maKhachHang = maKhachHang;
         lbIdKH.setText("Id: " + maKhachHang);
@@ -52,16 +52,16 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
     private void customUI() {
         txtNgayBatDau.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Bắt đầu");
         txtNgayKetThuc.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Kết thúc");
-        
+
         txtNgayBatDau.setVisible(false);
         txtNgayKetThuc.setVisible(false);
         lbIdKH.setVisible(false);
         btnChonKH.setVisible(false);
         cbxLoaiThe.setEnabled(false);
         cbxTrangThai.setEnabled(false);
-        
+
     }
-    
+
     private void loadLoaiThe() {
         Map<Integer, String> map = new HashMap<>();
         map = theATMBUS.convertListLoaiTheATMToMap();
@@ -75,7 +75,7 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
 
         cbxLoaiThe.setModel(model);
     }
-    
+
     private void loadTrangThai() {
         Map<Integer, String> map = new HashMap<>();
         map = trangThaiBUS.convertListTrangThaiToMap(danhMuc);
@@ -89,7 +89,7 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
 
         cbxTrangThai.setModel(model);
     }
-    
+
     private void checkFilterStatus() {
         if (rdbAllNgayTao.isSelected() && rdbAllKH.isSelected() && rdbAllLoaiThe.isSelected() && rdbAllTrangThai.isSelected()) {
             isFiltered = false;
@@ -97,34 +97,40 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
             isFiltered = true;
         }
     }
-    
-    private List<TheATMDTO> chonTieuChiLoc() throws ParseException, Exception {
-        FormatDate fDate = new FormatDate();
 
+    private List<TheATMDTO> chonTieuChiLoc() {
         Date dateFrom, dateTo;
+
         if (rdbAllNgayTao.isSelected()) {
             dateFrom = null;
             dateTo = null;
         } else {
-            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
-                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
-                return null;
-            } else {
+            if (!txtNgayBatDau.getText().trim().isEmpty() && !txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText()) && InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
                 dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
                 dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
-                
+
                 if (!InputValidation.kiemTraTrinhTuNhapNgay(dateFrom, dateTo)) {
                     MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
                     return null;
                 }
+
+            } else if (!txtNgayBatDau.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText().trim())) {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = null;
+            } else if (!txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayKetThuc.getText().trim())) {
+                dateFrom = null;
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+            } else {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
             }
         }
-        
+
         int maKH;
         if (rdbAllKH.isSelected()) {
             maKH = 0;
         } else {
-            if (lbIdKH.getText().equals("(Chưa có)")) {
+            if (lbIdKH.getText().equals("(Chưa chọn)")) {
                 MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
                 maKH = 0;
             } else {
@@ -136,20 +142,30 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
         if (rdbAllLoaiThe.isSelected()) {
             idLoaiThe = 0;
         } else {
-            idLoaiThe = maLoaiThe;
+            if (cbxLoaiThe.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn loại thẻ!");
+                return null;
+            } else {
+                idLoaiThe = maLoaiThe;
+            }
         }
-        
+
         int idTrangThai;
         if (rdbAllTrangThai.isSelected()) {
             idTrangThai = 0;
         } else {
-            idTrangThai = maTrangThai;
+            if (cbxTrangThai.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn trạng thái thẻ!");
+                return null;
+            } else {
+                idTrangThai = maTrangThai;
+            }
         }
 
         return theATMBUS.locThe(dateFrom, dateTo, maKH, idLoaiThe, idTrangThai);
     }
-    
-    public List<TheATMDTO> listTheBoLoc() throws Exception {
+
+    public List<TheATMDTO> listTheBoLoc() {
         return chonTieuChiLoc();
     }
 
@@ -574,21 +590,18 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
-        try {
-            if (chonTieuChiLoc() != null) {
-                checkFilterStatus();
+        List<TheATMDTO> listLocThe = chonTieuChiLoc();
+        
+        if (listLocThe != null) {
+            checkFilterStatus();
 
-                formDSThe.loadDSThe(isFiltered, chonTieuChiLoc());
-                this.dispose();
-            } else {
-                MessageBox.showInformationMessage(null, "", "Không có thông tin thẻ khách hàng nào phù hợp");
+            if (listLocThe.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Không có thông tin thẻ nào phù hợp!");
                 return;
             }
-
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            
+            formDSThe.loadDSThe(isFiltered, false, chonTieuChiLoc());
+            this.dispose();
         }
     }//GEN-LAST:event_btnLocActionPerformed
 
@@ -627,7 +640,7 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbChonNgayTaoActionPerformed
 
     private void rdbAllKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbAllKHActionPerformed
-        if(rdbAllKH.isSelected()) {
+        if (rdbAllKH.isSelected()) {
             btnChonKH.setVisible(false);
             lbIdKH.setText("(Chưa chọn)");
             lbIdKH.setVisible(false);
@@ -635,14 +648,14 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
     }//GEN-LAST:event_rdbAllKHActionPerformed
 
     private void rdbChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbChonKHActionPerformed
-        if(rdbChonKH.isSelected()) {
+        if (rdbChonKH.isSelected()) {
             btnChonKH.setVisible(true);
             lbIdKH.setVisible(true);
         }
     }//GEN-LAST:event_rdbChonKHActionPerformed
 
     private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH", true);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);
@@ -679,7 +692,16 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
         rdbAllKH.setSelected(true);
         rdbAllLoaiThe.setSelected(true);
         rdbAllTrangThai.setSelected(true);
-        
+        txtNgayBatDau.setText("");
+        txtNgayKetThuc.setText("");
+        txtNgayBatDau.setVisible(false);
+        txtNgayKetThuc.setVisible(false);
+        lbIdKH.setText("(Chưa chọn)");
+        cbxLoaiThe.setSelectedIndex(0);
+        cbxTrangThai.setSelectedIndex(0);
+        cbxLoaiThe.setEnabled(false);
+        cbxTrangThai.setEnabled(false);
+
         btnLocActionPerformed(null);
     }//GEN-LAST:event_btnResetActionPerformed
 
@@ -691,18 +713,7 @@ public class JFrameBoLocDSThe extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

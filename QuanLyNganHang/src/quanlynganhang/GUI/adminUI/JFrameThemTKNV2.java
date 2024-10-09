@@ -39,8 +39,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     private void initCustomUI() {
         pwfMatKhau.putClientProperty(FlatClientProperties.STYLE, ""
             + "showRevealButton:true;");
-        pwfMaPIN.putClientProperty(FlatClientProperties.STYLE, ""
-            + "showRevealButton:true;");
     }
 
     private void loadAnh(String tenFileAnh) {
@@ -54,7 +52,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     public void dienThongTinNV(int maNhanVien) {
         FormatDate fDate = new FormatDate();
         NhanVienDTO nhanVien = nhanVienBUS.getNhanVienById(maNhanVien, 0);
-        
+
         if (nhanVien != null) {
             txtMaNV.setText("" + nhanVien.getMaNV());
             txtHoDem.setText(nhanVien.getHoDem());
@@ -99,18 +97,22 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
         }
     }
 
-    private boolean themTaiKhoanNV() throws ParseException {
+    private boolean themTaiKhoanNV() {
         FormatDate fDate = new FormatDate();
         StringBuilder error = new StringBuilder();
         error.append("");
 
         TaiKhoanNVDTO taiKhoanNV = new TaiKhoanNVDTO();
 
-        String tenDangNhap = txtTenDangNhap.getText();
+        String tenDangNhap = txtTenDangNhap.getText().trim();
         if (!tenDangNhap.isEmpty()) {
-            taiKhoanNV.setTenDangNhap(txtTenDangNhap.getText());
+            if (InputValidation.kiemTraTen(tenDangNhap)) {
+                taiKhoanNV.setTenDangNhap(tenDangNhap);
+            } else {
+                error.append("\nTên đăng nhập không hợp lệ!");
+            }
         } else {
-            error.append("\nTên đang nhập không được để trống!");
+            error.append("\nTên đăng nhập không được để trống!");
         }
 
         String password = String.valueOf(pwfMatKhau.getPassword());
@@ -120,17 +122,10 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
             error.append("\nMật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
         }
 
-        String pinCode = String.valueOf(pwfMaPIN.getPassword());
-        if (InputValidation.kiemTraMaPIN(pinCode)) {
-            taiKhoanNV.setMaPIN(MaHoaMatKhauBUS.encryptPassword(pinCode));
-        } else {
-            error.append("\nMã PIN có độ dài 6 ký tự, chỉ chứa các ký tự số!");
-        }
-
         taiKhoanNV.setNgayTaoTK(fDate.getToday());
         taiKhoanNV.setMaNhanVien(Integer.parseInt(txtMaNV.getText()));
         if (error.isEmpty()) {
-            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV);
+            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV) != 0;
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -196,9 +191,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
         jPanel19 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
         pwfMatKhau = new javax.swing.JPasswordField();
-        jPanel22 = new javax.swing.JPanel();
-        jLabel19 = new javax.swing.JLabel();
-        pwfMaPIN = new javax.swing.JPasswordField();
         jPanel21 = new javax.swing.JPanel();
         btnChonNV = new javax.swing.JButton();
 
@@ -677,29 +669,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel19.setText("Mã PIN:");
-
-        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
-        jPanel22.setLayout(jPanel22Layout);
-        jPanel22Layout.setHorizontalGroup(
-            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel22Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pwfMaPIN, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel22Layout.setVerticalGroup(
-            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel22Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel19)
-                    .addComponent(pwfMaPIN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
@@ -708,8 +677,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
                 .addContainerGap(16, Short.MAX_VALUE)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel18, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel12Layout.setVerticalGroup(
@@ -719,9 +687,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
                 .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
         btnChonNV.setText("Chọn nhân viên");
@@ -849,15 +815,14 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTenChucVuActionPerformed
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        try {
-            if (themTaiKhoanNV()) {
-                MessageBox.showInformationMessage(null, "", "Thêm tài khoản nhân viên thành công!");
-            } else {
-                MessageBox.showErrorMessage(null, "Thêm tài khoản nhân viên thất bại!");
-            }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
+        if (txtMaNV.getText().trim().isEmpty()) {
+            MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên!");
+            return;
         }
+        if (themTaiKhoanNV()) {
+            MessageBox.showInformationMessage(null, "", "Thêm tài khoản nhân viên thành công!");
+        }
+
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void txtNgayVaoLamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNgayVaoLamActionPerformed
@@ -869,7 +834,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTenDangNhaptxtNgayVaoLamActionPerformed
 
     private void btnChonNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonNVActionPerformed
-        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV");
+        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn nhân viên", "DSNV", true);
         chonNV.setResizable(false);
         chonNV.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonNV.setVisible(true);
@@ -893,16 +858,16 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                System.out.println("The form will be executed if there are arguments passed in!");
-            }
-        });
+//        FlatRobotoFont.install();
+//        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
+//        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
+//        FlatMacLightLaf.setup();
+//
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                System.out.println("The form will be executed if there are arguments passed in!");
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -914,7 +879,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -933,7 +897,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel21;
-    private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -944,7 +907,6 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lbChiTietThongTin;
     private quanlynganhang.GUI.model.picturebox.PictureBox ptbAnh;
-    private javax.swing.JPasswordField pwfMaPIN;
     private javax.swing.JPasswordField pwfMatKhau;
     private javax.swing.JRadioButton rdbKhac;
     private javax.swing.JRadioButton rdbNam;

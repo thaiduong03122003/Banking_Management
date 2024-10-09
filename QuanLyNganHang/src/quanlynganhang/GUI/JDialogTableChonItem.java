@@ -1,6 +1,8 @@
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -12,6 +14,7 @@ import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
+import quanlynganhang.DTO.KhachHangDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
@@ -21,6 +24,9 @@ import quanlynganhang.GUI.adminUI.JFrameThemTKNV2;
 import quanlynganhang.GUI.model.message.MessageBox;
 import quanlynganhang.GUI.FormMoTheTinDung;
 import quanlynganhang.GUI.adminUI.FormThongKe;
+import quanlynganhang.GUI.model.textfield.SearchOptinEvent;
+import quanlynganhang.GUI.model.textfield.SearchOption;
+
 public class JDialogTableChonItem extends javax.swing.JDialog {
 
     private String loaiDanhSach;
@@ -28,7 +34,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
     private KhachHangBUS khachHangBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private TaiKhoanKHBUS taiKhoanKHBUS;
-    private  GiaoDichBUS giaoDichBUS;
+    private GiaoDichBUS giaoDichBUS;
     private JFrameThemTKNV2 themTKNV2;
     private FormPhanQuyen phanQuyen;
     private FormMoTaiKhoan moTaiKhoan;
@@ -44,319 +50,317 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
     private JFrameBoLocGD jFrameBoLocGD;
     private FormTraKhoanVay formTraKhoanVay;
     private FormTongQuan formTongQuan;
+    private boolean isSearched;
 
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameThemTKNV2 themTKNV2, String title, String loaiDanhSach) {
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameThemTKNV2 themTKNV2, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.themTKNV2 = themTKNV2;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-      public JDialogTableChonItem(java.awt.Frame parent, boolean modal,FormThongKe fromThongKe, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormThongKe fromThongKe, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.phanQuyen = phanQuyen;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormPhanQuyen phanQuyen, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormPhanQuyen phanQuyen, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.phanQuyen = phanQuyen;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
 
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTaiKhoan moTaiKhoan, String title, String loaiDanhSach) {
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTaiKhoan moTaiKhoan, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.moTaiKhoan = moTaiKhoan;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-   
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormNapTien napTien, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormNapTien napTien, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.napTien = napTien;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
 
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormRutTien rutTien, String title, String loaiDanhSach) {
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormRutTien rutTien, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.rutTien = rutTien;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
 
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenCungNganHang chuyenCungNganHang, String title, String loaiDanhSach) {
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenCungNganHang chuyenCungNganHang, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.chuyenCungNganHang = chuyenCungNganHang;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
 
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenLienNganHang chuyenLienNganHang, String title, String loaiDanhSach) {
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChuyenLienNganHang chuyenLienNganHang, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.chuyenLienNganHang = chuyenLienNganHang;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTKTietKiem formMoTKTietKiem, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTKTietKiem formMoTKTietKiem, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formMoTKTietKiem = formMoTKTietKiem;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChoVayVon formChoVayVon, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormChoVayVon formChoVayVon, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formChoVayVon = formChoVayVon;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheGhiNo formMoTheGhiNo, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheGhiNo formMoTheGhiNo, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formMoTheGhiNo = formMoTheGhiNo;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocDSThe jFrameBoLocDSThe, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocDSThe jFrameBoLocDSThe, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.jFrameBoLocDSThe = jFrameBoLocDSThe;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheTinDung formMoTheTinDung, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormMoTheTinDung formMoTheTinDung, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formMoTheTinDung = formMoTheTinDung;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocGD jFrameBoLocGD, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, JFrameBoLocGD jFrameBoLocGD, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.jFrameBoLocGD = jFrameBoLocGD;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
+        initSelectButton(canSelect);
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTraKhoanVay formTraKhoanVay, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTraKhoanVay formTraKhoanVay, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formTraKhoanVay = formTraKhoanVay;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-    
-    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTongQuan formTongQuan, String title, String loaiDanhSach) {
+
+    public JDialogTableChonItem(java.awt.Frame parent, boolean modal, FormTongQuan formTongQuan, String title, String loaiDanhSach, boolean canSelect) {
         super(parent, modal);
         this.formTongQuan = formTongQuan;
         this.loaiDanhSach = loaiDanhSach;
         this.setTitle(title);
 
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / tên cần tìm...");
+        initSelectButton(canSelect);
 
         switchTable();
     }
-     // ========================================17/9
-      public void loadDSRutTien() throws Exception {
+
+    //LOAD DANH SÁCH
+    public void loadDSRutTien() {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
         Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 3);
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
-        public void loadDSNapTien() throws Exception {
+
+    public void loadDSNapTien() {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
         Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 4);
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
- 
-           public void loadDSGuiTietKiem() throws Exception {
+
+    public void loadDSGuiTietKiem() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
         Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 5);
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
-             public void loadDSGiaoDich() throws Exception {
+
+    public void loadDSGiaoDich() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, giaoDichBUS.getDSGiaoDich(),0);
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, giaoDichBUS.getDSGiaoDich(), 0);
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
-               public void loadDSMaxGiiaoDich() throws Exception {
+
+    public void loadDSMaxGiiaoDich() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
         Object[][] dataModel = giaoDichBUS.doiSangObjectMaxGiaoDich();
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
-                  public void loadDSVayVon() throws Exception {
+
+    public void loadDSVayVon() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null,7);
-         String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 7);
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
-// ===========================================17/9
-    public void loadDSNhanVien() throws Exception {
+
+    public void loadDSNhanVien(boolean isSearched, List<NhanVienDTO> list) {
+        this.isSearched = isSearched;
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = nhanVienBUS.doiSangObjectNhanVien(0, false, null);
+        Object[][] dataModel = isSearched ? nhanVienBUS.doiSangObjectNhanVien(0, false, isSearched, list) : nhanVienBUS.doiSangObjectNhanVien(0, false, isSearched, null);
         String[] title = {"Mã nhân viên", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã Căn cước công dân", "Chức vụ"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
 
-    public void loadDSKhachHang() throws Exception {
+    public void loadDSKhachHang(boolean isSearched, List<KhachHangDTO> list) {
+        this.isSearched = isSearched;
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = khachHangBUS.doiSangObjectKhachHang(0, false, null);
+        Object[][] dataModel = isSearched ? khachHangBUS.doiSangObjectKhachHang(0, false, isSearched, list) : khachHangBUS.doiSangObjectKhachHang(0, false, isSearched, null);
+
         String[] title = {"Mã khách hàng", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã Căn cước công dân", "Nợ xấu"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
 
-    public void loadDSTaiKhoanNV() throws Exception {
+    public void loadDSTaiKhoanNV(boolean isSearched, List<TaiKhoanNVDTO> list) {
+        this.isSearched = isSearched;
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = taiKhoanNVBUS.doiSangObjectTaiKhoanNV(false, null);
-        String[] title = {"Mã tài khoản", "Họ tên nhân viên", "Tên đăng nhập", "Ngày tạo", "Trạng thái tài khoản"};
+        Object[][] dataModel = isSearched ? taiKhoanNVBUS.doiSangObjectTaiKhoanNV(false, isSearched, list) : taiKhoanNVBUS.doiSangObjectTaiKhoanNV(false, isSearched, null);
+        String[] title = {"Mã tài khoản", "Họ tên nhân viên", "Tên đăng nhập", "Ngày tạo", "Trạng thái tài khoản", "Trạng thái hoạt động"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
 
-    public void loadDSTaiKhoanKH() throws Exception {
+    public void loadDSTaiKhoanKH(boolean isSearched, List<TaiKhoanKHDTO> list) {
+        this.isSearched = isSearched;
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, null, true);
-        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
-        model.setDataVector(dataModel, title);
+        Object[][] dataModel = isSearched ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, null, false);
+        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
 
+        model.setDataVector(dataModel, title);
         jTableDS.setDefaultEditor(Object.class, null);
     }
-    
+
     public void loadDSTaiKhoanVay() throws Exception {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
@@ -372,46 +376,108 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         try {
             if (loaiDanhSach.equals("DSNV")) {
                 nhanVienBUS = new NhanVienBUS();
-                loadDSNhanVien();
+
+                txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+                    @Override
+                    public void optionSelected(SearchOption option, int index) {
+                        txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+                    }
+                });
+
+                txtSearchData.addOption(new SearchOption("họ tên nhân viên", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+                txtSearchData.addOption(new SearchOption("số điện thoại", new FlatSVGIcon("quanlynganhang/icon/searchData_phoneNum.svg")));
+                txtSearchData.addOption(new SearchOption("email", new FlatSVGIcon("quanlynganhang/icon/searchData_email.svg")));
+                txtSearchData.addOption(new SearchOption("mã căn cước", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+                txtSearchData.setSelectedIndex(0);
+
+                loadDSNhanVien(false, null);
+
             } else if (loaiDanhSach.equals("DSTKNV")) {
                 taiKhoanNVBUS = new TaiKhoanNVBUS();
-                loadDSTaiKhoanNV();
+
+                txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+                    @Override
+                    public void optionSelected(SearchOption option, int index) {
+                        txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+                    }
+                });
+
+                txtSearchData.addOption(new SearchOption("họ tên nhân viên", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+                txtSearchData.addOption(new SearchOption("tên đăng nhập", new FlatSVGIcon("quanlynganhang/icon/searchData_accNum.svg")));
+                txtSearchData.setSelectedIndex(0);
+
+                loadDSTaiKhoanNV(false, null);
+
             } else if (loaiDanhSach.equals("DSKH")) {
                 khachHangBUS = new KhachHangBUS();
-                loadDSKhachHang();
+
+                txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+                    @Override
+                    public void optionSelected(SearchOption option, int index) {
+                        txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+                    }
+                });
+
+                txtSearchData.addOption(new SearchOption("họ tên khách hàng", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+                txtSearchData.addOption(new SearchOption("số điện thoại", new FlatSVGIcon("quanlynganhang/icon/searchData_phoneNum.svg")));
+                txtSearchData.addOption(new SearchOption("email", new FlatSVGIcon("quanlynganhang/icon/searchData_email.svg")));
+                txtSearchData.addOption(new SearchOption("mã căn cước", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+                txtSearchData.setSelectedIndex(0);
+
+                loadDSKhachHang(false, null);
+
             } else if (loaiDanhSach.equals("DSTKKH")) {
                 taiKhoanKHBUS = new TaiKhoanKHBUS();
-                loadDSTaiKhoanKH();
+
+                txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+                    @Override
+                    public void optionSelected(SearchOption option, int index) {
+                        txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+                    }
+                });
+
+                txtSearchData.addOption(new SearchOption("họ tên khách hàng hoặc tên tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+                txtSearchData.addOption(new SearchOption("số tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+                txtSearchData.setSelectedIndex(0);
+
+                loadDSTaiKhoanKH(false, null);
+
             } else if (loaiDanhSach.equals("DSTKV")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 taiKhoanKHBUS = new TaiKhoanKHBUS();
                 loadDSTaiKhoanVay();
-            }//======================17/9
-             else if (loaiDanhSach.equals("DSRT")) {
+            } else if (loaiDanhSach.equals("DSRT")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSRutTien();
-            } 
-               else if (loaiDanhSach.equals("DSNT")) {
+            } else if (loaiDanhSach.equals("DSNT")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSNapTien();
-            } 
-               else if (loaiDanhSach.equals("DSGTK")) {
+            } else if (loaiDanhSach.equals("DSGTK")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSGuiTietKiem();
-            } 
-               else if (loaiDanhSach.equals("DSGD")) {
+            } else if (loaiDanhSach.equals("DSGD")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSGiaoDich();
-            } 
-              else if (loaiDanhSach.equals("DSMGD")) {
+            } else if (loaiDanhSach.equals("DSMGD")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSMaxGiiaoDich();
-            } 
-                else if (loaiDanhSach.equals("DSVV")) {
+            } else if (loaiDanhSach.equals("DSVV")) {
+                txtSearchData.setVisible(false);
+                btnSearch.setVisible(false);
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSVayVon();
-            } 
-            
-            else {
+            } else {
                 MessageBox.showErrorMessage(null, "Không tìm thấy danh sách được chọn!");
             }
         } catch (Exception e) {
@@ -444,6 +510,114 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         }
     }
 
+    private void initSelectButton(boolean canSelect) {
+        if (canSelect) {
+            btnChon.setVisible(true);
+        } else {
+            btnChon.setVisible(false);
+        }
+    }
+
+    private void searchData() {
+        if (loaiDanhSach.equals("DSNV")) {
+            int option = txtSearchData.getSelectedIndex();
+            String typeName;
+            switch (option) {
+                case 0:
+                    typeName = "name";
+                    break;
+                case 1:
+                    typeName = "phoneNumber";
+                    break;
+                case 2:
+                    typeName = "email";
+                    break;
+                case 3:
+                    typeName = "cccd";
+                    break;
+                default:
+                    return;
+            }
+
+            List<NhanVienDTO> listNV = nhanVienBUS.timKiemTheoLoai(0, typeName, txtSearchData.getText().trim());
+
+            if (listNV != null && !listNV.isEmpty()) {
+                loadDSNhanVien(true, listNV);
+                return;
+            }
+            showError();
+
+        } else if (loaiDanhSach.equals("DSTKNV")) {
+            int option = txtSearchData.getSelectedIndex();
+            String typeName = option == 0 ? "name" : "username";
+
+            List<TaiKhoanNVDTO> listTKNV = taiKhoanNVBUS.timKiemTheoLoai(typeName, txtSearchData.getText().trim());
+            if (listTKNV != null && !listTKNV.isEmpty()) {
+                loadDSTaiKhoanNV(true, listTKNV);
+                return;
+            }
+            showError();
+
+        } else if (loaiDanhSach.equals("DSKH")) {
+            int option = txtSearchData.getSelectedIndex();
+            String typeName;
+            switch (option) {
+                case 0:
+                    typeName = "name";
+                    break;
+                case 1:
+                    typeName = "phoneNumber";
+                    break;
+                case 2:
+                    typeName = "email";
+                    break;
+                case 3:
+                    typeName = "cccd";
+                    break;
+                default:
+                    return;
+            }
+
+            List<KhachHangDTO> listKH = khachHangBUS.timKiemTheoLoai(0, typeName, txtSearchData.getText().trim());
+
+            if (listKH != null && !listKH.isEmpty()) {
+                loadDSKhachHang(true, listKH);
+                return;
+            }
+            showError();
+
+        } else if (loaiDanhSach.equals("DSTKKH")) {
+            int option = txtSearchData.getSelectedIndex();
+            String typeName = option == 0 ? "name" : "accountNum";
+
+            List<TaiKhoanKHDTO> listTKKH = taiKhoanKHBUS.timKiemTheoLoai(typeName, txtSearchData.getText().trim());
+            if (listTKKH != null && !listTKKH.isEmpty()) {
+                loadDSTaiKhoanKH(true, listTKKH);
+                return;
+            }
+            showError();
+        }
+    }
+
+    private void showError() {
+        MessageBox.showErrorMessage(null, "Không tìm thấy thông tin nào!");
+    }
+
+    private void resetTable() {
+        if (loaiDanhSach.equals("DSNV")) {
+            loadDSNhanVien(false, null);
+
+        } else if (loaiDanhSach.equals("DSTKNV")) {
+            loadDSTaiKhoanNV(false, null);
+
+        } else if (loaiDanhSach.equals("DSKH")) {
+            loadDSKhachHang(false, null);
+
+        } else if (loaiDanhSach.equals("DSTKKH")) {
+            loadDSTaiKhoanKH(false, null);
+        }
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -455,7 +629,9 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtSearch = new javax.swing.JTextField();
+        txtSearchData = new quanlynganhang.GUI.model.textfield.TextFieldSearchOption();
+        btnSearch = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -469,9 +645,23 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtSearchData.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtSearchKeyReleased(evt);
+                txtSearchDataKeyReleased(evt);
+            }
+        });
+
+        btnSearch.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        btnReset.setIcon(new FlatSVGIcon("quanlynganhang/icon/reload_btn.svg"));
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -481,15 +671,22 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(476, Short.MAX_VALUE))
+                .addComponent(txtSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 370, Short.MAX_VALUE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtSearchData, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnReset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel1.add(jPanel4, java.awt.BorderLayout.CENTER);
@@ -595,7 +792,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                         themTKNV2.dienThongTinNV(id);
                     } else if (phanQuyen != null) {
                         phanQuyen.dienThongTin(id);
-                    } else if (jFrameBoLocGD != null){
+                    } else if (jFrameBoLocGD != null) {
                         jFrameBoLocGD.dienIdNV(id);
                     }
                     this.dispose();
@@ -618,7 +815,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                         formMoTKTietKiem.dienThongTinKH(id);
                     } else if (formChoVayVon != null) {
                         formChoVayVon.dienThongTinKH(id);
-                    } else if(jFrameBoLocDSThe != null) {
+                    } else if (jFrameBoLocDSThe != null) {
                         jFrameBoLocDSThe.dienIdKH(id);
                     } else if (jFrameBoLocGD != null) {
                         jFrameBoLocGD.dienIdKH(id);
@@ -631,7 +828,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                     JDialogXacNhanChon xacNhanChon = new JDialogXacNhanChon(null, true, this, id);
                     xacNhanChon.setDefaultCloseOperation(JDialogXacNhanChon.DISPOSE_ON_CLOSE);
                     xacNhanChon.setVisible(true);
-                } else if (loaiDanhSach.equals("DSTKV")){
+                } else if (loaiDanhSach.equals("DSTKV")) {
                     if (formTraKhoanVay != null) {
                         formTraKhoanVay.getMaTaiKhoanVay(id);
                         this.dispose();
@@ -646,53 +843,36 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
-        DefaultTableModel obj = (DefaultTableModel) jTableDS.getModel();
-        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-        jTableDS.setRowSorter(obj1);
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        if (txtSearchData.getText().trim().isEmpty()) {
+            MessageBox.showErrorMessage(null, "Vui lòng nhập thông tin cần tìm!");
+            return;
+        }
+        searchData();
+    }//GEN-LAST:event_btnSearchActionPerformed
 
-        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearch.getText());
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        resetTable();
+        txtSearchData.setText("");
+    }//GEN-LAST:event_btnResetActionPerformed
 
-        obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_txtSearchKeyReleased
+    private void txtSearchDataKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchDataKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSearchActionPerformed(null);
+        }
+    }//GEN-LAST:event_txtSearchDataKeyReleased
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogTableChonItem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogTableChonItem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogTableChonItem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogTableChonItem.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChon;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -702,6 +882,6 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableDS;
-    private javax.swing.JTextField txtSearch;
+    private quanlynganhang.GUI.model.textfield.TextFieldSearchOption txtSearchData;
     // End of variables declaration//GEN-END:variables
 }

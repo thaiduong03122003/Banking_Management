@@ -18,6 +18,7 @@ import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.TietKiemBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.GiaoDichDTO;
 import quanlynganhang.DTO.KhachHangDTO;
@@ -203,7 +204,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             error.append("Vui lòng nhập đầu đủ thông tin");
         } else {
             try {
-                soTien = new BigInteger(txtTienTietKiem.getText());
+                soTien = new BigInteger(txtTienTietKiem.getText().trim().replace(",", ""));
                 if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
                     error.append("\nSố tiền tiết kiệm nằm trong khoảng 1 triệu VND và 2 tỷ VND cho một lần gửi!");
                 }
@@ -214,12 +215,19 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             } catch (NumberFormatException ne) {
                 error.append("\nVui lòng nhập đúng số tiền giao dịch!");
             }
-
         }
+        
+        
 
         GiaoDichDTO giaoDich = new GiaoDichDTO();
         TaiKhoanKHDTO taiKhoanGTK = new TaiKhoanKHDTO();
         TietKiemDTO tietKiem = new TietKiemDTO();
+        
+        if (InputValidation.kiemTraTen(txtTenTKTietKiem.getText())) {
+            taiKhoanGTK.setTenTaiKhoan(txtTenTKTietKiem.getText().trim());
+        } else {
+            error.append("\nTên tài khoản không hợp lệ");
+        }
         
         if (isAutoGenerateSTK) {
             String soTaiKhoanMoi = taiKhoanKHBUS.taoSTKTuDong();
@@ -239,7 +247,6 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         }
 
         if (error.isEmpty()) {
-            taiKhoanGTK.setTenTaiKhoan(txtTenTKTietKiem.getText());
             taiKhoanGTK.setMaKhachHang(maKhachHang);
             taiKhoanGTK.setSoDu("0");
             taiKhoanGTK.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
@@ -275,7 +282,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             tietKiem.setHinhThucGiaHan(cbxGiaHan.getSelectedItem().toString());
             tietKiem.setHinhThucNhanLai(cbxNhanLai.getSelectedItem().toString());
             tietKiem.setNgayMoTK(fDate.getToday());
-            tietKiem.setSoTienGoc(txtTienTietKiem.getText());
+            tietKiem.setSoTienGoc(txtTienTietKiem.getText().trim().replace(",", ""));
             tietKiem.setMaTrangThai(10);
 
             int maTaiKhoanGTK = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanGTK);
@@ -291,12 +298,21 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                     }
                 }
             } else {
-                MessageBox.showErrorMessage(null, "Tạo tài khoản tiết kiệm thất bại!");
+                MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
             }
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
         }
-
+    }
+    
+    private void onCodeTextChanged() {
+        String currency = txtTienTietKiem.getText().trim().replace(",", "");
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtTienTietKiem.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
+        }
     }
 
     /** This method is called from within the constructor to
@@ -438,6 +454,12 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jLabel4.setIcon(new FlatSVGIcon("quanlynganhang/icon/money_label.svg")
         );
         jLabel4.setText("Số tiền tiết kiệm");
+
+        txtTienTietKiem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTienTietKiemKeyReleased(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel1.setText("VND");
@@ -1218,15 +1240,18 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     }//GEN-LAST:event_cbxGiaHanItemStateChanged
 
     private void btnTaoTKTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoTKTKActionPerformed
+        if (lbHotenKH.equals("Chưa chọn")) {
+            MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
+            return;
+        }
+        
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn tạo tài khoản tiết kiệm cho khách hàng này?") == JOptionPane.YES_OPTION) {
             taoTaiKhoanTK();
-        } else {
-            return;
         }
     }//GEN-LAST:event_btnTaoTKTKActionPerformed
 
     private void btnChonKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonKHActionPerformed
-        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH");
+        JDialogTableChonItem chonNV = new JDialogTableChonItem(null, true, this, "Chọn khách hàng", "DSKH", true);
         chonNV.setResizable(false);
         chonNV.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonNV.setVisible(true);
@@ -1300,6 +1325,10 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             isAutoGenerateSTK = false;
         }
     }//GEN-LAST:event_chxSTKTuDongActionPerformed
+
+    private void txtTienTietKiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienTietKiemKeyReleased
+        onCodeTextChanged();
+    }//GEN-LAST:event_txtTienTietKiemKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

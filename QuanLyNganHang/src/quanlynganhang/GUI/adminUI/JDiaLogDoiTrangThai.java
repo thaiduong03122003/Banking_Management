@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import quanlynganhang.BUS.DangNhapBUS;
 import quanlynganhang.BUS.KhoaTaiKhoanBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
@@ -22,26 +23,30 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
     private TrangThaiBUS trangThaiBUS;
     private TaiKhoanNVBUS taiKhoanNVBUS;
     private TaiKhoanKHBUS taiKhoanKHBUS;
+    private DangNhapBUS dangNhapBUS;
     private KhoaTaiKhoanBUS khoaTaiKhoanBUS;
     private String loaiMa, danhMuc;
     private int maTK;
-    private String loaiTaiKhoan;
+    private String loaiTaiKhoan, tenTrangThai;
     private FormatDate fDate;
+    private KhoaTaiKhoanDTO khoaTK;
 
     public JDiaLogDoiTrangThai(java.awt.Frame parent, boolean modal, String loaiMa, String danhMuc, int maTK, String tenTrangThai, String loaiTaiKhoan) {
         super(parent, modal);
         trangThaiBUS = new TrangThaiBUS();
         khoaTaiKhoanBUS = new KhoaTaiKhoanBUS();
+        dangNhapBUS = new DangNhapBUS();
         this.danhMuc = danhMuc;
         this.loaiMa = loaiMa;
         this.maTK = maTK;
+        this.tenTrangThai = tenTrangThai;
         this.loaiTaiKhoan = loaiTaiKhoan;
         fDate = new FormatDate();
         initComponents();
         customUI();
         txtMa.setText("" + maTK);
         doiLoaiTaiKhoan();
-        loadTrangThai(tenTrangThai);
+        loadTrangThai();
     }
 
     private void customUI() {
@@ -61,7 +66,7 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
         }
     }
 
-    private void loadTrangThai(String selectedTrangThai) {
+    private void loadTrangThai() {
         int selectedIndex = 0;
         int index = 0;
 
@@ -72,7 +77,7 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
 
         for (String tenTrangThai : map.values()) {
             model.addElement(tenTrangThai);
-            if (tenTrangThai.equals(selectedTrangThai)) {
+            if (tenTrangThai.equals(this.tenTrangThai)) {
                 selectedIndex = index;
             }
             index++;
@@ -80,6 +85,21 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
 
         cbxTrangThai.setModel(model);
         cbxTrangThai.setSelectedIndex(selectedIndex);
+
+        if (this.tenTrangThai.equals("Locked")) {
+            fillLockedStatus();
+        }
+    }
+
+    private void fillLockedStatus() {
+        khoaTK = khoaTaiKhoanBUS.selectByIdTK(maTK, loaiTaiKhoan);
+
+        if (khoaTK == null) {
+            return;
+        }
+
+        txtKhoaDen.setText(fDate.toString(khoaTK.getNgayMoKhoa()));
+        txaLyDo.setText(khoaTK.getLyDoKhoa());
     }
 
     private boolean doiTrangThai() {
@@ -88,6 +108,10 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
         Integer maTrangthai = trangThaiBUS.getIdFromTenTrangThai(tenTrangThai, danhMuc);
 
         if (maTrangthai != null) {
+            if (this.tenTrangThai.equals("Locked") && !tenTrangThai.equals("Locked")) {
+                moKhoa();
+            }
+
             if (loaiTaiKhoan.equals("TKNV")) {
                 return taiKhoanNVBUS.doiTrangThai(maTK, maTrangthai.intValue());
             } else if (loaiTaiKhoan.equals("TKKH")) {
@@ -95,7 +119,7 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
             } else {
                 return false;
             }
-            
+
         } else {
             MessageBox.showErrorMessage(null, "Lấy id của trạng thái thất bại!");
             return false;
@@ -104,21 +128,16 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
 
     private boolean datNgayMoKhoa() {
         KhoaTaiKhoanDTO khoaTaiKhoan = new KhoaTaiKhoanDTO();
-        khoaTaiKhoan.setMaTaiKhoanNV(maTK);
+        khoaTaiKhoan.setMaTaiKhoan(maTK);
 
         String ngayKhoa = txtKhoaDen.getText();
         if (InputValidation.kiemTraNgay(ngayKhoa)) {
             if (InputValidation.kiemTraNgayKhoa(ngayKhoa)) {
-                try {
-                    khoaTaiKhoan.setNgayMoKhoa(fDate.toDate(ngayKhoa));
-                    khoaTaiKhoan.setLyDoKhoa(txaLyDo.getText());
-                    khoaTaiKhoan.setLoaiTaiKhoan(loaiTaiKhoan);
+                khoaTaiKhoan.setNgayMoKhoa(fDate.toDate(ngayKhoa));
+                khoaTaiKhoan.setLyDoKhoa(txaLyDo.getText());
+                khoaTaiKhoan.setLoaiTaiKhoan(loaiTaiKhoan);
 
-                    return khoaTaiKhoanBUS.addKhoaTaiKhoan(khoaTaiKhoan);
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
-                    return false;
-                }
+                return khoaTaiKhoanBUS.addKhoaTaiKhoan(khoaTaiKhoan);
             } else {
                 MessageBox.showErrorMessage(null, "Ngày khóa phải lớn hơn ngày hiện tại!");
                 return false;
@@ -127,7 +146,28 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
             MessageBox.showErrorMessage(null, "Ngày nhập không hợp lệ!");
             return false;
         }
+    }
 
+    private void moKhoa() {
+        if (khoaTK == null) {
+            return;
+        }
+
+        khoaTaiKhoanBUS.unlock(khoaTK.getMaKhoaTK());
+    }
+
+    private void confirmDoiTT() {
+        if (cbxTrangThai.getSelectedItem().equals("Locked")) {
+            if (doiTrangThai() && datNgayMoKhoa()) {
+                MessageBox.showInformationMessage(null, "", "Khóa tài khoản thành công!");
+                this.dispose();
+            }
+        } else {
+            if (doiTrangThai()) {
+                MessageBox.showInformationMessage(null, "", "Thay đổi trạng thái tài khoản thành công!");
+                this.dispose();
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -395,28 +435,22 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiActionPerformed
-
-        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {
-            if (cbxTrangThai.getSelectedItem().equals("Locked")) {
-                if (doiTrangThai() && datNgayMoKhoa()) {
-                    MessageBox.showInformationMessage(null, "", "Khóa tài khoản thành công!");
-                    this.dispose();
+        if (loaiTaiKhoan.equals("TKNV")) {
+            if (taiKhoanNVBUS.getTaiKhoanNVById(maTK).getTinhTrangDangNhap() == 1) {
+                if (MessageBox.showConfirmMessage(this, "Tài khoản này đang hoạt động, bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {
+                    confirmDoiTT();
+                    return;
                 } else {
-                    MessageBox.showErrorMessage(null, "Khóa tài khoản thất bại!");
-                }
-            } else {
-                if (doiTrangThai()) {
-                    MessageBox.showInformationMessage(null, "", "Thay đổi trạng thái tài khoản thành công!");
-                    this.dispose();
-                } else {
-                    MessageBox.showErrorMessage(null, "Thay đổi trạng thái tài khoản thất bại!");
+                    return;
                 }
             }
+        }
+
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {
+            confirmDoiTT();
         } else {
             return;
         }
-
-
     }//GEN-LAST:event_btnDoiActionPerformed
 
     private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseActionPerformed
@@ -454,35 +488,7 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDiaLogDoiTrangThai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDiaLogDoiTrangThai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDiaLogDoiTrangThai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDiaLogDoiTrangThai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

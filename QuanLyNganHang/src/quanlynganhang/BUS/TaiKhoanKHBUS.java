@@ -1,13 +1,11 @@
 package quanlynganhang.BUS;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Date;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,11 +15,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
+import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DAO.TaiKhoanKHDAO;
-import quanlynganhang.DTO.NganHangDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 
 public class TaiKhoanKHBUS {
@@ -33,45 +31,25 @@ public class TaiKhoanKHBUS {
     }
 
     public List<TaiKhoanKHDTO> getDSTaiKhoanKH() {
-        try {
-            return taiKhoanKHDAO.selectAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectAll();
     }
 
     public List<TaiKhoanKHDTO> getAllDSTaiKhoanKH() {
-        try {
-            return taiKhoanKHDAO.selectAllIncludeDeleted();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectAllIncludeDeleted();
     }
 
     public List<TaiKhoanKHDTO> getDSTaiKhoanNguon(int maKhachHang) {
-        try {
-            return taiKhoanKHDAO.selectByMaKH(maKhachHang);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectByMaKH(maKhachHang);
     }
 
     private List<TaiKhoanKHDTO> getDSTaiKhoanVay() {
-        try {
-            return taiKhoanKHDAO.selectTKVay();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectTKVay();
     }
 
-    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, List<TaiKhoanKHDTO> listTaiKhoanKH, boolean isBiXoa) {
+    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, boolean isSearched, List<TaiKhoanKHDTO> listTaiKhoanKH, boolean isBiXoa) {
         List<TaiKhoanKHDTO> list = new ArrayList<>();
 
-        if (isFiltered) {
+        if (isFiltered || isSearched) {
             list = listTaiKhoanKH;
         } else {
             if (isBiXoa) {
@@ -79,7 +57,6 @@ public class TaiKhoanKHBUS {
             } else {
                 list = getAllDSTaiKhoanKH();
             }
-
         }
 
         FormatDate fDate = new FormatDate();
@@ -91,10 +68,23 @@ public class TaiKhoanKHBUS {
             data[rowIndex][1] = taiKhoanKH.getSoTaiKhoan();
             data[rowIndex][2] = taiKhoanKH.getTenTaiKhoan();
             data[rowIndex][3] = taiKhoanKH.getTenKhachHang();
-            data[rowIndex][4] = taiKhoanKH.getSoDu() + " VND";
+            if (InputValidation.kiemTraSoTien(taiKhoanKH.getSoDu())) {
+                data[rowIndex][4] = FormatNumber.convertNumToVND(new BigInteger(taiKhoanKH.getSoDu())) + " VND";
+            } else {
+                data[rowIndex][4] = "<html><p style='color:rgb(255,0,0);'>Không xác định</p></html>";
+            }
+            
             data[rowIndex][5] = fDate.toString(taiKhoanKH.getNgayTao());
             data[rowIndex][6] = taiKhoanKH.getTenLoaiTaiKhoan();
-            data[rowIndex][7] = taiKhoanKH.getTenTrangThai();
+
+            int maTrangThai = taiKhoanKH.getMaTrangThai();
+
+            if (maTrangThai == 1 || maTrangThai == 2) {
+                data[rowIndex][7] = "<html><p style='color:rgb(255,0,0);'>" + taiKhoanKH.getTenTrangThai() + "</p></html>";
+            } else {
+                data[rowIndex][7] = taiKhoanKH.getTenTrangThai();
+            }
+
             rowIndex++;
         }
         return data;
@@ -147,88 +137,55 @@ public class TaiKhoanKHBUS {
     }
 
     public int addTaiKhoanKH(TaiKhoanKHDTO taiKhoanKH) {
-        try {
-
-            return taiKhoanKHDAO.insert(taiKhoanKH);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return 0;
-        }
+        return taiKhoanKHDAO.insert(taiKhoanKH);
     }
 
     public boolean updateTaiKhoanKH(TaiKhoanKHDTO taiKhoanKH) {
-        try {
-            return taiKhoanKHDAO.update(taiKhoanKH);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return taiKhoanKHDAO.update(taiKhoanKH);
     }
 
     public boolean doiTrangThai(int maTaiKhoanKH, int maTrangThai) {
-        try {
-            return taiKhoanKHDAO.switchStatus(maTaiKhoanKH, maTrangThai);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return taiKhoanKHDAO.switchStatus(maTaiKhoanKH, maTrangThai);
     }
 
     public TaiKhoanKHDTO getTaiKhoanKHById(int maTaiKhoanKH) {
-        try {
-            return taiKhoanKHDAO.selectById(maTaiKhoanKH);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectById(maTaiKhoanKH);
     }
 
     public TaiKhoanKHDTO getTaiKhoanKHBySTK(String soTK) {
-        try {
-            return taiKhoanKHDAO.selectByAccountNum(soTK, 1);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectByAccountNum(soTK, 1);
     }
 
     public TaiKhoanKHDTO getTaiKhoanKHBySTK(String sotaiKhoan, int maNganHang) {
-        try {
-            return taiKhoanKHDAO.selectByAccountNum(sotaiKhoan, maNganHang);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectByAccountNum(sotaiKhoan, maNganHang);
     }
 
     private String getNewSTK() {
-        try {
-            return taiKhoanKHDAO.getNewSTK();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "";
-        }
+        return taiKhoanKHDAO.getNewSTK();
     }
 
-    public List<TaiKhoanKHDTO> locTaiKhoanKH(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maLoaiTaiKhoan, int maTrangThai) throws Exception {
+    public List<TaiKhoanKHDTO> locTaiKhoanKH(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maLoaiTaiKhoan, int maTrangThai) {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
 
         if (dateFrom != null && dateTo != null) {
             dateBatDau = new Date(dateFrom.getTime());
             dateKetThuc = new Date(dateTo.getTime());
+        } else if (dateFrom != null && dateTo == null) {
+            dateBatDau = new Date(dateFrom.getTime());
+        } else if (dateFrom == null && dateTo != null) {
+            dateKetThuc = new Date(dateTo.getTime());
         }
 
         return taiKhoanKHDAO.filter(dateBatDau, dateKetThuc, maKhachHang, maLoaiTaiKhoan, maTrangThai);
     }
 
+    public List<TaiKhoanKHDTO> timKiemTheoLoai(String typeName, String inputValue) {
+        return taiKhoanKHDAO.searchByInputType(typeName, inputValue);
+    }
+
     public boolean doiMatKhau(TaiKhoanKHDTO taiKhoanKH) {
-        try {
-            return taiKhoanKHDAO.changePassword(taiKhoanKH);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return taiKhoanKHDAO.changePassword(taiKhoanKH);
     }
 
     public void xuatExcel(File file, String userName, List<TaiKhoanKHDTO> list) throws FileNotFoundException, IOException {
@@ -275,50 +232,11 @@ public class TaiKhoanKHBUS {
         outputStream.close();
     }
 
-    public List<TaiKhoanKHDTO> nhapExcel(File file) throws IOException {
-        List<TaiKhoanKHDTO> list = new ArrayList<>();
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String sheetName = workbook.getSheetName(0);
-            if (!sheetName.equals("Danh sách tài khoản khách hàng")) {
-                return null;
-            } else {
-                Row row;
-                try {
-                    int value = (int) sheet.getRow(4).getCell(0).getNumericCellValue();
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-                for (int i = 4; i <= sheet.getLastRowNum(); i++) {
-                    row = sheet.getRow(i);
-
-                    try {
-                        TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
-                        taiKhoanKH.setMaTKKH((int) row.getCell(0).getNumericCellValue());
-                        taiKhoanKH.setSoTaiKhoan(row.getCell(1).getStringCellValue());
-                        taiKhoanKH.setTenKhachHang(row.getCell(2).getStringCellValue());
-                        taiKhoanKH.setSoDu(row.getCell(3).getStringCellValue());
-                        taiKhoanKH.setNgayTao(fDate.toDate(row.getCell(4).getStringCellValue()));
-                        taiKhoanKH.setTenTrangThai(row.getCell(5).getStringCellValue());
-
-                        list.add(taiKhoanKH);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return list;
-            }
-        }
-    }
-
     public String taoSTKTuDong() {
         String soTaiKhoan = getNewSTK();
 
         if (soTaiKhoan.equals("")) {
-            return "";
+            soTaiKhoan = "100000000011";
         }
 
         BigInteger newSTK = new BigInteger(soTaiKhoan);
@@ -338,11 +256,6 @@ public class TaiKhoanKHBUS {
     }
 
     public List<TaiKhoanKHDTO> getTaiKhoanKHByMaKH(int maTaiKhoanKH) {
-        try {
-            return taiKhoanKHDAO.selectByMaKH(maTaiKhoanKH);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return taiKhoanKHDAO.selectByMaKH(maTaiKhoanKH);
     }
 }

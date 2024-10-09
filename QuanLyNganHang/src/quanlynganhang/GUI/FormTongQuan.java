@@ -250,11 +250,11 @@ public class FormTongQuan extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 1098, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 194, Short.MAX_VALUE)
+            .addGap(0, 305, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPSummaryLayout = new javax.swing.GroupLayout(jPSummary);
@@ -327,14 +327,14 @@ public class FormTongQuan extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void xemTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xemTKKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách tài khoản khách hàng", "DSTKKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách tài khoản khách hàng", "DSTKKH", false);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);
     }//GEN-LAST:event_xemTKKHActionPerformed
 
     private void xemKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xemKHActionPerformed
-        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách khách hàng", "DSKH");
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách khách hàng", "DSKH", false);
         chonKH.setResizable(false);
         chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonKH.setVisible(true);

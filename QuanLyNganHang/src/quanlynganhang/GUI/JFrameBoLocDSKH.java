@@ -9,6 +9,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,8 +32,10 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
     private KhachHangBUS khachHangBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private boolean isFiltered;
+    private int biXoa;
+    
 
-    public JFrameBoLocDSKH(FormDSKhachHang formDSKhachHang) {
+    public JFrameBoLocDSKH(FormDSKhachHang formDSKhachHang, int biXoa) {
         this.formDSKhachHang = formDSKhachHang;
         diaChiBUS = new DiaChiBUS();
         khachHangBUS = new KhachHangBUS();
@@ -40,6 +43,7 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         maQuanHuyen = 0;
         maPhuongXa = 0;
         isFiltered = false;
+        this.biXoa = biXoa;
 
         initComponents();
         customUI();
@@ -99,7 +103,7 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
 
         cbxXa.setModel(model);
     }
-    
+
     private void checkFilterStatus() {
         if (rdbAllGender.isSelected() && rdbAllNgaySinh.isSelected() && rdbAllDiaChi.isSelected() && rdbAllKH.isSelected()) {
             isFiltered = false;
@@ -107,8 +111,8 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
             isFiltered = true;
         }
     }
-    
-    private List<KhachHangDTO> chonTieuChiLoc() throws ParseException, Exception {
+
+    private List<KhachHangDTO> chonTieuChiLoc() {
         FormatDate fDate = new FormatDate();
 
         String gender;
@@ -127,18 +131,27 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
             dateFrom = null;
             dateTo = null;
         } else {
-            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
-                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
-                return null;
-            } else {
+
+            if (!txtNgayBatDau.getText().trim().isEmpty() && !txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText()) && InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
                 dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
                 dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
-                
+
                 if (!InputValidation.kiemTraTrinhTuNhapNgay(dateFrom, dateTo)) {
                     MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
                     return null;
                 }
+
+            } else if (!txtNgayBatDau.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText().trim())) {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = null;
+            } else if (!txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayKetThuc.getText().trim())) {
+                dateFrom = null;
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+            } else {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
             }
+
         }
 
         int idTinh, idHuyen, idXa;
@@ -147,24 +160,29 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
             idHuyen = 0;
             idXa = 0;
         } else {
-            idTinh = maTinhThanh;
-            idHuyen = maQuanHuyen;
-            idXa = maPhuongXa;
+            if (cbxTinh.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn địa chỉ!");
+                return null;
+            } else {
+                idTinh = maTinhThanh;
+                idHuyen = maQuanHuyen;
+                idXa = maPhuongXa;
+            }
         }
 
         int noXau;
         if (rdbAllKH.isSelected()) {
             noXau = 2;
         } else if (rdbCoNo.isSelected()) {
-            noXau = 0;
-        } else {
             noXau = 1;
+        } else {
+            noXau = 0;
         }
 
         return khachHangBUS.locKhachHang(gender, dateFrom, dateTo, idTinh, idHuyen, idXa, noXau);
     }
-    
-    public List<KhachHangDTO> listNVBoLoc() throws Exception {
+
+    public List<KhachHangDTO> listNVBoLoc() {
         return chonTieuChiLoc();
     }
 
@@ -386,14 +404,12 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cbxXa, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cbxHuyen, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cbxTinh, javax.swing.GroupLayout.Alignment.LEADING, 0, 157, Short.MAX_VALUE))
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(rdbAllDiaChi, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(rdbChonDiaChi, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(cbxXa, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbxHuyen, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(rdbAllDiaChi, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(rdbChonDiaChi, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+                            .addComponent(cbxTinh, javax.swing.GroupLayout.Alignment.LEADING, 0, 202, Short.MAX_VALUE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel4Layout.setVerticalGroup(
@@ -439,7 +455,7 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(rdbKhongNo, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                        .addComponent(rdbKhongNo, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
                         .addContainerGap())
                     .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -501,18 +517,17 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(158, 158, 158))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnReset)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnReset)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnLoc)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -541,7 +556,9 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -583,8 +600,6 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
     private void rdbChonDiaChiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbChonDiaChiActionPerformed
         if (rdbChonDiaChi.isSelected()) {
             cbxTinh.setEnabled(true);
-            cbxHuyen.setEnabled(true);
-            cbxXa.setEnabled(true);
         }
     }//GEN-LAST:event_rdbChonDiaChiActionPerformed
 
@@ -593,60 +608,65 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void cbxTinhItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTinhItemStateChanged
-        String tenTinhThanh = (String) cbxTinh.getSelectedItem();
-        if (tenTinhThanh.equals("Chọn thành phố/tỉnh")) {
-            cbxHuyen.setSelectedIndex(0);
-            cbxXa.setSelectedIndex(0);
-
-            cbxHuyen.setEnabled(false);
-            cbxXa.setEnabled(false);
-            maTinhThanh = 0;
-        } else {
-            maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
-
-            if (maTinhThanh != 0) {
-                loadQuanHuyen(maTinhThanh.intValue());
-                cbxHuyen.setEnabled(true);
-                cbxXa.setEnabled(false);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenTinhThanh = (String) cbxTinh.getSelectedItem();
+            if (tenTinhThanh.equals("Chọn thành phố/tỉnh")) {
                 cbxHuyen.setSelectedIndex(0);
                 cbxXa.setSelectedIndex(0);
+
+                cbxHuyen.setEnabled(false);
+                cbxXa.setEnabled(false);
+                maTinhThanh = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của tỉnh thành thất bại!");
+                maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
+
+                if (maTinhThanh != 0) {
+                    loadQuanHuyen(maTinhThanh.intValue());
+                    cbxHuyen.setEnabled(true);
+                    cbxXa.setEnabled(false);
+                    cbxHuyen.setSelectedIndex(0);
+                    cbxXa.setSelectedIndex(0);
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của tỉnh thành thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxTinhItemStateChanged
 
     private void cbxHuyenItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxHuyenItemStateChanged
-        String tenQuanHuyen = (String) cbxHuyen.getSelectedItem();
-        if (tenQuanHuyen.equals("Chọn quận/huyện")) {
-            cbxXa.setSelectedIndex(0);
-
-            cbxXa.setEnabled(false);
-            maQuanHuyen = 0;
-        } else {
-            maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
-
-            if (maQuanHuyen != 0) {
-                loadPhuongXa(maQuanHuyen.intValue());
-                cbxXa.setEnabled(true);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenQuanHuyen = (String) cbxHuyen.getSelectedItem();
+            if (tenQuanHuyen.equals("Chọn quận/huyện")) {
                 cbxXa.setSelectedIndex(0);
+
+                cbxXa.setEnabled(false);
+                maQuanHuyen = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của quận huyện thất bại!");
+                maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
+
+                if (maQuanHuyen != 0) {
+                    loadPhuongXa(maQuanHuyen.intValue());
+                    cbxXa.setEnabled(true);
+                    cbxXa.setSelectedIndex(0);
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của quận huyện thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxHuyenItemStateChanged
 
     private void cbxXaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxXaItemStateChanged
-        String tenPhuongXa = (String) cbxXa.getSelectedItem();
-        if (tenPhuongXa.equals("Chọn phường/xã")) {
-            maPhuongXa = 0;
-        } else {
-            maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
-
-            if (maPhuongXa != 0) {
-                System.out.println("Id xã: " + maPhuongXa + " - Id huyện: " + maQuanHuyen + " - Id tỉnh: " + maTinhThanh);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenPhuongXa = (String) cbxXa.getSelectedItem();
+            if (tenPhuongXa.equals("Chọn phường/xã")) {
+                maPhuongXa = 0;
             } else {
-                MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
+                maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
+
+                if (maPhuongXa != 0) {
+                } else {
+                    MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxXaItemStateChanged
@@ -656,26 +676,33 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
         rdbAllNgaySinh.setSelected(true);
         rdbAllDiaChi.setSelected(true);
         rdbAllKH.setSelected(true);
+        txtNgayBatDau.setText("");
+        txtNgayKetThuc.setText("");
+        txtNgayBatDau.setVisible(false);
+        txtNgayKetThuc.setVisible(false);
+        cbxXa.setSelectedIndex(0);
+        cbxHuyen.setSelectedIndex(0);
+        cbxTinh.setSelectedIndex(0);
+        cbxXa.setEnabled(false);
+        cbxHuyen.setEnabled(false);
+        cbxTinh.setEnabled(false);
 
         btnLocActionPerformed(null);
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocActionPerformed
-        try {
-            if (chonTieuChiLoc() != null) {
-                checkFilterStatus();
+        List<KhachHangDTO> listLocKH = chonTieuChiLoc();
 
-                formDSKhachHang.loadDSKhachHang(0, isFiltered, chonTieuChiLoc());
-                this.dispose();
-            } else {
-                MessageBox.showInformationMessage(null, "Lọc khách hàng", "Không có thông tin khách hàng nào phù hợp");
+        if (listLocKH != null) {
+            checkFilterStatus();
+
+            if (listLocKH.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Không có thông tin khách hàng nào phù hợp!");
                 return;
             }
 
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            formDSKhachHang.loadDSKhachHang(biXoa, isFiltered, false, listLocKH);
+            this.dispose();
         }
     }//GEN-LAST:event_btnLocActionPerformed
 
@@ -683,18 +710,7 @@ public class JFrameBoLocDSKH extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

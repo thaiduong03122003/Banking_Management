@@ -9,6 +9,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
         }
     }
 
-    private List<TaiKhoanKHDTO> chonTieuChiLoc() throws ParseException, Exception {
+    private List<TaiKhoanKHDTO> chonTieuChiLoc() {
         FormatDate fDate = new FormatDate();
 
         Date dateFrom, dateTo;
@@ -123,10 +124,7 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
             dateFrom = null;
             dateTo = null;
         } else {
-            if (!InputValidation.kiemTraNgay(txtNgayBatDau.getText()) || !InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
-                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
-                return null;
-            } else {
+            if (!txtNgayBatDau.getText().trim().isEmpty() && !txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText()) && InputValidation.kiemTraNgay(txtNgayKetThuc.getText())) {
                 dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
                 dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
 
@@ -134,6 +132,16 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
                     MessageBox.showErrorMessage(null, "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!");
                     return null;
                 }
+
+            } else if (!txtNgayBatDau.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayBatDau.getText().trim())) {
+                dateFrom = (Date) fDate.toDate(txtNgayBatDau.getText());
+                dateTo = null;
+            } else if (!txtNgayKetThuc.getText().trim().isEmpty() && InputValidation.kiemTraNgay(txtNgayKetThuc.getText().trim())) {
+                dateFrom = null;
+                dateTo = (Date) fDate.toDate(txtNgayKetThuc.getText());
+            } else {
+                MessageBox.showErrorMessage(null, "Ngày nhập vào không hợp lệ!, vui lòng nhập đúng định dạng dd/MM/yyyy");
+                return null;
             }
         }
 
@@ -141,27 +149,42 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
         if (rdbAllKH.isSelected()) {
             idKhachHang = 0;
         } else {
-            idKhachHang = maKhachHang;
+            if (cbxKH.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
+                return null;
+            } else {
+                idKhachHang = maKhachHang;
+            }
         }
 
         int idTrangThai;
         if (rdbAllTrangThai1.isSelected()) {
             idTrangThai = 0;
         } else {
-            idTrangThai = maTrangThai;
+            if (cbxTrangThai3.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn trạng thái tài khoản!");
+                return null;
+            } else {
+                idTrangThai = maTrangThai;
+            }
         }
 
         int idLoaiTaiKhoan;
         if (rdbAllLoaiTaiKhoan.isSelected()) {
             idLoaiTaiKhoan = 0;
         } else {
-            idLoaiTaiKhoan = maLoaiTaiKhoan;
+            if (cbxLoaiTaiKhoan.getSelectedIndex() == 0) {
+                MessageBox.showErrorMessage(null, "Vui lòng chọn loại tài khoản!");
+                return null;
+            } else {
+                idLoaiTaiKhoan = maLoaiTaiKhoan;
+            }
         }
 
         return taiKhoanKHBUS.locTaiKhoanKH(dateFrom, dateTo, idKhachHang, idLoaiTaiKhoan, idTrangThai);
     }
 
-    public List<TaiKhoanKHDTO> listKHBoLoc() throws Exception {
+    public List<TaiKhoanKHDTO> listTKKHBoLoc() throws Exception {
         return chonTieuChiLoc();
     }
 
@@ -604,21 +627,18 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCloseMouseClicked
 
     private void btnLocTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLocTKKHActionPerformed
-        try {
-            if (chonTieuChiLoc() != null) {
-                checkFilterStatus();
+        List<TaiKhoanKHDTO> listLocTKKH = chonTieuChiLoc();
 
-                formDSTaiKhoanKH.loadDSTaiKhoanKH(isFiltered, chonTieuChiLoc());
-                this.dispose();
-            } else {
-                MessageBox.showInformationMessage(null, "", "Không có thông tin tài khoản khách hàng nào phù hợp");
+        if (listLocTKKH != null) {
+            checkFilterStatus();
+
+            if (listLocTKKH.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Không có thông tin khách hàng nào phù hợp!");
                 return;
             }
 
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            formDSTaiKhoanKH.loadDSTaiKhoanKH(isFiltered, false, listLocTKKH);
+            this.dispose();
         }
     }//GEN-LAST:event_btnLocTKKHActionPerformed
 
@@ -661,6 +681,16 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
         rdbAllKH.setSelected(true);
         rdbAllLoaiTaiKhoan.setSelected(true);
         rdbAllTrangThai1.setSelected(true);
+        txtNgayBatDau.setText("");
+        txtNgayKetThuc.setText("");
+        txtNgayBatDau.setVisible(false);
+        txtNgayKetThuc.setVisible(false);
+        cbxKH.setSelectedIndex(0);
+        cbxLoaiTaiKhoan.setSelectedIndex(0);
+        cbxTrangThai3.setSelectedIndex(0);
+        cbxKH.setEnabled(false);
+        cbxLoaiTaiKhoan.setEnabled(false);
+        cbxTrangThai3.setEnabled(false);
 
         btnLocTKKHActionPerformed(null);
     }//GEN-LAST:event_btnResetActionPerformed
@@ -670,14 +700,16 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxKHActionPerformed
 
     private void cbxTrangThai3ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTrangThai3ItemStateChanged
-        String tenTrangThai = (String) cbxTrangThai3.getSelectedItem();
-        if (tenTrangThai.equals("-Chọn trạng thái-")) {
-            maTrangThai = 0;
-        } else {
-            maTrangThai = trangThaiBUS.getIdFromTenTrangThai(tenTrangThai, danhMuc);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenTrangThai = (String) cbxTrangThai3.getSelectedItem();
+            if (tenTrangThai.equals("-Chọn trạng thái-")) {
+                maTrangThai = 0;
+            } else {
+                maTrangThai = trangThaiBUS.getIdFromTenTrangThai(tenTrangThai, danhMuc);
 
-            if (maTrangThai == null) {
-                MessageBox.showErrorMessage(null, "Lấy id của trạng thái thất bại!");
+                if (maTrangThai == null) {
+                    MessageBox.showErrorMessage(null, "Lấy id của trạng thái thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxTrangThai3ItemStateChanged
@@ -687,30 +719,34 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCloseActionPerformed
 
     private void txtNgayBatDauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNgayBatDauActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_txtNgayBatDauActionPerformed
 
     private void cbxLoaiTaiKhoanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxLoaiTaiKhoanItemStateChanged
-        String tenLoaiTaiKhoan = (String) cbxLoaiTaiKhoan.getSelectedItem();
-        if (tenLoaiTaiKhoan.equals("-Chọn loại tài khoản-")) {
-            maLoaiTaiKhoan = 0;
-        } else {
-            maLoaiTaiKhoan = loaiTaiKhoanBUS.getIdFromTenLoaiTaiKhoan(tenLoaiTaiKhoan);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenLoaiTaiKhoan = (String) cbxLoaiTaiKhoan.getSelectedItem();
+            if (tenLoaiTaiKhoan.equals("-Chọn loại tài khoản-")) {
+                maLoaiTaiKhoan = 0;
+            } else {
+                maLoaiTaiKhoan = loaiTaiKhoanBUS.getIdFromTenLoaiTaiKhoan(tenLoaiTaiKhoan);
 
-            if (maLoaiTaiKhoan == null) {
-                MessageBox.showErrorMessage(null, "Lấy id của loại tài khoản thất bại!");
+                if (maLoaiTaiKhoan == null) {
+                    MessageBox.showErrorMessage(null, "Lấy id của loại tài khoản thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxLoaiTaiKhoanItemStateChanged
 
     private void cbxKHItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxKHItemStateChanged
-        String khachHang = (String) cbxKH.getSelectedItem();
-        if (khachHang.equals("-Chọn khách hàng-")) {
-            maKhachHang = 0;
-        } else {
-            String[] parts = khachHang.split(" - ");
-            String maKhachHangString = parts[0];
-            maKhachHang = Integer.parseInt(maKhachHangString);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String khachHang = (String) cbxKH.getSelectedItem();
+            if (khachHang.equals("-Chọn khách hàng-")) {
+                maKhachHang = 0;
+            } else {
+                String[] parts = khachHang.split(" - ");
+                String maKhachHangString = parts[0];
+                maKhachHang = Integer.parseInt(maKhachHangString);
+            }
         }
     }//GEN-LAST:event_cbxKHItemStateChanged
 
@@ -718,18 +754,7 @@ public class JFrameBoLocDSTKKH extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

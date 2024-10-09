@@ -4,11 +4,15 @@ import quanlynganhang.GUI.adminUI.*;
 import quanlynganhang.GUI.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,22 +23,29 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import quanlynganhang.BUS.ChiaQuyenBUS;
+import quanlynganhang.BUS.KhoaTaiKhoanBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.DTO.ChucVuDTO;
+import quanlynganhang.DTO.KhoaTaiKhoanDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
+import quanlynganhang.GUI.model.textfield.SearchOptinEvent;
+import quanlynganhang.GUI.model.textfield.SearchOption;
 
 public class FormDSTaiKhoanKH extends javax.swing.JPanel {
 
     private JFrameBoLocDSTKKH boloc;
     private JFrameChiTietTKKH formChiTiet;
     private TaiKhoanKHBUS taiKhoanKHBUS;
-    private boolean isFiltered;
+    private KhoaTaiKhoanBUS khoaTaiKhoanBUS;
+    private boolean isFiltered, isSearched;
     private List<TaiKhoanKHDTO> listLocTaiKhoanKH, currentList;
     private int quyenThem, quyenSua, quyenXoa;
     private ChucVuDTO chucVu;
@@ -42,12 +53,25 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     public FormDSTaiKhoanKH(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
         this.chucVu = chucVu;
         taiKhoanKHBUS = new TaiKhoanKHBUS();
+        khoaTaiKhoanBUS = new KhoaTaiKhoanBUS();
         listLocTaiKhoanKH = new ArrayList<>();
 
         initComponents();
         thietLapChucVu();
-        txtSearchTaiKhoanKH.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập số tài khoản/ tên tài khoản/ tên khách hàng cần tìm...");
-        loadDSTaiKhoanKH(false, null);
+
+        txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+            @Override
+            public void optionSelected(SearchOption option, int index) {
+                txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+            }
+        });
+
+        txtSearchData.addOption(new SearchOption("họ tên khách hàng hoặc tên tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+        txtSearchData.addOption(new SearchOption("số tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+
+        txtSearchData.setSelectedIndex(0);
+
+        loadDSTaiKhoanKH(false, false, null);
         jTableDSTaiKhoanKH.getTableHeader().setReorderingAllowed(false);
     }
 
@@ -57,30 +81,67 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLTKKhachHang(), 4);
     }
 
-    public void loadDSTaiKhoanKH(boolean isFiltered, List<TaiKhoanKHDTO> list) throws Exception {
+    public void loadDSTaiKhoanKH(boolean isFiltered, boolean isSearched, List<TaiKhoanKHDTO> list) {
         this.isFiltered = isFiltered;
+        this.isSearched = isSearched;
         listLocTaiKhoanKH = list;
         DefaultTableModel model = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = isFiltered ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, null, false);
-        currentList = isFiltered ? list : taiKhoanKHBUS.getDSTaiKhoanKH();
+        Object[][] dataModel = (isFiltered || isSearched) ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, null, false);
+        currentList = (isFiltered || isSearched) ? list : taiKhoanKHBUS.getDSTaiKhoanKH();
         String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
+
         model.setDataVector(dataModel, title);
 
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        jTableDSTaiKhoanKH.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
+        jTableDSTaiKhoanKH.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
         jTableDSTaiKhoanKH.setDefaultEditor(Object.class, null);
     }
 
     private void sapXep(int columnIndex, boolean isAscending) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSTaiKhoanKH.getModel());
 
-        if (columnIndex == 0) { 
+        if (columnIndex == 0) {
             sorter.setComparator(columnIndex, new Comparator<Object>() {
                 @Override
                 public int compare(Object o1, Object o2) {
                     Integer int1 = Integer.parseInt(o1.toString());
                     Integer int2 = Integer.parseInt(o2.toString());
                     return int1.compareTo(int2);
+                }
+            });
+        } else if (columnIndex == 4) {
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    String num1 = o1.toString().split(" ")[0].replace(",", "");
+                    String num2 = o2.toString().split(" ")[0].replace(",", "");
+
+                    Integer int1 = Integer.parseInt(num1);
+                    Integer int2 = Integer.parseInt(num2);
+
+                    return int1.compareTo(int2);
+                }
+            });
+        } else if (columnIndex == 5) {
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    try {
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date1 = LocalDate.parse(o1.toString(), dateFormatter);
+                        LocalDate date2 = LocalDate.parse(o2.toString(), dateFormatter);
+                        return date1.compareTo(date2);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return 0;
+                    }
                 }
             });
         }
@@ -118,14 +179,33 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         }
     }
 
-    private List<TaiKhoanKHDTO> nhapExcel(File file) {
-
-        try {
-            return taiKhoanKHBUS.nhapExcel(file);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+    private boolean searchData() {
+        if (txtSearchData.getText().trim().isEmpty()) {
+            MessageBox.showErrorMessage(null, "Vui lòng nhập thông tin muốn tìm!");
+            return true;
         }
+
+        int option = txtSearchData.getSelectedIndex();
+        String typeName = option == 0 ? "name" : "accountNum";
+
+        List<TaiKhoanKHDTO> listTKKH = taiKhoanKHBUS.timKiemTheoLoai(typeName, txtSearchData.getText().trim());
+        if (listTKKH != null && !listTKKH.isEmpty()) {
+            loadDSTaiKhoanKH(isFiltered, true, listTKKH);
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private void disableForm(boolean isEnable) {
+        txtSearchData.setEnabled(isEnable);
+        btnSearchData.setEnabled(isEnable);
+        btnReload.setEnabled(isEnable);
+        jTableDSTaiKhoanKH.setEnabled(isEnable);
+        cbxSapXep.setEnabled(isEnable);
+        btnBoLoc.setEnabled(isEnable);
+        btnXuatFile.setEnabled(isEnable);
     }
 
     /** This method is called from within the constructor to
@@ -144,17 +224,13 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         ppmDongTK = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtSearchTaiKhoanKH = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        btnSearchData = new javax.swing.JButton();
+        txtSearchData = new quanlynganhang.GUI.model.textfield.TextFieldSearchOption();
         jPanel5 = new javax.swing.JPanel();
         btnBoLoc = new javax.swing.JButton();
         cbxSapXep = new javax.swing.JComboBox<>();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        btnXuatFile = new javax.swing.JButton();
-        btnNhapFile = new javax.swing.JButton();
-        jPanel7 = new javax.swing.JPanel();
         btnReload = new javax.swing.JButton();
+        btnXuatFile = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -189,16 +265,16 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
 
-        txtSearchTaiKhoanKH.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtSearchTaiKhoanKHKeyReleased(evt);
+        btnSearchData.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        btnSearchData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchDataActionPerformed(evt);
             }
         });
 
-        jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+        txtSearchData.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchDataKeyReleased(evt);
             }
         });
 
@@ -207,19 +283,22 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(txtSearchTaiKhoanKH, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(txtSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtSearchTaiKhoanKH, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtSearchData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         btnBoLoc.setIcon(new FlatSVGIcon("quanlynganhang/icon/filter_btn.svg")
@@ -231,10 +310,25 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
             }
         });
 
-        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã tài khoản tăng dần", "Mã tài khoản giảm dần", "Ngày tạo tăng dần", "Ngày tạo giảm dần" }));
+        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "<html><p style=\"color:rgb(255, 0, 0);\">Mã tài khoản tăng dần</p></html>", "Mã tài khoản giảm dần", "<html><p style=\"color:rgb(255, 0, 0);\">Ngày tạo tăng dần</p></html>", "Ngày tạo giảm dần", "<html><p style=\"color:rgb(255, 0, 0);\">Số dư tăng dần</p></html>", "Số dư giảm dần" }));
         cbxSapXep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxSapXepItemStateChanged(evt);
+            }
+        });
+
+        btnReload.setIcon(new FlatSVGIcon("quanlynganhang/icon/reload_btn.svg"));
+        btnReload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReloadActionPerformed(evt);
+            }
+        });
+
+        btnXuatFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
+        btnXuatFile.setText("Xuất file");
+        btnXuatFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXuatFileActionPerformed(evt);
             }
         });
 
@@ -243,19 +337,28 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(139, 139, 139)
-                .addComponent(cbxSapXep, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(cbxSapXep, 0, 222, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(btnXuatFile, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnBoLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(cbxSapXep))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbxSapXep)))
+                    .addComponent(btnXuatFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -281,91 +384,6 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         );
 
         add(jPanel1, java.awt.BorderLayout.PAGE_START);
-
-        btnXuatFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
-        btnXuatFile.setText("Xuất file");
-        btnXuatFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXuatFileActionPerformed(evt);
-            }
-        });
-
-        btnNhapFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/nhap_excel_btn.svg")
-        );
-        btnNhapFile.setText("Nhập file");
-        btnNhapFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNhapFileActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnXuatFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNhapFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnXuatFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnNhapFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        btnReload.setText("Tải lại DS");
-        btnReload.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReloadActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap(203, Short.MAX_VALUE)
-                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        add(jPanel2, java.awt.BorderLayout.LINE_END);
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
@@ -410,37 +428,23 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
             boloc = new JFrameBoLocDSTKKH(this);
             boloc.setResizable(false);
             boloc.setDefaultCloseOperation(JFrameBoLocDSTKKH.DISPOSE_ON_CLOSE);
+
+            boloc.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        disableForm(true);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         }
 
+        disableForm(false);
         boloc.setExtendedState(JFrameBoLocDSTKKH.NORMAL);
         boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
-
-    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
-        try {
-//            if (boloc != null) {
-//                listLocTaiKhoanKH = boloc.listKHBoLoc();
-//                if (listLocTaiKhoanKH == null) {
-//                    MessageBox.showErrorMessage(null, "Không có tài khoản khách hàng nào!");
-//                    boloc = null;
-//                    loadDSTaiKhoanKH(false, null);
-//                } else {
-//                    loadDSTaiKhoanKH(isFiltered, currentList);
-//                }
-//            } else {
-//                loadDSTaiKhoanKH(false, null);
-//            }
-            List<TaiKhoanKHDTO> dsTKKH = taiKhoanKHBUS.getDSTaiKhoanKH();
-            loadDSTaiKhoanKH( false, dsTKKH);
-
-            DefaultTableModel model = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
-            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-            jTableDSTaiKhoanKH.setRowSorter(sorter);
-            sorter.setRowFilter(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }//GEN-LAST:event_btnReloadActionPerformed
 
     private void ppmChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmChiTietActionPerformed
         if (formChiTiet == null) {
@@ -467,7 +471,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                             @Override
                             public void windowClosed(WindowEvent e) {
                                 try {
-                                    loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
+                                    loadDSTaiKhoanKH(isFiltered, isSearched, listLocTaiKhoanKH);
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -509,7 +513,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                             @Override
                             public void windowClosed(WindowEvent e) {
                                 try {
-                                    loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
+                                    loadDSTaiKhoanKH(isFiltered, isSearched, listLocTaiKhoanKH);
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
@@ -538,6 +542,12 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                     if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đóng tài khoản này?") == JOptionPane.YES_OPTION) {
                         int maTaiKhoanKH = Integer.parseInt(idObj.toString());
 
+                        KhoaTaiKhoanDTO khoaTK = khoaTaiKhoanBUS.selectByIdTK(maTaiKhoanKH, "TKKH");
+
+                        if (khoaTK != null) {
+                            khoaTaiKhoanBUS.unlock(khoaTK.getMaKhoaTK());
+                        }
+
                         if (!taiKhoanKHBUS.doiTrangThai(maTaiKhoanKH, 1)) {
                             MessageBox.showErrorMessage(null, "Đóng tài khoản thất bại!");
                             return;
@@ -545,7 +555,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                             MessageBox.showInformationMessage(null, "", "Đóng tài khoản thành công");
 
                             try {
-                                loadDSTaiKhoanKH(isFiltered, listLocTaiKhoanKH);
+                                loadDSTaiKhoanKH(isFiltered, isSearched, listLocTaiKhoanKH);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -561,38 +571,33 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_ppmDongTKActionPerformed
 
-    private void txtSearchTaiKhoanKHKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchTaiKhoanKHKeyReleased
-//        DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
-//        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-//        jTableDSTaiKhoanKH.setRowSorter(obj1);
-//
-//        int[] searchColumns = {0, 1, 2, 3};
-//
-//        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchTaiKhoanKH.getText(), searchColumns);
-//
-//        obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_txtSearchTaiKhoanKHKeyReleased
-
     private void cbxSapXepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSapXepItemStateChanged
-        String selectedSortOption = (String) cbxSapXep.getSelectedItem();
+        if (evt != null && evt.getStateChange() == ItemEvent.SELECTED) {
+            int selectedIndex = cbxSapXep.getSelectedIndex();
 
-        switch (selectedSortOption) {
-            case "Mã tài khoản tăng dần":
-                sapXep(0, true);
-                break;
-            case "Mã tài khoản giảm dần":
-                sapXep(0, false);
-                break;
-            case "Ngày tạo tăng dần":
-                sapXep(5, true);
-                break;
-            case "Ngày tạo giảm dần":
-                sapXep(5, false);
-                break;
-            default:
-                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSTaiKhoanKH.getModel());
-                jTableDSTaiKhoanKH.setRowSorter(null);
-                break;
+            switch (selectedIndex) {
+                case 1:
+                    sapXep(0, true);
+                    break;
+                case 2:
+                    sapXep(0, false);
+                    break;
+                case 3:
+                    sapXep(5, true);
+                    break;
+                case 4:
+                    sapXep(5, false);
+                    break;
+                case 5:
+                    sapXep(4, true);
+                    break;
+                case 6:
+                    sapXep(4, false);
+                    break;
+                default:
+                    jTableDSTaiKhoanKH.setRowSorter(null);
+                    break;
+            }
         }
     }//GEN-LAST:event_cbxSapXepItemStateChanged
 
@@ -604,59 +609,58 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnXuatFileActionPerformed
 
-    private void btnNhapFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhapFileActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Chọn file");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel files", "xlsx", "xlsm", "xltx", "xlsb", "xltm", "xla", "xlam", "xll", "xlw");
-        fileChooser.setFileFilter(filter);
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
 
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            List<TaiKhoanKHDTO> listTaiKhoanKH = nhapExcel(selectedFile);
-            if (listTaiKhoanKH != null) {
-                MessageBox.showInformationMessage(null, "Nhập file", "Lấy dữ liệu thành công!");
-                try {
-                    loadDSTaiKhoanKH(true, listTaiKhoanKH);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void txtSearchDataKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchDataKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSearchDataActionPerformed(null);
+        }
+    }//GEN-LAST:event_txtSearchDataKeyReleased
+
+    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
+        try {
+            if (cbxSapXep.getSelectedIndex() != 0) {
+                cbxSapXep.setSelectedIndex(0);
+            }
+
+            if (boloc != null) {
+                listLocTaiKhoanKH = boloc.listTKKHBoLoc();
+                if (listLocTaiKhoanKH == null) {
+                    MessageBox.showErrorMessage(null, "Không có tài khoản khách hàng nào!");
+                    boloc = null;
+                    loadDSTaiKhoanKH(false, false, null);
+                } else {
+                    loadDSTaiKhoanKH(isFiltered, false, listLocTaiKhoanKH);
                 }
             } else {
-                MessageBox.showErrorMessage(null, "Lấy dữ liệu nhập thất bại!");
+                loadDSTaiKhoanKH(false, false, null);
             }
-        } else {
-            return;
+
+            txtSearchData.setText("");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    }//GEN-LAST:event_btnNhapFileActionPerformed
+    }//GEN-LAST:event_btnReloadActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel obj = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
-        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-        jTableDSTaiKhoanKH.setRowSorter(obj1);
-
-        int[] searchColumns = { 1, 2, 3};
-
-        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchTaiKhoanKH.getText(), searchColumns);
-
-        obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_jButton5ActionPerformed
+    private void btnSearchDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchDataActionPerformed
+        if (!searchData()) {
+            MessageBox.showErrorMessage(null, "Không tìm thấy thông tin!");
+        }
+    }//GEN-LAST:event_btnSearchDataActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBoLoc;
-    private javax.swing.JButton btnNhapFile;
     private javax.swing.JButton btnReload;
+    private javax.swing.JButton btnSearchData;
     private javax.swing.JButton btnXuatFile;
     private javax.swing.JComboBox<String> cbxSapXep;
-    private javax.swing.JButton jButton5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -665,6 +669,6 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
     private javax.swing.JMenuItem ppmChiTiet;
     private javax.swing.JMenuItem ppmDongTK;
     private javax.swing.JMenuItem ppmSua;
-    private javax.swing.JTextField txtSearchTaiKhoanKH;
+    private quanlynganhang.GUI.model.textfield.TextFieldSearchOption txtSearchData;
     // End of variables declaration//GEN-END:variables
 }

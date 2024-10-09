@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormatDate {
 
@@ -24,31 +25,26 @@ public class FormatDate {
         return sdf.format(date);
     }
 
-    public Date toDate(String stDate) throws ParseException {
-        return sdf.parse(stDate);
+    public Date toDate(String stDate) {
+        try {
+            return sdf.parse(stDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Date getToday() {
         LocalDate today = LocalDate.now();
         String formattedToday = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        try {
-            return toDate(formattedToday);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return toDate(formattedToday);
     }
 
     public Date addDay(int nODays) {
         LocalDate today = LocalDate.now();
         LocalDate newDate = today.plusDays(nODays);
         String formattedToday = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        try {
-            return toDate(formattedToday);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return toDate(formattedToday);
     }
 
     public Date addMonth(int nOMonths) {

@@ -1,54 +1,66 @@
 package quanlynganhang.GUI.adminUI;
 
-import quanlynganhang.GUI.*;
-import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
+import quanlynganhang.GUI.model.textfield.SearchOptinEvent;
+import quanlynganhang.GUI.model.textfield.SearchOption;
 
 public class FormDSNhanVien extends javax.swing.JPanel {
 
     private JFrameBoLocDSNV boloc;
     private JFrameChiTietNV formChiTiet;
+    private TaiKhoanNVDTO taiKhoanNV;
     private NhanVienBUS nhanVienBUS;
     private int quyenThem1, quyenThem2, quyenSua, quyenXoa, biXoa;
-    private boolean isFiltered;
+    private boolean isFiltered, isSearched;
     private List<NhanVienDTO> listLocNV, currentList;
     private ChucVuDTO chucVu;
 
     public FormDSNhanVien(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) throws Exception {
         this.chucVu = chucVu;
+        this.taiKhoanNV = taiKhoanNV;
         nhanVienBUS = new NhanVienBUS();
         listLocNV = new ArrayList<>();
         initComponents();
         thietLapChucVu();
-        txtSearchNV.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập mã / họ tên / mã căn cước của nhân viên cần tìm...");
+
+        txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+            @Override
+            public void optionSelected(SearchOption option, int index) {
+                txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+            }
+        });
+
+        txtSearchData.addOption(new SearchOption("họ tên nhân viên", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+        txtSearchData.addOption(new SearchOption("số điện thoại", new FlatSVGIcon("quanlynganhang/icon/searchData_phoneNum.svg")));
+        txtSearchData.addOption(new SearchOption("email", new FlatSVGIcon("quanlynganhang/icon/searchData_email.svg")));
+        txtSearchData.addOption(new SearchOption("mã căn cước", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+        txtSearchData.setSelectedIndex(0);
+
         biXoa = 0;
-        loadDSNhanVien(biXoa, false, null);
+        loadDSNhanVien(biXoa, false, false, null);
         jTableDSNV.getTableHeader().setReorderingAllowed(false);
     }
 
@@ -59,14 +71,15 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqLNhanVien(), 4);
     }
 
-    public void loadDSNhanVien(int biXoa, boolean isFiltered, List<NhanVienDTO> list) throws Exception {
+    public void loadDSNhanVien(int biXoa, boolean isFiltered, boolean isSearched, List<NhanVienDTO> list) {
         this.isFiltered = isFiltered;
+        this.isSearched = isSearched;
         listLocNV = list;
         DefaultTableModel model = (DefaultTableModel) jTableDSNV.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = isFiltered ? nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, list) : nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, null);
-        currentList = isFiltered ? list : nhanVienBUS.getDSNhanVien(biXoa);
+        Object[][] dataModel = (isFiltered || isSearched) ? nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, isSearched, list) : nhanVienBUS.doiSangObjectNhanVien(biXoa, isFiltered, isSearched, null);
+        currentList = (isFiltered || isSearched) ? list : nhanVienBUS.getDSNhanVien(biXoa);
         String[] title = {"Mã nhân viên", "Họ đệm", "Tên", "Giới tính", "Ngày sinh", "Địa chỉ", "Email", "Số điện thoại", "Mã Căn cước công dân", "Chức vụ"};
         model.setDataVector(dataModel, title);
 
@@ -75,6 +88,32 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
     private void sapXep(int columnIndex, boolean isAscending) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSNV.getModel());
+        if (columnIndex == 0) {
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Integer int1 = Integer.parseInt(o1.toString());
+                    Integer int2 = Integer.parseInt(o2.toString());
+                    return int1.compareTo(int2);
+                }
+            });
+        } else if (columnIndex == 4) {
+            sorter.setComparator(columnIndex, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    try {
+                        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date1 = LocalDate.parse(o1.toString(), dateFormatter);
+                        LocalDate date2 = LocalDate.parse(o2.toString(), dateFormatter);
+                        return date1.compareTo(date2);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return 0;
+                    }
+                }
+            });
+        }
+
         jTableDSNV.setRowSorter(sorter);
 
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
@@ -92,7 +131,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
             if (saveFile != null) {
                 saveFile = new File(saveFile.toString() + ".xlsx");
-                nhanVienBUS.xuatExcel(saveFile, "Thái Dương", currentList);
+                nhanVienBUS.xuatExcel(saveFile, taiKhoanNV.getTenNhanVien(), currentList);
 
                 return true;
             } else {
@@ -108,14 +147,64 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         }
     }
 
-    private List<NhanVienDTO> nhapExcel(File file) {
+    private void themNhanVien() {
+        if (quyenThem1 == 1) {
+            JDialogThemNV themNV = new JDialogThemNV(null, true);
+            themNV.setDefaultCloseOperation(JDialogThemNV.DISPOSE_ON_CLOSE);
+            themNV.setVisible(true);
 
-        try {
-            return nhanVienBUS.nhapExcel(file);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+            loadDSNhanVien(0, false, false, null);
+        } else {
+            ChiaQuyenBUS.showError();
+            return;
         }
+    }
+
+    private boolean searchData() {
+        if (txtSearchData.getText().trim().isEmpty()) {
+            MessageBox.showErrorMessage(null, "Vui lòng nhập thông tin muốn tìm!");
+            return true;
+        }
+
+        int option = txtSearchData.getSelectedIndex();
+        String typeName;
+        switch (option) {
+            case 0:
+                typeName = "name";
+                break;
+            case 1:
+                typeName = "phoneNumber";
+                break;
+            case 2:
+                typeName = "email";
+                break;
+            case 3:
+                typeName = "cccd";
+                break;
+            default:
+                return false;
+        }
+
+        List<NhanVienDTO> listNV = nhanVienBUS.timKiemTheoLoai(biXoa, typeName, txtSearchData.getText().trim());
+
+        if (listNV != null && !listNV.isEmpty()) {
+            loadDSNhanVien(biXoa, isFiltered, true, listNV);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void disableForm(boolean isEnable) {
+        txtSearchData.setEnabled(isEnable);
+        btnSearchData.setEnabled(isEnable);
+        btnReload.setEnabled(isEnable);
+        jTableDSNV.setEnabled(isEnable);
+        btnThemNV.setEnabled(isEnable);
+        cbxSapXep.setEnabled(isEnable);
+        btnBoLoc.setEnabled(isEnable);
+        btnXuatFile.setEnabled(isEnable);
+        btnDoiBang.setEnabled(isEnable);
     }
 
     /** This method is called from within the constructor to
@@ -135,20 +224,15 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         ppmXoa = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtSearchNV = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        txtSearchData = new quanlynganhang.GUI.model.textfield.TextFieldSearchOption();
+        btnSearchData = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         btnBoLoc = new javax.swing.JButton();
         cbxSapXep = new javax.swing.JComboBox<>();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        btnXuatFile = new javax.swing.JButton();
-        btnNhapFile = new javax.swing.JButton();
-        jPanel7 = new javax.swing.JPanel();
-        btnThemNV = new javax.swing.JButton();
-        btnThemTKNV = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
+        btnXuatFile = new javax.swing.JButton();
         btnDoiBang = new javax.swing.JButton();
+        btnThemNV = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -191,32 +275,40 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(1132, 511));
         setLayout(new java.awt.BorderLayout());
 
-        txtSearchNV.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtSearchData.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtSearchNVKeyReleased(evt);
+                txtSearchDataKeyReleased(evt);
             }
         });
 
-        jButton5.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        btnSearchData.setIcon(new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
+        btnSearchData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchDataActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(txtSearchNV, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(txtSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtSearchNV, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnSearchData, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(txtSearchData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         btnBoLoc.setIcon(new FlatSVGIcon("quanlynganhang/icon/filter_btn.svg")
@@ -228,10 +320,39 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             }
         });
 
-        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "Mã nhân viên tăng dần", "Mã nhân viên giảm dần", "Tên theo thứ tự A -> Z", "Tên theo thứ tự Z -> A" }));
+        cbxSapXep.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-Sắp xếp theo-", "<html><p style=\"color:rgb(255, 0, 0);\">Mã nhân viên tăng dần</p></html>", "Mã nhân viên giảm dần", "<html><p style=\"color:rgb(255, 0, 0);\">Tên theo thứ tự A -> Z</p></html>", "Tên theo thứ tự Z -> A", "<html><p style=\"color:rgb(255, 0, 0);\">Ngày sinh tăng dần</p></html>", "Ngày sinh giảm dần" }));
         cbxSapXep.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxSapXepItemStateChanged(evt);
+            }
+        });
+
+        btnReload.setIcon(new FlatSVGIcon("quanlynganhang/icon/reload_btn.svg"));
+        btnReload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReloadActionPerformed(evt);
+            }
+        });
+
+        btnXuatFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
+        btnXuatFile.setText("Xuất file");
+        btnXuatFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXuatFileActionPerformed(evt);
+            }
+        });
+
+        btnDoiBang.setText("DSNV bị xóa");
+        btnDoiBang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDoiBangActionPerformed(evt);
+            }
+        });
+
+        btnThemNV.setText("Thêm NV");
+        btnThemNV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemNVActionPerformed(evt);
             }
         });
 
@@ -240,19 +361,34 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(139, 139, 139)
-                .addComponent(cbxSapXep, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
-                .addComponent(btnBoLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbxSapXep, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnThemNV, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnDoiBang, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnXuatFile, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBoLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnBoLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(cbxSapXep))
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnXuatFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnBoLoc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDoiBang, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cbxSapXep, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btnThemNV, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -263,7 +399,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -278,122 +414,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         );
 
         add(jPanel1, java.awt.BorderLayout.PAGE_START);
-
-        btnXuatFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/xuat_excel_btn.svg"));
-        btnXuatFile.setText("Xuất file");
-        btnXuatFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXuatFileActionPerformed(evt);
-            }
-        });
-
-        btnNhapFile.setIcon(new FlatSVGIcon("quanlynganhang/icon/nhap_excel_btn.svg")
-        );
-        btnNhapFile.setText("Nhập file");
-        btnNhapFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNhapFileActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnXuatFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNhapFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnXuatFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnNhapFile, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        btnThemNV.setText("Thêm NV");
-        btnThemNV.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnThemNVActionPerformed(evt);
-            }
-        });
-
-        btnThemTKNV.setText("Thêm tài khoản");
-        btnThemTKNV.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnThemTKNVActionPerformed(evt);
-            }
-        });
-
-        btnReload.setText("Tải lại DS");
-        btnReload.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReloadActionPerformed(evt);
-            }
-        });
-
-        btnDoiBang.setText("DSNV bị xóa");
-        btnDoiBang.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDoiBangActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnThemNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnThemTKNV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDoiBang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnThemNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnThemTKNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59)
-                .addComponent(btnReload, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnDoiBang, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        add(jPanel2, java.awt.BorderLayout.LINE_END);
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
@@ -435,71 +455,42 @@ public class FormDSNhanVien extends javax.swing.JPanel {
 
     private void btnBoLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoLocActionPerformed
         if (boloc == null) {
-            boloc = new JFrameBoLocDSNV(this);
+            boloc = new JFrameBoLocDSNV(this, biXoa);
             boloc.setResizable(false);
             boloc.setDefaultCloseOperation(JFrameBoLocDSNV.DISPOSE_ON_CLOSE);
+
+            boloc.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        disableForm(true);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         }
 
+        disableForm(false);
         boloc.setExtendedState(JFrameBoLocDSNV.NORMAL);
         boloc.setVisible(true);
     }//GEN-LAST:event_btnBoLocActionPerformed
 
-    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
-        try {
-            if (boloc != null) {
-                listLocNV = boloc.listNVBoLoc();
-                if (listLocNV == null) {
-                    MessageBox.showErrorMessage(null, "Không có nhân viên nào!");
-                    boloc = null;
-                    loadDSNhanVien(biXoa, false, null);
-                } else {
-                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                }
-            } else {
-                loadDSNhanVien(biXoa, false, null);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }//GEN-LAST:event_btnReloadActionPerformed
-
-    private void btnThemNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemNVActionPerformed
-        if (quyenThem1 == 1) {
-            JDialogThemNV themNV = new JDialogThemNV(null, true);
-            themNV.setDefaultCloseOperation(JDialogThemNV.DISPOSE_ON_CLOSE);
-            themNV.setVisible(true);
-            try {
-                loadDSNhanVien(0, false, null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            ChiaQuyenBUS.showError();
-            return;
-        }
-    }//GEN-LAST:event_btnThemNVActionPerformed
-
-    private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
-        ppmTaoTKActionPerformed(null);
-    }//GEN-LAST:event_btnThemTKNVActionPerformed
-
     private void btnDoiBangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiBangActionPerformed
         if (biXoa == 0) {
             biXoa = 1;
-            try {
-                loadDSNhanVien(biXoa, false, null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            ppmXoa.setVisible(false);
+
+            loadDSNhanVien(biXoa, false, false, null);
+
             ppmSua.setText("Khôi phục");
             btnDoiBang.setText("DSNV hiện tại");
         } else {
             biXoa = 0;
-            try {
-                loadDSNhanVien(biXoa, false, null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            ppmXoa.setVisible(true);
+
+            loadDSNhanVien(biXoa, false, false, null);
+
             ppmSua.setText("Sửa");
             btnDoiBang.setText("DSNV bị xóa");
         }
@@ -529,11 +520,8 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                         formChiTiet.addWindowListener(new WindowAdapter() {
                             @Override
                             public void windowClosed(WindowEvent e) {
-                                try {
-                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                loadDSNhanVien(biXoa, isFiltered, isSearched, listLocNV);
+
                                 formChiTiet = null;
                             }
                         });
@@ -568,11 +556,8 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                             if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn khôi phục nhân viên này?") == JOptionPane.YES_OPTION) {
                                 if (nhanVienBUS.restoreNhanVien(maNhanVien)) {
                                     MessageBox.showInformationMessage(null, "", "Đã khôi phục lại nhân viên!");
-                                    try {
-                                        loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
+
+                                    loadDSNhanVien(biXoa, isFiltered, isSearched, listLocNV);
                                 } else {
                                     MessageBox.showErrorMessage(null, "Khôi phục nhân viên thất bại");
                                 }
@@ -588,11 +573,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                             formSua.addWindowListener(new WindowAdapter() {
                                 @Override
                                 public void windowClosed(WindowEvent e) {
-                                    try {
-                                        loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
+                                    loadDSNhanVien(biXoa, isFiltered, isSearched, listLocNV);
                                 }
                             });
                         }
@@ -626,12 +607,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                                 return;
                             } else {
                                 MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
-
-                                try {
-                                    loadDSNhanVien(biXoa, isFiltered, listLocNV);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                loadDSNhanVien(biXoa, isFiltered, isSearched, listLocNV);
                             }
                         } else {
                             return;
@@ -645,38 +621,33 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_ppmXoaActionPerformed
 
-    private void txtSearchNVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchNVKeyReleased
-        DefaultTableModel obj = (DefaultTableModel) jTableDSNV.getModel();
-        TableRowSorter<DefaultTableModel> obj1 = new TableRowSorter<>(obj);
-        jTableDSNV.setRowSorter(obj1);
-
-        int[] searchColumns = {0, 1, 2, 8, 9};
-
-        RowFilter<DefaultTableModel, Object> rowFilter = RowFilter.regexFilter(txtSearchNV.getText(), searchColumns);
-
-        obj1.setRowFilter(rowFilter);
-    }//GEN-LAST:event_txtSearchNVKeyReleased
-
     private void cbxSapXepItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSapXepItemStateChanged
-        String selectedSortOption = (String) cbxSapXep.getSelectedItem();
+        if (evt != null && evt.getStateChange() == ItemEvent.SELECTED) {
+            int selectedIndex = cbxSapXep.getSelectedIndex();
 
-        switch (selectedSortOption) {
-            case "Mã nhân viên tăng dần":
-                sapXep(0, true);
-                break;
-            case "Mã nhân viên giảm dần":
-                sapXep(0, false);
-                break;
-            case "Tên theo thứ tự A -> Z":
-                sapXep(2, true);
-                break;
-            case "Tên theo thứ tự Z -> A":
-                sapXep(2, false);
-                break;
-            default:
-                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTableDSNV.getModel());
-                jTableDSNV.setRowSorter(null);
-                break;
+            switch (selectedIndex) {
+                case 1:
+                    sapXep(0, true);
+                    break;
+                case 2:
+                    sapXep(0, false);
+                    break;
+                case 3:
+                    sapXep(2, true);
+                    break;
+                case 4:
+                    sapXep(2, false);
+                    break;
+                case 5:
+                    sapXep(4, true);
+                    break;
+                case 6:
+                    sapXep(4, false);
+                    break;
+                default:
+                    jTableDSNV.setRowSorter(null);
+                    break;
+            }
         }
     }//GEN-LAST:event_cbxSapXepItemStateChanged
 
@@ -687,32 +658,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
             MessageBox.showErrorMessage(null, "Xuất file thất bại!");
         }
     }//GEN-LAST:event_btnXuatFileActionPerformed
-
-    private void btnNhapFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNhapFileActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Chọn file");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel files", "xlsx", "xlsm", "xltx", "xlsb", "xltm", "xla", "xlam", "xll", "xlw");
-        fileChooser.setFileFilter(filter);
-
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            List<NhanVienDTO> listNV = nhapExcel(selectedFile);
-            if (listNV != null) {
-                MessageBox.showInformationMessage(null, "Nhập file", "Lấy dữ liệu thành công!");
-                try {
-                    loadDSNhanVien(biXoa, true, listNV);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            } else {
-                MessageBox.showErrorMessage(null, "Lấy dữ liệu nhập thất bại!");
-            }
-        } else {
-            return;
-        }
-
-    }//GEN-LAST:event_btnNhapFileActionPerformed
 
     private void ppmTaoTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ppmTaoTKActionPerformed
         if (quyenThem2 == 1) {
@@ -750,24 +695,60 @@ public class FormDSNhanVien extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_ppmTaoTKActionPerformed
 
+    private void txtSearchDataKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchDataKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnSearchDataActionPerformed(null);
+        }
+    }//GEN-LAST:event_txtSearchDataKeyReleased
+
+    private void btnSearchDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchDataActionPerformed
+        if (!searchData()) {
+            MessageBox.showErrorMessage(null, "Không tìm thấy thông tin!");
+        }
+    }//GEN-LAST:event_btnSearchDataActionPerformed
+
+    private void btnReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadActionPerformed
+        try {
+            if (cbxSapXep.getSelectedIndex() != 0) {
+                cbxSapXep.setSelectedIndex(0);
+            }
+
+            if (boloc != null) {
+                listLocNV = boloc.listNVBoLoc();
+                if (listLocNV == null) {
+                    MessageBox.showErrorMessage(null, "Không có nhân viên nào!");
+                    boloc = null;
+                    loadDSNhanVien(biXoa, false, false, null);
+                } else {
+                    loadDSNhanVien(biXoa, isFiltered, false, listLocNV);
+                }
+            } else {
+                loadDSNhanVien(biXoa, false, false, null);
+            }
+
+            txtSearchData.setText("");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnReloadActionPerformed
+
+    private void btnThemNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemNVActionPerformed
+        themNhanVien();
+    }//GEN-LAST:event_btnThemNVActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBoLoc;
     private javax.swing.JButton btnDoiBang;
-    private javax.swing.JButton btnNhapFile;
     private javax.swing.JButton btnReload;
+    private javax.swing.JButton btnSearchData;
     private javax.swing.JButton btnThemNV;
-    private javax.swing.JButton btnThemTKNV;
     private javax.swing.JButton btnXuatFile;
     private javax.swing.JComboBox<String> cbxSapXep;
-    private javax.swing.JButton jButton5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator2;
@@ -777,6 +758,6 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     private javax.swing.JMenuItem ppmSua;
     private javax.swing.JMenuItem ppmTaoTK;
     private javax.swing.JMenuItem ppmXoa;
-    private javax.swing.JTextField txtSearchNV;
+    private quanlynganhang.GUI.model.textfield.TextFieldSearchOption txtSearchData;
     // End of variables declaration//GEN-END:variables
 }

@@ -3,43 +3,41 @@ package quanlynganhang.GUI;
 import javax.swing.JOptionPane;
 import quanlynganhang.BUS.TheATMBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.TheATMDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-
 public class JDialogGiaHanThe extends javax.swing.JDialog {
-    private int maThe;
+
+    private TheATMDTO theATM;
     private TheATMBUS theATMBUS;
     private FormatDate fDate;
-    
-    public JDialogGiaHanThe(java.awt.Frame parent, boolean modal, int maThe) {
+
+    public JDialogGiaHanThe(java.awt.Frame parent, boolean modal, TheATMDTO theATM) {
         super(parent, modal);
         initComponents();
-        
-        this.maThe = maThe;
+
+        this.theATM = theATM;
         theATMBUS = new TheATMBUS();
         fDate = new FormatDate();
-        
-        txtMaThe.setText("" + maThe);
+
+        txtMaThe.setText("" + theATM.getMaThe());
     }
 
     private void giaHanThe() {
         if (!txtSoThang.getText().isEmpty()) {
-            
+
             try {
                 int soThang = Integer.parseInt(txtSoThang.getText());
-                
-                TheATMDTO theATM = new TheATMDTO();
-                
-                theATM.setMaThe(maThe);
-                theATM.setThoiHanThe(fDate.addMonth(soThang));
+
+                theATM.setThoiHanThe(fDate.addMonth(theATM.getThoiHanThe(), soThang));
                 if (theATMBUS.giaHanThe(theATM)) {
                     MessageBox.showInformationMessage(null, "", "Gia hạn thẻ thành công!");
                     this.dispose();
                 } else {
                     MessageBox.showErrorMessage(null, "Gia hạn thẻ thất bại!");
                 }
-                
+
             } catch (Exception e) {
                 MessageBox.showErrorMessage(null, "Vui lòng nhập đúng số tháng!");
             }
@@ -47,6 +45,7 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
             MessageBox.showErrorMessage(null, "Vui lòng nhập số tháng muốn gia hạn!");
         }
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -69,6 +68,7 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
         txtMaThe = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtSoThang = new javax.swing.JTextField();
+        lbNgayHetHan = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -110,6 +110,7 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
 
         btnGiaHan.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnGiaHan.setText("Gia hạn");
+        btnGiaHan.setEnabled(false);
         btnGiaHan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGiaHanActionPerformed(evt);
@@ -121,11 +122,11 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap(55, Short.MAX_VALUE)
+                .addContainerGap(74, Short.MAX_VALUE)
                 .addComponent(btnClose, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnGiaHan, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(96, Short.MAX_VALUE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,18 +151,30 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
 
         jLabel3.setText("Số tháng gia hạn");
 
+        txtSoThang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSoThangKeyReleased(evt);
+            }
+        });
+
+        lbNgayHetHan.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lbNgayHetHan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(87, 87, 87)
+                .addContainerGap(107, Short.MAX_VALUE)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtMaThe)
                     .addComponent(txtSoThang)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
-                .addContainerGap(131, Short.MAX_VALUE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(111, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -170,11 +183,13 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtMaThe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtSoThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(lbNgayHetHan, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         jPanel3.add(jPanel6, java.awt.BorderLayout.CENTER);
@@ -197,39 +212,34 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnGiaHanActionPerformed
 
+    private void txtSoThangKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoThangKeyReleased
+        try {
+            if (InputValidation.kiemTraSoTien(txtSoThang.getText().trim())) {
+                int soThang = Integer.parseInt(txtSoThang.getText().trim());
+
+                if (soThang == 0) {
+                    lbNgayHetHan.setText("<html><p style='color:rgb(255, 0, 0);'>Vui lòng nhập số lớn hơn 0</p></html>");
+                    btnGiaHan.setEnabled(false);
+                } else {
+                    lbNgayHetHan.setText("<html><p>Thời gian hết hạn dự kiến: <span style='color:rgb(3, 28, 252);'>" + fDate.toString(fDate.addMonth(theATM.getThoiHanThe(), soThang)) + "</span></p></html>");
+                    btnGiaHan.setEnabled(true);
+                }
+
+            } else {
+                lbNgayHetHan.setText("<html><p style='color:rgb(255, 0, 0);'>Số tháng không hợp lệ</p></html>");
+                btnGiaHan.setEnabled(false);
+            }
+        } catch (Exception e) {
+            lbNgayHetHan.setText("<html><p style='color:rgb(255, 0, 0);'>Số tháng không hợp lệ</p></html>");
+            btnGiaHan.setEnabled(false);
+        }
+    }//GEN-LAST:event_txtSoThangKeyReleased
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogGiaHanThe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogGiaHanThe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogGiaHanThe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogGiaHanThe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -244,6 +254,7 @@ public class JDialogGiaHanThe extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JLabel lbNgayHetHan;
     private javax.swing.JTextField txtMaThe;
     private javax.swing.JTextField txtSoThang;
     // End of variables declaration//GEN-END:variables

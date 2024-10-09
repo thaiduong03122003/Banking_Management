@@ -1204,7 +1204,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnChonTKVayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKVayActionPerformed
-        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản vay", "DSTKV");
+        JDialogTableChonItem chonTKKH = new JDialogTableChonItem(null, true, this, "Chọn tài khoản vay", "DSTKV", true);
         chonTKKH.setResizable(false);
         chonTKKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
         chonTKKH.setVisible(true);

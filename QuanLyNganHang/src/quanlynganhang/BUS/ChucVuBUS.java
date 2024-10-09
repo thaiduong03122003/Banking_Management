@@ -1,5 +1,6 @@
 package quanlynganhang.BUS;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,10 @@ public class ChucVuBUS {
         }
     }
 
-    public Object[][] doiSangObjectChucVu(int biXoa) {
-        List<ChucVuDTO> list = getDSChucVu(biXoa);
+    public Object[][] doiSangObjectChucVu(int biXoa, boolean isSearched, List<ChucVuDTO> listChucVu) {
+        List<ChucVuDTO> list = new ArrayList<>();
+
+        list = isSearched ? listChucVu : getDSChucVu(biXoa);
 
         Object[][] data = new Object[list.size()][14];
         int rowIndex = 0;
@@ -54,7 +57,7 @@ public class ChucVuBUS {
         }
         return data;
     }
-    
+
     public ChucVuDTO addChucVu(ChucVuDTO chucVu, int biXoa) {
         try {
             return chucVuDAO.insert(chucVu, biXoa);
@@ -63,7 +66,7 @@ public class ChucVuBUS {
             return null;
         }
     }
-    
+
     public boolean updateChucVu(ChucVuDTO chucVu, int biXoa) {
         try {
             return chucVuDAO.update(chucVu, biXoa);
@@ -72,7 +75,7 @@ public class ChucVuBUS {
             return false;
         }
     }
-    
+
     public boolean deleteChucVu(int maChucVu) {
         try {
             return chucVuDAO.delete(maChucVu);
@@ -81,7 +84,7 @@ public class ChucVuBUS {
             return false;
         }
     }
-    
+
     public ChucVuDTO getChucVuById(int maChucVu) {
         try {
             return chucVuDAO.selectById(maChucVu, 0);
@@ -90,7 +93,7 @@ public class ChucVuBUS {
             return null;
         }
     }
-    
+
     public Map<Integer, String> convertListChucVuToMap() {
         List<ChucVuDTO> list = getDSChucVu(0);
         if (list == null) {
@@ -104,11 +107,15 @@ public class ChucVuBUS {
 
         return map;
     }
-    
+
+    public List<ChucVuDTO> timKiemTheoLoai(String inputValue, int biXoa) {
+        return chucVuDAO.searchByInputType(inputValue, biXoa);
+    }
+
     public Integer getIdFromTenChucVu(String tenChucVu) {
         Map<Integer, String> map = new HashMap<>();
         map = convertListChucVuToMap();
-        
+
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
             if (entry.getValue().equals(tenChucVu)) {
                 return entry.getKey();
@@ -116,7 +123,7 @@ public class ChucVuBUS {
         }
         return null;
     }
-    
+
     private List<ChucVuDTO> getSoLuongChucVu() {
         try {
             return chucVuDAO.getNORole();
@@ -125,7 +132,7 @@ public class ChucVuBUS {
             return null;
         }
     }
-    
+
     public Object[][] doiSangObjectSoLuongChucVu() {
         List<ChucVuDTO> list = getSoLuongChucVu();
 
@@ -135,7 +142,7 @@ public class ChucVuBUS {
             data[rowIndex][0] = chucVu.getMaChucVu();
             data[rowIndex][1] = chucVu.getTenChucVu();
             data[rowIndex][2] = chucVu.getSoChucVu();
- 
+
             rowIndex++;
         }
         return data;

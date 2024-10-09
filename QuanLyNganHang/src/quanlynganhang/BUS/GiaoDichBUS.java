@@ -1,10 +1,21 @@
 package quanlynganhang.BUS;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.DAO.ChuyenTienDAO;
 import quanlynganhang.DAO.GiaoDichDAO;
 import quanlynganhang.DAO.KhoTienDAO;
@@ -44,18 +55,12 @@ public class GiaoDichBUS {
             return null;
         }
     }
-    
-    //=====================================================17/9
-      public Object[][] doiSangObjectMaxGiaoDich() throws Exception {
+
+    public Object[][] doiSangObjectMaxGiaoDich() throws Exception {
         List<GiaoDichDTO> list = new ArrayList<>();
-    
-       
-           
-        
+
         list = giaoDichDAO.getMaxGiaoDich();
-        
-         
-    
+
         Object[][] data = new Object[list.size()][8];
         int rowIndex = 0;
         for (GiaoDichDTO giaoDich : list) {
@@ -72,7 +77,7 @@ public class GiaoDichBUS {
         return data;
     }
 
-       public Object[][] doiSangObjectGiaoDichTK(boolean isFiltered, List<GiaoDichDTO> listGiaoDich,int loaiGD) throws Exception {
+    public Object[][] doiSangObjectGiaoDichTK(boolean isFiltered, List<GiaoDichDTO> listGiaoDich, int loaiGD) {
         List<GiaoDichDTO> list = new ArrayList<>();
 
         if (isFiltered) {
@@ -80,14 +85,20 @@ public class GiaoDichBUS {
         } else {
             list = giaoDichDAO.filter(null, null, 0, 0, 0, loaiGD);
         }
-         
-    
+
         Object[][] data = new Object[list.size()][8];
         int rowIndex = 0;
         for (GiaoDichDTO giaoDich : list) {
             data[rowIndex][0] = giaoDich.getMaGiaoDich();
             data[rowIndex][1] = giaoDich.getSoTaiKhoan();
-            data[rowIndex][2] = giaoDich.getTenKhachHang();
+
+            String tenKhachHang = giaoDich.getTenKhachHang();
+            if (tenKhachHang.equals("null null") || tenKhachHang == null) {
+                data[rowIndex][2] = "<html><p style='color:rgb(255,0,0);font-weight:bold;'>Hệ thống</p></html>";
+            } else {
+                data[rowIndex][2] = giaoDich.getTenKhachHang();
+            }
+
             data[rowIndex][3] = giaoDich.getSoTien();
             data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
             data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
@@ -98,24 +109,34 @@ public class GiaoDichBUS {
         return data;
     }
 
-    //======================================================17/9
- 
-    public Object[][] doiSangObjectGiaoDich(boolean isFiltered, List<GiaoDichDTO> listGiaoDich) {
+    public Object[][] doiSangObjectGiaoDich(boolean isFiltered, boolean isSearched, List<GiaoDichDTO> listGiaoDich) {
         List<GiaoDichDTO> list = new ArrayList<>();
 
-        if (isFiltered) {
-            list = listGiaoDich;
-        } else {
-            list = getDSGiaoDich();
-        }
+        list = (isFiltered || isSearched) ? listGiaoDich : getDSGiaoDich();
 
         Object[][] data = new Object[list.size()][8];
         int rowIndex = 0;
         for (GiaoDichDTO giaoDich : list) {
             data[rowIndex][0] = giaoDich.getMaGiaoDich();
-            data[rowIndex][1] = giaoDich.getSoTaiKhoan();
-            data[rowIndex][2] = giaoDich.getTenKhachHang();
-            data[rowIndex][3] = giaoDich.getSoTien();
+
+            int maTrangThaiTKKH = giaoDich.getMaTrangThaiTKKH();
+            int biXoa = giaoDich.getBiXoa();
+
+            if (maTrangThaiTKKH == 1 || biXoa == 1) {
+                data[rowIndex][1] = "<html><p style='color:rgb(255,0,0);'>" + giaoDich.getSoTaiKhoan() + "</p></html>";
+            } else {
+                data[rowIndex][1] = giaoDich.getSoTaiKhoan();
+            }
+
+            String tenKhachHang = giaoDich.getTenKhachHang();
+
+            if (tenKhachHang.equals("null null") || tenKhachHang == null) {
+                data[rowIndex][2] = "<html><p style='color:rgb(255,0,0);font-weight:bold;'>Hệ thống</p></html>";
+            } else {
+                data[rowIndex][2] = giaoDich.getTenKhachHang();
+            }
+
+            data[rowIndex][3] = FormatNumber.convertNumToVND(new BigInteger(giaoDich.getSoTien())) + " VND";
             data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
             data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
             data[rowIndex][6] = giaoDich.getTenNhanVien();
@@ -125,16 +146,24 @@ public class GiaoDichBUS {
         return data;
     }
 
-    public List<GiaoDichDTO> locGiaoDich(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maNhanVien, int maTaiKhoanKH, int maLoaiGiaoDich) throws Exception {
+    public List<GiaoDichDTO> locGiaoDich(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maNhanVien, int maTaiKhoanKH, int maLoaiGiaoDich) {
         java.sql.Date dateBatDau = null;
         java.sql.Date dateKetThuc = null;
 
         if (dateFrom != null && dateTo != null) {
             dateBatDau = new Date(dateFrom.getTime());
             dateKetThuc = new Date(dateTo.getTime());
+        } else if (dateFrom != null && dateTo == null) {
+            dateBatDau = new Date(dateFrom.getTime());
+        } else if (dateFrom == null && dateTo != null) {
+            dateKetThuc = new Date(dateTo.getTime());
         }
 
         return giaoDichDAO.filter(dateBatDau, dateKetThuc, maKhachHang, maNhanVien, maTaiKhoanKH, maLoaiGiaoDich);
+    }
+
+    public List<GiaoDichDTO> timKiemTheoLoai(String typeName, String inputValue) {
+        return giaoDichDAO.searchByInputType(typeName, inputValue);
     }
 
     public boolean napTien(GiaoDichDTO giaoDich) {
@@ -302,6 +331,10 @@ public class GiaoDichBUS {
         }
     }
 
+    public ChuyenTienDTO getByIdGD(int maGiaoDich) {
+        return chuyenTienDAO.selectByIdGD(maGiaoDich);
+    }
+
     public boolean truTienTKTrongKho(String soTienTru) {
         layTienTuKho();
 
@@ -446,6 +479,69 @@ public class GiaoDichBUS {
         } catch (Exception ex) {
             ex.printStackTrace();
             return 0;
+        }
+    }
+
+    public GiaoDichDTO getGiaoDichById(int maGiaoDich) {
+        try {
+            return giaoDichDAO.selectById(maGiaoDich);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean xuatExcel(File file, String userName, List<GiaoDichDTO> list) {
+        try {
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Danh sách thông tin giao dịch");
+
+            String[] titles = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Trạng thái"};
+            LocalDate ngayHienTai = LocalDate.now();
+
+            Row timeRow = sheet.createRow(0);
+            Cell cell = timeRow.createCell(0);
+            cell.setCellValue("Ngày xuất danh sách: " + ngayHienTai.toString());
+
+            Row userRow = sheet.createRow(1);
+            cell = userRow.createCell(0);
+            cell.setCellValue("Nhân viên xuất file: " + userName);
+
+            Row titleRow = sheet.createRow(3);
+            for (int i = 0; i < titles.length; i++) {
+                cell = titleRow.createCell(i);
+                cell.setCellValue(titles[i]);
+            }
+
+            int rowCount = 4;
+            for (GiaoDichDTO giaoDich : list) {
+                Row dataRow = sheet.createRow(rowCount++);
+                cell = dataRow.createCell(0);
+                cell.setCellValue(giaoDich.getMaGiaoDich());
+                cell = dataRow.createCell(1);
+                cell.setCellValue(giaoDich.getSoTaiKhoan());
+                cell = dataRow.createCell(2);
+                cell.setCellValue(giaoDich.getTenKhachHang());
+                cell = dataRow.createCell(3);
+                cell.setCellValue(FormatNumber.convertNumToVND(new BigInteger(giaoDich.getSoTien())) + " VND");
+                cell = dataRow.createCell(4);
+                cell.setCellValue(fDate.toString(giaoDich.getNgayGiaoDich()));
+                cell = dataRow.createCell(5);
+                cell.setCellValue(giaoDich.getTenLoaiGiaoDich());
+                cell = dataRow.createCell(6);
+                cell.setCellValue(giaoDich.getTenNhanVien());
+                cell = dataRow.createCell(7);
+                cell.setCellValue(giaoDich.getTenTrangThai());
+            }
+
+            FileOutputStream outputStream = new FileOutputStream(file);
+            workbook.write(outputStream);
+            workbook.close();
+            outputStream.close();
+
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }
