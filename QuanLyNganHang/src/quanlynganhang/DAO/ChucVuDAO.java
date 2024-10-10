@@ -13,8 +13,8 @@ public class ChucVuDAO {
         if (selectByName(chucVu.getTenChucVu(), biXoa) != null) {
             return null;
         } else {
-            String sql = "INSERT INTO tbl_chuc_vu(ten_chuc_vu, mo_ta, admin, thong_ke, khach_hang, nhan_vien, tk_khach_hang, tk_nhan_vien, the, giao_dich, gui_tiet_kiem, vay_von, vay_tin_dung, phan_quyen, them_chuc_vu, bi_xoa)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO tbl_chuc_vu(ten_chuc_vu, mo_ta, admin, thong_ke, khach_hang, nhan_vien, tk_khach_hang, tk_nhan_vien, the, giao_dich, gui_tiet_kiem, vay_von, phan_quyen, chuc_vu, bi_xoa)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);) {
 
@@ -30,10 +30,9 @@ public class ChucVuDAO {
                 pstmt.setInt(10, chucVu.getqLGiaoDich());
                 pstmt.setInt(11, chucVu.getqLGuiTietKiem());
                 pstmt.setInt(12, chucVu.getqLVayVon());
-                pstmt.setInt(13, chucVu.getqLVayTinDung());
-                pstmt.setInt(14, chucVu.getPhanQuyen());
-                pstmt.setInt(15, chucVu.getThemChucVu());
-                pstmt.setInt(16, 0);
+                pstmt.setInt(13, chucVu.getPhanQuyen());
+                pstmt.setString(14, chucVu.getqlChucVu());
+                pstmt.setInt(15, 0);
 
                 pstmt.executeUpdate();
 
@@ -52,7 +51,7 @@ public class ChucVuDAO {
     }
 
     private boolean updateExecute(ChucVuDTO chucVu, int biXoa) {
-        String sql = "UPDATE tbl_chuc_vu SET ten_chuc_vu = ?, mo_ta = ?, admin = ?, thong_ke = ?, khach_hang = ?, nhan_vien = ?, tk_khach_hang = ?, tk_nhan_vien = ?, the = ?, giao_dich =?, gui_tiet_kiem = ?, vay_von = ?, vay_tin_dung = ?, phan_quyen = ?, them_chuc_vu = ?, bi_xoa = ? WHERE ma_chuc_vu = ?";
+        String sql = "UPDATE tbl_chuc_vu SET ten_chuc_vu = ?, mo_ta = ?, admin = ?, thong_ke = ?, khach_hang = ?, nhan_vien = ?, tk_khach_hang = ?, tk_nhan_vien = ?, the = ?, giao_dich =?, gui_tiet_kiem = ?, vay_von = ?, phan_quyen = ?, chuc_vu = ?, bi_xoa = ? WHERE ma_chuc_vu = ?";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
@@ -68,11 +67,10 @@ public class ChucVuDAO {
             pstmt.setInt(10, chucVu.getqLGiaoDich());
             pstmt.setInt(11, chucVu.getqLGuiTietKiem());
             pstmt.setInt(12, chucVu.getqLVayVon());
-            pstmt.setInt(13, chucVu.getqLVayTinDung());
-            pstmt.setInt(14, chucVu.getPhanQuyen());
-            pstmt.setInt(15, chucVu.getThemChucVu());
-            pstmt.setInt(16, biXoa);
-            pstmt.setInt(17, chucVu.getMaChucVu());
+            pstmt.setInt(13, chucVu.getPhanQuyen());
+            pstmt.setString(14, chucVu.getqlChucVu());
+            pstmt.setInt(15, biXoa);
+            pstmt.setInt(16, chucVu.getMaChucVu());
 
             return pstmt.executeUpdate() > 0;
         } catch (Exception e) {
@@ -132,9 +130,8 @@ public class ChucVuDAO {
                     chucVu.setqLGiaoDich(rs.getInt("giao_dich"));
                     chucVu.setqLGuiTietKiem(rs.getInt("gui_tiet_kiem"));
                     chucVu.setqLVayVon(rs.getInt("vay_von"));
-                    chucVu.setqLVayTinDung(rs.getInt("vay_tin_dung"));
                     chucVu.setPhanQuyen(rs.getInt("phan_quyen"));
-                    chucVu.setThemChucVu(rs.getInt("them_chuc_vu"));
+                    chucVu.setqlChucVu(rs.getString("chuc_vu"));
                     chucVu.setBiXoa(biXoa);
 
                     list.add(chucVu);
@@ -170,9 +167,8 @@ public class ChucVuDAO {
                     chucVu.setqLGiaoDich(rs.getInt("giao_dich"));
                     chucVu.setqLGuiTietKiem(rs.getInt("gui_tiet_kiem"));
                     chucVu.setqLVayVon(rs.getInt("vay_von"));
-                    chucVu.setqLVayTinDung(rs.getInt("vay_tin_dung"));
                     chucVu.setPhanQuyen(rs.getInt("phan_quyen"));
-                    chucVu.setThemChucVu(rs.getInt("them_chuc_vu"));
+                    chucVu.setqlChucVu(rs.getString("chuc_vu"));
                     chucVu.setBiXoa(biXoa);
 
                     return chucVu;
@@ -207,9 +203,8 @@ public class ChucVuDAO {
                     chucVu.setqLGiaoDich(rs.getInt("giao_dich"));
                     chucVu.setqLGuiTietKiem(rs.getInt("gui_tiet_kiem"));
                     chucVu.setqLVayVon(rs.getInt("vay_von"));
-                    chucVu.setqLVayTinDung(rs.getInt("vay_tin_dung"));
                     chucVu.setPhanQuyen(rs.getInt("phan_quyen"));
-                    chucVu.setThemChucVu(rs.getInt("them_chuc_vu"));
+                    chucVu.setqlChucVu(rs.getString("chuc_vu"));
                     chucVu.setBiXoa(biXoa);
 
                     return chucVu;
@@ -274,9 +269,8 @@ public class ChucVuDAO {
                     chucVu.setqLGiaoDich(rs.getInt("giao_dich"));
                     chucVu.setqLGuiTietKiem(rs.getInt("gui_tiet_kiem"));
                     chucVu.setqLVayVon(rs.getInt("vay_von"));
-                    chucVu.setqLVayTinDung(rs.getInt("vay_tin_dung"));
                     chucVu.setPhanQuyen(rs.getInt("phan_quyen"));
-                    chucVu.setThemChucVu(rs.getInt("them_chuc_vu"));
+                    chucVu.setqlChucVu(rs.getString("chuc_vu"));
                     chucVu.setBiXoa(rs.getInt("bi_xoa"));
 
                     list.add(chucVu);

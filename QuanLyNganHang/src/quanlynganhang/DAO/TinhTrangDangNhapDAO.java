@@ -9,7 +9,8 @@ public class TinhTrangDangNhapDAO {
     public int insert(int maTaiKhoanNV, boolean isLogin) {
         int id = selectByAccountId(maTaiKhoanNV);
         if (id != 0) {
-            System.out.println(loginAccount(id, isLogin) ? "Da dang nhap!" : "Dang nhap chua duoc luu tinh trang!");
+            
+            loginAccount(id, isLogin);
             return id;
         } else {
             String sql = "INSERT INTO tbl_dang_nhap(ma_tk_nhan_vien, tinh_trang_dang_nhap)"

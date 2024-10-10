@@ -121,10 +121,6 @@ public class MainForm extends JLayeredPane {
         panelBody.revalidate();
     }
 
-//    public void setSelectedMenu(int index, int subIndex) {
-//        menu.setSelectedMenu(index, subIndex);
-//    }
-
     public Menu menu;
     private HeaderBar headerBar;
     private JPanel panelBody;

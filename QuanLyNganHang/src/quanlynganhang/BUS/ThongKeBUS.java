@@ -1,7 +1,5 @@
 package quanlynganhang.BUS;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import quanlynganhang.DAO.ThongKeDAO;
 
 public class ThongKeBUS {

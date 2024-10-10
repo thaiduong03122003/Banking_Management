@@ -28,14 +28,14 @@ import quanlynganhang.DTO.TheATMDTO;
 import quanlynganhang.DTO.TrangThaiDTO;
 
 public class TheATMBUS {
-    
+
     private final TheATMDAO theATMDAO = new TheATMDAO();
     private final LoaiTheATMDAO loaiTheATMDAO = new LoaiTheATMDAO();
     private final FormatDate fDate = new FormatDate();
-    
+
     public TheATMBUS() {
     }
-    
+
     public List<TheATMDTO> getDSThe() {
         try {
             return theATMDAO.selectAll();
@@ -68,62 +68,29 @@ public class TheATMBUS {
         }
         return data;
     }
-    
-    
 
     public int addTheATM(TheATMDTO theATM) {
-        try {
-            
-            return theATMDAO.insert(theATM);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return 0;
-        }
+        return theATMDAO.insert(theATM);
     }
 
     public boolean updateTheATM(TheATMDTO theATM) {
-        try {
-            return theATMDAO.update(theATM);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return theATMDAO.update(theATM);
     }
 
     public boolean doiTrangThai(int maThe, int maTrangThai) {
-        try {
-            return theATMDAO.switchStatus(maThe, maTrangThai);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return theATMDAO.switchStatus(maThe, maTrangThai);
     }
-    
+
     public boolean giaHanThe(TheATMDTO theATM) {
-        try {
-            return theATMDAO.giaHanThe(theATM);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return theATMDAO.giaHanThe(theATM);
     }
 
     public TheATMDTO getTheById(int maThe) {
-        try {
-            return theATMDAO.selectById(maThe);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return theATMDAO.selectById(maThe);
     }
-    
+
     public List<TheATMDTO> getTheByMaKH(int maKhachHang) {
-        try {
-            return theATMDAO.selectByMaKH(maKhachHang);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return theATMDAO.selectByMaKH(maKhachHang);
     }
 
     public List<TheATMDTO> locThe(java.util.Date dateFrom, java.util.Date dateTo, int maKhachHang, int maLoaiThe, int maTrangThai) {
@@ -143,23 +110,13 @@ public class TheATMBUS {
     }
 
     public boolean doiMaPIN(TheATMDTO theATM) {
-        try {
-            return theATMDAO.changePIN(theATM);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return theATMDAO.changePIN(theATM);
     }
-    
+
     public List<LoaiTheATMDTO> getDSLoaiTheATM() {
-        try {
-            return loaiTheATMDAO.selectAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return loaiTheATMDAO.selectAll();
     }
-    
+
     public Map<Integer, String> convertListLoaiTheATMToMap() {
         List<LoaiTheATMDTO> list = getDSLoaiTheATM();
         if (list == null) {
@@ -173,11 +130,11 @@ public class TheATMBUS {
 
         return map;
     }
-    
+
     public Integer getIdFromTenLoaiThe(String tenLoaiThe) {
         Map<Integer, String> map = new HashMap<>();
         map = convertListLoaiTheATMToMap();
-        
+
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
             if (entry.getValue().equals(tenLoaiThe)) {
                 return entry.getKey();
@@ -185,14 +142,9 @@ public class TheATMBUS {
         }
         return null;
     }
-    
+
     public List<TheATMDTO> timKiemTheoLoai(String typeName, String inputValue) {
-        try {
-            return theATMDAO.searchByInputType(typeName, inputValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return theATMDAO.searchByInputType(typeName, inputValue);
     }
 
     public void xuatExcel(File file, String userName, List<TheATMDTO> list) throws FileNotFoundException, IOException {
@@ -240,11 +192,11 @@ public class TheATMBUS {
         workbook.close();
         outputStream.close();
     }
-    
+
     public TheATMDTO getTheATMBySoThe(String soThe) {
         return theATMDAO.selectByCardNum(soThe);
     }
-    
+
     public String taoSoTheTuDong() {
         String soThe = theATMDAO.getNewSoThe();
 

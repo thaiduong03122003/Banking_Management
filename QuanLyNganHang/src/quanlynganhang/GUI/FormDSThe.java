@@ -427,6 +427,11 @@ public class FormDSThe extends javax.swing.JPanel {
     }//GEN-LAST:event_btnXuatFileActionPerformed
 
     private void mnuGiaHanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuGiaHanActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         int selectedRow = jTableDSThe.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn thẻ trước khi gia hạn!");
@@ -465,6 +470,11 @@ public class FormDSThe extends javax.swing.JPanel {
     }//GEN-LAST:event_mnuGiaHanActionPerformed
 
     private void mnuDoiMaPINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuDoiMaPINActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         int selectedRow = jTableDSThe.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn thẻ trước khi đổi mã PIN!");
@@ -496,6 +506,11 @@ public class FormDSThe extends javax.swing.JPanel {
     }//GEN-LAST:event_mnuDoiMaPINActionPerformed
 
     private void mnuDoiTrangThaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuDoiTrangThaiActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         int selectedRow = jTableDSThe.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn thẻ trước khi đổi trạng thái!");
@@ -506,7 +521,7 @@ public class FormDSThe extends javax.swing.JPanel {
             if (idObj != null) {
                 int maThe = Integer.parseInt(idObj.toString());
 
-                JDialogDoiTrangThaiThe jDoiTrangThaiThe = new JDialogDoiTrangThaiThe(null, true, maThe);
+                JDialogDoiTrangThaiThe jDoiTrangThaiThe = new JDialogDoiTrangThaiThe(null, true, maThe, quyenXoa);
                 jDoiTrangThaiThe.setDefaultCloseOperation(JDialogDoiTrangThaiThe.DISPOSE_ON_CLOSE);
                 jDoiTrangThaiThe.setVisible(true);
 

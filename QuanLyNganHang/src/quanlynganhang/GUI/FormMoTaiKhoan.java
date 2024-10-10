@@ -1434,6 +1434,10 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
     }//GEN-LAST:event_txtTienKeyPressed
 
     private void txtTienKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienKeyReleased
+        if (txtTien.getText().trim().isEmpty()) {
+            return;
+        }
+        
         onCodeTextChanged();
     }//GEN-LAST:event_txtTienKeyReleased
 

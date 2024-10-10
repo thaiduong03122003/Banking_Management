@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package quanlynganhang.GUI.adminUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
@@ -15,16 +11,11 @@ import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JDialogThemTKNV extends javax.swing.JDialog {
     
     private int maNhanVien;
     private TaiKhoanNVBUS taiKhoanNVBUS;
 
-    /** Creates new form JDialogThemNV */
     public JDialogThemTKNV(java.awt.Frame parent, boolean modal, int maNhanVien) {
         super(parent, modal);
         this.maNhanVien = maNhanVien;
@@ -49,7 +40,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         
         String tenDangNhap = txtTenTK.getText().trim();
         if (!tenDangNhap.isEmpty()) {
-            if (InputValidation.kiemTraTen(tenDangNhap)) {
+            if (InputValidation.kiemTraTenDangNhap(tenDangNhap)) {
                 taiKhoanNV.setTenDangNhap(tenDangNhap);
             } else {
                 error.append("\nTên đăng nhập không hợp lệ!");
@@ -68,7 +59,11 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
         taiKhoanNV.setNgayTaoTK(fDate.getToday());
         taiKhoanNV.setMaNhanVien(maNhanVien);
         if (error.isEmpty()) {
-            return taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV) != 0;
+             if (taiKhoanNVBUS.addTaiKhoanNV(taiKhoanNV) == 0) {
+                 MessageBox.showErrorMessage(null, "Tên tài khoản đã tồn tại!");
+                 return false;
+             }
+             return true;
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -316,8 +311,6 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
     private void btnThemTKNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTKNVActionPerformed
         if (dienThongTin()) {
             MessageBox.showInformationMessage(null, "", "Thêm tài khoản nhân viên thành công!");
-        } else {
-            MessageBox.showErrorMessage(null, "Thêm tài khoản nhân viên thất bại!");
         }
     }//GEN-LAST:event_btnThemTKNVActionPerformed
 
@@ -325,36 +318,7 @@ public class JDialogThemTKNV extends javax.swing.JDialog {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemTKNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemTKNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemTKNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemTKNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                System.out.println("This JDialog just running in FormDSNhanVien and FormDSTaiKkhoanNV");
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

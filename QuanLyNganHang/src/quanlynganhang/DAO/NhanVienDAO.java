@@ -371,7 +371,8 @@ public class NhanVienDAO {
         params.add(biXoa);
 
         if (typeName.equals("name")) {
-            conditionalClause.append(" AND (nv.ho_dem LIKE ? OR nv.ten LIKE ?)");
+            conditionalClause.append(" AND (nv.ho_dem LIKE ? OR nv.ten LIKE ? OR CONCAT(nv.ho_dem, ' ', nv.ten) LIKE ?)");
+            params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
         }

@@ -513,7 +513,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                         MessageBox.showErrorMessage(null, "Mã nhân viên không tồn tại!");
                         return;
                     } else {
-                        formChiTiet = new JFrameChiTietNV(nhanVien, false);
+                        formChiTiet = new JFrameChiTietNV(nhanVien, false, quyenSua, quyenXoa);
                         formChiTiet.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
@@ -566,7 +566,7 @@ public class FormDSNhanVien extends javax.swing.JPanel {
                             }
 
                         } else {
-                            JFrameChiTietNV formSua = new JFrameChiTietNV(nhanVien, true);
+                            JFrameChiTietNV formSua = new JFrameChiTietNV(nhanVien, true, quyenSua, quyenXoa);
                             formSua.setDefaultCloseOperation(JFrameChiTietNV.DISPOSE_ON_CLOSE);
                             formSua.setVisible(true);
 
@@ -733,6 +733,11 @@ public class FormDSNhanVien extends javax.swing.JPanel {
     }//GEN-LAST:event_btnReloadActionPerformed
 
     private void btnThemNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemNVActionPerformed
+        if (quyenThem1 != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         themNhanVien();
     }//GEN-LAST:event_btnThemNVActionPerformed
 

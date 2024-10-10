@@ -9,6 +9,8 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.DiaChiBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.XuLyAnhBUS;
@@ -29,25 +32,31 @@ import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
 public class JFrameChiTietNV extends javax.swing.JFrame {
-
+    
     private DiaChiBUS diaChiBUS;
     private NhanVienBUS nhanVienBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private NhanVienDTO nhanVienDTO;
     private String fileName, newFileName;
-
-    public JFrameChiTietNV(NhanVienDTO nhanVien, boolean isEdit) {
+    private int maNhanVien, biXoa, quyenSua, quyenXoa;
+    
+    
+    public JFrameChiTietNV(NhanVienDTO nhanVien, boolean isEdit, int quyenSua, int quyenXoa) {
         nhanVienBUS = new NhanVienBUS();
         nhanVienDTO = new NhanVienDTO();
         nhanVienDTO = nhanVien;
+        
+        this.quyenSua = quyenSua;
+        this.quyenXoa = quyenXoa;
+        
         newFileName = "";
-
+        
         initComponents();
         diaChiBUS = new DiaChiBUS();
         dienThongTin(nhanVien);
         editInfo(isEdit);
     }
-
+    
     private void editInfo(boolean isEdit) {
         if (isEdit) {
             btnSuaThongTinActionPerformed(null);
@@ -56,7 +65,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             doiTrangThaiNhap(isEdit);
         }
     }
-
+    
     private void doiTrangThaiNhap(boolean isEnabel) {
         txtHoDem.setEnabled(isEnabel);
         txtTen.setEnabled(isEnabel);
@@ -75,16 +84,16 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         btnChonAnh.setEnabled(isEnabel);
         btnCapNhat.setEnabled(isEnabel);
     }
-
+    
     private void loadTinhThanh(String selectedName) {
         int selectedIndex = 0;
         int index = 1;
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListTinhThanhToMap();
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn tỉnh thành-");
-
+        
         for (String tenTinhThanh : map.values()) {
             model.addElement(tenTinhThanh);
             if (tenTinhThanh.equals(selectedName)) {
@@ -92,20 +101,20 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             }
             index++;
         }
-
+        
         cbxTinhThanh.setModel(model);
         cbxTinhThanh.setSelectedIndex(selectedIndex);
     }
-
+    
     private void loadQuanHuyen(int maTinhThanh, String selectedName) {
         int selectedIndex = 0;
         int index = 1;
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListQuanHuyenToMap(maTinhThanh);
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn quận huyện-");
-
+        
         for (String tenQuanHuyen : map.values()) {
             model.addElement(tenQuanHuyen);
             if (tenQuanHuyen.equals(selectedName)) {
@@ -113,20 +122,20 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             }
             index++;
         }
-
+        
         cbxQuanHuyen.setModel(model);
         cbxQuanHuyen.setSelectedIndex(selectedIndex);
     }
-
+    
     private void loadPhuongXa(int maQuanHuyen, String selectedName) {
         int selectedIndex = 0;
         int index = 1;
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListPhuongXaToMap(maQuanHuyen);
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn phường xã-");
-
+        
         for (String tenPhuongXa : map.values()) {
             model.addElement(tenPhuongXa);
             if (tenPhuongXa.equals(selectedName)) {
@@ -134,11 +143,11 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             }
             index++;
         }
-
+        
         cbxPhuongXa.setModel(model);
         cbxPhuongXa.setSelectedIndex(selectedIndex);
     }
-
+    
     private void loadAnh(String tenFileAnh) {
         String imagePath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "quanlynganhang" + File.separator + "image" + File.separator + "data_image" + File.separator + tenFileAnh;
         ImageIcon icon = new ImageIcon(imagePath);
@@ -146,10 +155,17 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         repaint();
         revalidate();
     }
-
+    
     private void dienThongTin(NhanVienDTO nhanVien) {
         FormatDate fDate = new FormatDate();
-
+        
+        if (nhanVien.getBiXoa() == 1) {
+            btnXoa.setEnabled(false);
+        }
+        
+        maNhanVien = nhanVien.getMaNV();
+        biXoa = nhanVien.getBiXoa();
+        
         txtMaNV.setText("" + nhanVien.getMaNV());
         txtHoDem.setText(nhanVien.getHoDem());
         txtTen.setText(nhanVien.getTen());
@@ -159,19 +175,19 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         txtCCCD.setText(nhanVien.getCccd());
         txtMaChucVu.setText("" + nhanVien.getMaChucVu());
         txtTenChucVu.setText(nhanVien.getTenChucVu());
-
+        
         if (nhanVien.getNgaySinh() == null) {
             txtNgaySinh.setText("");
         } else {
             txtNgaySinh.setText(fDate.toString(nhanVien.getNgaySinh()));
         }
-
+        
         if (nhanVien.getNgayVaoLam() == null) {
             txtNgayVaoLam.setText("");
         } else {
             txtNgayVaoLam.setText(fDate.toString(nhanVien.getNgayVaoLam()));
         }
-
+        
         String gioiTinh = nhanVien.getGioiTinh();
         if (gioiTinh.equals("Nam")) {
             rdbNam.setSelected(true);
@@ -180,19 +196,19 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         } else {
             rdbKhac.setSelected(true);
         }
-
+        
         maPhuongXa = nhanVien.getMaPhuongXa();
-
+        
         DiaChiDTO diaChi = new DiaChiDTO();
         diaChi = diaChiBUS.layDiaChiTuIdPhuongXa(maPhuongXa);
-
+        
         maQuanHuyen = diaChi.getMaQuanHuyen();
         maTinhThanh = diaChi.getMaTinhThanh();
-
+        
         loadTinhThanh(diaChi.getTenTinhThanh());
         loadQuanHuyen(maTinhThanh, diaChi.getTenQuanHuyen());
         loadPhuongXa(maQuanHuyen, diaChi.getTenPhuongXa());
-
+        
         fileName = nhanVien.getAnhDaiDien();
         if (fileName != null) {
             loadAnh(fileName);
@@ -200,31 +216,31 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             fileName = "no_image.png";
             loadAnh(fileName);
         }
-
+        
     }
-
+    
     private boolean capNhatNhanVien() throws ParseException {
         StringBuilder error = new StringBuilder();
         FormatDate fDate = new FormatDate();
         error.append("");
-
+        
         NhanVienDTO nhanVien = new NhanVienDTO();
-
+        
         int maNhanVien = Integer.parseInt(txtMaNV.getText());
         nhanVien.setMaNV(maNhanVien);
-
+        
         if (InputValidation.kiemTraTen(txtHoDem.getText())) {
             nhanVien.setHoDem(txtHoDem.getText());
         } else {
             error.append("\nHọ đệm không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraTen(txtTen.getText())) {
             nhanVien.setTen(txtTen.getText());
         } else {
             error.append("\nTên không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraNgay(txtNgaySinh.getText())) {
             if (InputValidation.kiemTratuoi(txtNgaySinh.getText())) {
                 nhanVien.setNgaySinh(fDate.toDate(txtNgaySinh.getText()));
@@ -234,43 +250,43 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         } else {
             error.append("\nNgày sinh không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraCCCD(txtCCCD.getText())) {
             nhanVien.setCccd(txtCCCD.getText());
         } else {
             error.append("\nMã căn cước không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraEmail(txtEmail.getText())) {
             nhanVien.setEmail(txtEmail.getText());
         } else {
             error.append("\nEmail không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraSDT(txtSdt.getText())) {
             nhanVien.setSdt(txtSdt.getText());
         } else {
             error.append("\nSố điện thoại không hợp lệ");
         }
-
+        
         if (!txtSoNha.getText().isEmpty()) {
             nhanVien.setSoNha(txtSoNha.getText());
         } else {
             error.append("\nVui lòng nhập địa chỉ");
         }
-
+        
         if (maTinhThanh == null || maQuanHuyen == null || maPhuongXa == null) {
             error.append("\nVui lòng nhập đầy đủ tỉnh, huyện, xã");
         } else {
             nhanVien.setMaPhuongXa(maPhuongXa);
         }
-
+        
         if (InputValidation.kiemTraNgay(txtNgayVaoLam.getText())) {
             nhanVien.setNgayVaoLam(fDate.toDate(txtNgayVaoLam.getText()));
         } else {
             error.append("\nNgày vào làm không hợp lệ");
         }
-
+        
         if (rdbNam.isSelected()) {
             nhanVien.setGioiTinh("Nam");
         } else if (rdbNu.isSelected()) {
@@ -278,7 +294,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         } else {
             nhanVien.setGioiTinh("Khác");
         }
-
+        
         if (newFileName.isEmpty()) {
             if (fileName == null) {
                 nhanVien.setAnhDaiDien("no_image.png");
@@ -289,7 +305,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         } else {
             nhanVien.setAnhDaiDien(newFileName);
         }
-
+        
         if (error.isEmpty()) {
             if (nhanVienBUS.updateNhanVien(nhanVien, 0)) {
                 nhanVienDTO = nhanVien;
@@ -354,6 +370,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         btnChonAnh = new javax.swing.JButton();
         btnSuaThongTin = new javax.swing.JButton();
         btnCapNhat = new javax.swing.JButton();
+        btnXoa = new javax.swing.JButton();
         btnPhanQuyen = new javax.swing.JButton();
         ptbAnh = new quanlynganhang.GUI.model.picturebox.PictureBox();
         jPanel14 = new javax.swing.JPanel();
@@ -768,7 +785,21 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             }
         });
 
+        btnXoa.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnXoa.setForeground(new java.awt.Color(255, 0, 51));
+        btnXoa.setText("Xóa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
+
         btnPhanQuyen.setText("Phân quyền");
+        btnPhanQuyen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPhanQuyenActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -778,12 +809,14 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnChonAnh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(0, 48, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnSuaThongTin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnCapNhat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPhanQuyen, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnPhanQuyen, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnSuaThongTin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnCapNhat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnXoa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -793,11 +826,13 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(btnChonAnh)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnPhanQuyen)
+                .addGap(18, 18, 18)
                 .addComponent(btnSuaThongTin)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCapNhat)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnPhanQuyen)
+                .addComponent(btnXoa)
                 .addGap(18, 18, 18))
         );
 
@@ -923,14 +958,14 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         if (tenTinhThanh.equals("-Chọn tỉnh thành-")) {
             cbxQuanHuyen.setSelectedIndex(0);
             cbxPhuongXa.setSelectedIndex(0);
-
+            
             cbxQuanHuyen.setEnabled(false);
             cbxPhuongXa.setEnabled(false);
             txtSoNha.setEnabled(false);
             maTinhThanh = null;
         } else {
             maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
-
+            
             if (maTinhThanh != null) {
                 loadQuanHuyen(maTinhThanh.intValue(), "");
                 cbxQuanHuyen.setEnabled(true);
@@ -944,17 +979,17 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         if (maTinhThanh == null) {
             return;
         }
-
+        
         String tenQuanHuyen = (String) cbxQuanHuyen.getSelectedItem();
         if (tenQuanHuyen.equals("-Chọn quận huyện-")) {
             cbxPhuongXa.setSelectedIndex(0);
-
+            
             cbxPhuongXa.setEnabled(false);
             txtSoNha.setEnabled(false);
             maQuanHuyen = null;
         } else {
             maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
-
+            
             if (maQuanHuyen != null) {
                 loadPhuongXa(maQuanHuyen.intValue(), "");
                 cbxPhuongXa.setEnabled(true);
@@ -968,14 +1003,14 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         if (maQuanHuyen == null) {
             return;
         }
-
+        
         String tenPhuongXa = (String) cbxPhuongXa.getSelectedItem();
         if (tenPhuongXa.equals("-Chọn phường xã-")) {
             txtSoNha.setEnabled(false);
             maPhuongXa = null;
         } else {
             maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
-
+            
             if (maPhuongXa != null) {
                 txtSoNha.setEnabled(true);
             } else {
@@ -989,10 +1024,15 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
     }//GEN-LAST:event_cbxTinhThanhActionPerformed
 
     private void btnSuaThongTinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaThongTinActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
             doiTrangThaiNhap(true);
             btnSuaThongTin.setText("Hủy sửa");
-
+            
         } else {
             dienThongTin(nhanVienDTO);
             doiTrangThaiNhap(false);
@@ -1010,7 +1050,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn cập nhật thông tin?") == JOptionPane.NO_OPTION) {
             return;
         }
-
+        
         try {
             if (capNhatNhanVien()) {
                 MessageBox.showInformationMessage(null, "", "Cập nhật thông tin nhân viên thành công!");
@@ -1033,7 +1073,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-
+                
                 newFileName = XuLyAnhBUS.saveImage(selectedFile);
                 loadAnh(newFileName);
             } else {
@@ -1041,7 +1081,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
             }
             
             btnChonAnh.setText("Xóa ảnh");
-      
+            
         } else {
             if (XuLyAnhBUS.deleteImage(newFileName)) {
                 loadAnh(fileName);
@@ -1052,20 +1092,54 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnChonAnhActionPerformed
 
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        if (quyenXoa != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa nhân viên này?") == JOptionPane.NO_OPTION) {
+            return;
+        }
+        
+        boolean isDelete = nhanVienBUS.deleteNhanVien(maNhanVien);
+        if (isDelete == false) {
+            MessageBox.showErrorMessage(null, "Xóa nhân viên thất bại!");
+            return;
+        } else {
+            MessageBox.showInformationMessage(null, "", "Xóa nhân viên thành công");
+            btnXoa.setEnabled(false);
+        }
+    }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnPhanQuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhanQuyenActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+
+        JDialogPhanQuyen phanQuyen = new JDialogPhanQuyen(null, true, Integer.parseInt(txtMaNV.getText().trim()), txtTenChucVu.getText().trim());
+                            phanQuyen.setDefaultCloseOperation(JDialogPhanQuyen.DISPOSE_ON_CLOSE);
+                            phanQuyen.setVisible(true);
+
+                            phanQuyen.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    NhanVienDTO nhanVienInfo = nhanVienBUS.getNhanVienById(maNhanVien, biXoa);
+                                    dienThongTin(nhanVienInfo);
+                                    
+                                    txtSoNha.setEnabled(false);
+                                    cbxPhuongXa.setEnabled(false);
+                                    cbxQuanHuyen.setEnabled(false);
+                                }
+                            });
+    }//GEN-LAST:event_btnPhanQuyenActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                System.out.println("The form will be executed if there are arguments passed in!");
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1075,6 +1149,7 @@ public class JFrameChiTietNV extends javax.swing.JFrame {
     private javax.swing.ButtonGroup btnGroupNoXau;
     private javax.swing.JButton btnPhanQuyen;
     private javax.swing.JButton btnSuaThongTin;
+    private javax.swing.JButton btnXoa;
     private javax.swing.JComboBox<String> cbxPhuongXa;
     private javax.swing.JComboBox<String> cbxQuanHuyen;
     private javax.swing.JComboBox<String> cbxTinhThanh;

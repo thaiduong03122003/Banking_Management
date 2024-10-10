@@ -74,10 +74,7 @@ public class JFrameWelcome extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatRobotoFont.install();
-        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-        FlatMacLightLaf.setup();
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

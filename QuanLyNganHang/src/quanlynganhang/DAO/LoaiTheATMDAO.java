@@ -9,7 +9,8 @@ import quanlynganhang.DTO.LoaiTheATMDTO;
 import quanlynganhang.DTO.TrangThaiDTO;
 
 public class LoaiTheATMDAO {
-    public List<LoaiTheATMDTO> selectAll() throws Exception {
+
+    public List<LoaiTheATMDTO> selectAll() {
         String sql = "SELECT * FROM tbl_loai_the_atm";
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -26,10 +27,11 @@ public class LoaiTheATMDAO {
                     list.add(loaiThe);
                 }
                 return list;
-            } catch(Exception e) {
-                e.printStackTrace();
-                return null;
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 }

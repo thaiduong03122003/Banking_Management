@@ -56,7 +56,7 @@ public class GiaoDichBUS {
         }
     }
 
-    public Object[][] doiSangObjectMaxGiaoDich() throws Exception {
+    public Object[][] doiSangObjectMaxGiaoDich() {
         List<GiaoDichDTO> list = new ArrayList<>();
 
         list = giaoDichDAO.getMaxGiaoDich();
@@ -67,7 +67,7 @@ public class GiaoDichBUS {
             data[rowIndex][0] = giaoDich.getMaGiaoDich();
             data[rowIndex][1] = giaoDich.getSoTaiKhoan();
             data[rowIndex][2] = giaoDich.getTenKhachHang();
-            data[rowIndex][3] = giaoDich.getSoTien();
+            data[rowIndex][3] = FormatNumber.convertNumToVND(new BigInteger(giaoDich.getSoTien())) + " VND";
             data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
             data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
             data[rowIndex][6] = giaoDich.getTenNhanVien();
@@ -99,7 +99,7 @@ public class GiaoDichBUS {
                 data[rowIndex][2] = giaoDich.getTenKhachHang();
             }
 
-            data[rowIndex][3] = giaoDich.getSoTien();
+            data[rowIndex][3] = FormatNumber.convertNumToVND(new BigInteger(giaoDich.getSoTien())) + " VND";
             data[rowIndex][4] = fDate.toString(giaoDich.getNgayGiaoDich());
             data[rowIndex][5] = giaoDich.getTenLoaiGiaoDich();
             data[rowIndex][6] = giaoDich.getTenNhanVien();

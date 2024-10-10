@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI.model.slider;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -12,12 +8,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import quanlynganhang.GUI.MainForm;
 
-/**
- *
- * @author THAI
- */
 public class Slide1 extends javax.swing.JPanel {
 
     /** Creates new form Slide1 */

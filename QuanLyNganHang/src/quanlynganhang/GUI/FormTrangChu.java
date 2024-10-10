@@ -9,16 +9,15 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import quanlynganhang.BUS.CalendarBUS;
 import quanlynganhang.BUS.WeatherBUS;
-import static quanlynganhang.BUS.WeatherBUS.getCityLocation;
 import quanlynganhang.DTO.CalendarDTO;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.DTO.WeatherDTO;
-import quanlynganhang.GUI.model.message.MessageBox;
 import quanlynganhang.GUI.model.slider.Slide1;
 import quanlynganhang.GUI.model.slider.Slide2;
 import quanlynganhang.GUI.model.slider.Slide3;
-import quanlynganhang.GUI.model.slider.Slideshow;
+import quanlynganhang.GUI.model.slider.Slide4;
+import quanlynganhang.GUI.model.slider.Slide5;
 
 public class FormTrangChu extends javax.swing.JPanel {
 
@@ -64,7 +63,7 @@ public class FormTrangChu extends javax.swing.JPanel {
         btnSearchCity.setEnabled(false);
 
         txtWeatherSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập thành phố muốn xem thời tiết...");
-        slideshow1.initSlideshow(new Slide1(), new Slide2(), new Slide3());
+        slideshow1.initSlideshow(new Slide1(), new Slide2(), new Slide3(), new Slide4(), new Slide5());
 
         weatherStatCLayout = (CardLayout) (jPWeatherInfo.getLayout());
         weatherStatCLayout.show(jPWeatherInfo, "jPInitWeather");

@@ -1,23 +1,22 @@
 package quanlynganhang.GUI.adminUI;
 
-import quanlynganhang.GUI.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormThemChucVu extends javax.swing.JPanel {
 
     private JFrameMoTaCotChucVu chuThich;
     private ChucVuBUS chucVuBUS;
-    private int biXoa;
+    private int biXoa, quyenThem, quyenSua, quyenXoa;
     private boolean isSearched;
 
     public FormThemChucVu(TaiKhoanNVDTO taiKhoanNV, ChucVuDTO chucVu) {
@@ -25,11 +24,19 @@ public class FormThemChucVu extends javax.swing.JPanel {
         initComponents();
         initCustomUI();
         biXoa = 0;
+        
+        thietLapChucVu(chucVu);
         loadDSChucVu(biXoa, false, null);
     }
 
     private void initCustomUI() {
         txtSearchQuyen.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nhập tên chức vụ cần tìm...");
+    }
+    
+    private void thietLapChucVu(ChucVuDTO chucVu) {
+        quyenThem = ChiaQuyenBUS.splitQuyen(chucVu.getqlChucVu(), 2);
+        quyenSua = ChiaQuyenBUS.splitQuyen(chucVu.getqlChucVu(), 3);
+        quyenXoa = ChiaQuyenBUS.splitQuyen(chucVu.getqlChucVu(), 4);
     }
 
     public void loadDSChucVu(int biXoa, boolean isSearched, List<ChucVuDTO> listChucVu) {
@@ -39,7 +46,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
 
         Object[][] dataModel = isSearched ? chucVuBUS.doiSangObjectChucVu(biXoa, isSearched, listChucVu) : chucVuBUS.doiSangObjectChucVu(biXoa, isSearched, null);
 
-        String[] title = {"Mã chức vụ", "Tên chức vụ", "Mô tả", "Admin", "Thong ke", "QLKH", "QLNV", "QLTKKH", "QLTKNV", "QLT", "QLGD", "QLGTK", "QLVV", "QLVTD"};
+        String[] title = {"Mã chức vụ", "Tên chức vụ", "Mô tả", "Admin", "Thong ke", "QLKH", "QLNV", "QLTKKH", "QLTKNV", "QLT", "QLCV", "QLGD", "QLGTK", "QLVV",};
         model.setDataVector(dataModel, title);
 
         jTableDSChucVu.setDefaultEditor(Object.class, null);
@@ -84,7 +91,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
         btnSearchData = new javax.swing.JButton();
         btnReload = new javax.swing.JButton();
         btnInfoTable = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnThemChucVu = new javax.swing.JButton();
         btnDoiBang = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -196,12 +203,12 @@ public class FormThemChucVu extends javax.swing.JPanel {
             }
         });
 
-        jButton1.setIcon(new FlatSVGIcon("quanlynganhang/icon/quyen_label.svg")
+        btnThemChucVu.setIcon(new FlatSVGIcon("quanlynganhang/icon/quyen_label.svg")
         );
-        jButton1.setText("Thêm chức vụ");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnThemChucVu.setText("Thêm chức vụ");
+        btnThemChucVu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnThemChucVuActionPerformed(evt);
             }
         });
 
@@ -228,7 +235,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(btnDoiBang, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnThemChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -240,7 +247,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
                     .addComponent(btnSearchData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnReload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnInfoTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnThemChucVu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnDoiBang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -291,13 +298,18 @@ public class FormThemChucVu extends javax.swing.JPanel {
         add(jPanel3, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnThemChucVuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemChucVuActionPerformed
+        if (quyenThem != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         JDialogThemChucVu themChucVu = new JDialogThemChucVu(null, true);
         themChucVu.setDefaultCloseOperation(JDialogThemChucVu.DISPOSE_ON_CLOSE);
         themChucVu.setVisible(true);
         biXoa = 1;
         btnDoiBangActionPerformed(null);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnThemChucVuActionPerformed
 
     private void btnInfoTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoTableActionPerformed
         if (chuThich == null) {
@@ -330,6 +342,11 @@ public class FormThemChucVu extends javax.swing.JPanel {
     }//GEN-LAST:event_btnDoiBangActionPerformed
 
     private void mnuSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSuaActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         int selectedRow = jTableDSChucVu.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn chức vụ trước khi sửa!");
@@ -361,6 +378,11 @@ public class FormThemChucVu extends javax.swing.JPanel {
     }//GEN-LAST:event_mnuSuaActionPerformed
 
     private void mnuXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuXoaActionPerformed
+        if (quyenXoa != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         int selectedRow = jTableDSChucVu.getSelectedRow();
         if (selectedRow == -1) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn chức vụ trước khi xóa!");
@@ -415,7 +437,7 @@ public class FormThemChucVu extends javax.swing.JPanel {
     private javax.swing.JButton btnInfoTable;
     private javax.swing.JButton btnReload;
     private javax.swing.JButton btnSearchData;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnThemChucVu;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;

@@ -1,32 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI.adminUI;
 
 import quanlynganhang.GUI.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.event.ItemEvent;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import quanlynganhang.BUS.ChucVuBUS;
 import quanlynganhang.BUS.NhanVienBUS;
-import quanlynganhang.BUS.TaiKhoanNVBUS;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormPhanQuyen extends javax.swing.JPanel {
 
     private ChucVuBUS chucVuBUS;
@@ -761,14 +751,16 @@ public class FormPhanQuyen extends javax.swing.JPanel {
     }//GEN-LAST:event_btnResetDSActionPerformed
 
     private void cbxChucVuItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxChucVuItemStateChanged
-        String tenChucVu = (String) cbxChucVu.getSelectedItem();
-        if (tenChucVu.equals("Chọn chức vụ")) {
-            maChucVu = 0;
-        } else {
-            maChucVu = chucVuBUS.getIdFromTenChucVu(tenChucVu);
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            String tenChucVu = (String) cbxChucVu.getSelectedItem();
+            if (tenChucVu.equals("Chọn chức vụ")) {
+                maChucVu = 0;
+            } else {
+                maChucVu = chucVuBUS.getIdFromTenChucVu(tenChucVu);
 
-            if (maChucVu == 0) {
-                MessageBox.showErrorMessage(null, "Lấy id của chức vụ thất bại!");
+                if (maChucVu == 0) {
+                    MessageBox.showErrorMessage(null, "Lấy id của chức vụ thất bại!");
+                }
             }
         }
     }//GEN-LAST:event_cbxChucVuItemStateChanged
@@ -783,7 +775,7 @@ public class FormPhanQuyen extends javax.swing.JPanel {
             MessageBox.showErrorMessage(null, "Vui lòng chọn nhân viên!");
             return;
         }
-        
+
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {
             int maNV = Integer.parseInt(lbMaNV.getText());
             if (nhanVienBUS.doiChucVu(maNV, maChucVu)) {

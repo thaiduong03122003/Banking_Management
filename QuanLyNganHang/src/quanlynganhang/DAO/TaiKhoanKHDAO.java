@@ -33,8 +33,8 @@ public class TaiKhoanKHDAO {
                 pstmt.setInt(6, 1);
                 pstmt.setInt(7, taiKhoanKH.getMaLoaiTaiKhoan());
                 pstmt.setInt(8, taiKhoanKH.getMaKhachHang());
-
-                if (taiKhoanKH.getMaLoaiTaiKhoan() == 3) {
+                
+                if (taiKhoanKH.getMaLoaiTaiKhoan() == 3 || taiKhoanKH.getMaLoaiTaiKhoan() == 4) {
                     pstmt.setInt(9, 6);
                 } else {
                     pstmt.setInt(9, 7);
@@ -99,53 +99,22 @@ public class TaiKhoanKHDAO {
         return false;
     }
 
-    public List<TaiKhoanKHDTO> selectAll() {
-        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+    public List<TaiKhoanKHDTO> selectAll(int maLoaiTaiKhoan) {
+        String baseSql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
             + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
             + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
             + " WHERE ma_ngan_hang = ?";
 
+        String sql = (maLoaiTaiKhoan != 0) ? baseSql + " AND tkkh.ma_loai_tai_khoan = ?" : baseSql;
+
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
             pstmt.setInt(1, 1);
 
-            List<TaiKhoanKHDTO> list = new ArrayList<>();
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
-                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
-                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
-                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
-                    taiKhoanKH.setSoDu(rs.getString("so_du"));
-                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
-                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
-                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
-                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
-                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
-
-                    list.add(taiKhoanKH);
-                }
-                return list;
+            if (maLoaiTaiKhoan != 0) {
+                pstmt.setInt(2, maLoaiTaiKhoan);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<TaiKhoanKHDTO> selectAllIncludeDeleted() {
-        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
-            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
-            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
-            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
-            + " WHERE ma_ngan_hang = ?";
-
-        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-
-            pstmt.setInt(1, 1);
 
             List<TaiKhoanKHDTO> list = new ArrayList<>();
 
@@ -222,7 +191,6 @@ public class TaiKhoanKHDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
                     String sotaiKhoan = (rs.getString("so_tai_khoan"));
 
                     return sotaiKhoan;
@@ -268,43 +236,6 @@ public class TaiKhoanKHDAO {
                 }
             }
             return list;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<TaiKhoanKHDTO> selectTKVay() {
-        String sql = "SELECT tkkh.*, kh.ho_dem, kh.ten, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
-            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
-            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
-            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
-            + " WHERE tkkh.ma_loai_tai_khoan = ?";
-
-        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-
-            pstmt.setInt(1, 4);
-
-            List<TaiKhoanKHDTO> list = new ArrayList<>();
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
-                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
-                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
-                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
-                    taiKhoanKH.setSoDu(rs.getString("so_du"));
-                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
-                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
-                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
-                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
-                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
-                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
-
-                    list.add(taiKhoanKH);
-                }
-                return list;
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -425,19 +356,21 @@ public class TaiKhoanKHDAO {
         return null;
     }
 
-    public List<TaiKhoanKHDTO> searchByInputType(String typeName, String inputValue) {
+    public List<TaiKhoanKHDTO> searchVVByInputType(String typeName, String inputValue) {
         String sql = "SELECT tkkh.*, kh.*, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
             + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
             + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
-            + " WHERE tkkh.ma_tk_khach_hang != ?";
+            + " WHERE tkkh.ma_tk_khach_hang != ? AND tkkh.ma_loai_tai_khoan = ?";
 
         StringBuilder conditionalClause = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(0);
+        params.add(4);
 
         if (typeName.equals("name")) {
-            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ? OR tkkh.ten_tai_khoan LIKE ?)");
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ? OR CONCAT(kh.ho_dem, ' ', kh.ten) LIKE ? OR tkkh.ten_tai_khoan LIKE ?)");
+            params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
@@ -452,7 +385,65 @@ public class TaiKhoanKHDAO {
             sql += conditionalClause.toString();
         }
 
-        System.out.println("Cau SQL: " + sql);
+        try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
+            for (int i = 1; i <= params.size(); i++) {
+                pstmt.setObject(i, params.get(i - 1));
+            }
+            List<TaiKhoanKHDTO> list = new ArrayList<>();
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
+                    taiKhoanKH.setMaTKKH(rs.getInt("ma_tk_khach_hang"));
+                    taiKhoanKH.setTenTaiKhoan(rs.getString("ten_tai_khoan"));
+                    taiKhoanKH.setMaLoaiTaiKhoan(rs.getInt("tkkh.ma_loai_tai_khoan"));
+                    taiKhoanKH.setTenLoaiTaiKhoan(rs.getString("ltk.ten_loai_tai_khoan"));
+                    taiKhoanKH.setMaKhachHang(rs.getInt("ma_khach_hang"));
+                    taiKhoanKH.setTenKhachHang(rs.getString("kh.ho_dem") + " " + rs.getString("kh.ten"));
+                    taiKhoanKH.setSoTaiKhoan(rs.getString("so_tai_khoan"));
+                    taiKhoanKH.setNgayTao(rs.getDate("ngay_tao_tk"));
+                    taiKhoanKH.setMaTrangThai(rs.getInt("ma_trang_thai"));
+                    taiKhoanKH.setTenTrangThai(rs.getString("tt.ten_trang_thai"));
+                    taiKhoanKH.setSoDu(rs.getString("so_du"));
+
+                    list.add(taiKhoanKH);
+                }
+
+                return list;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<TaiKhoanKHDTO> searchByInputType(String typeName, String inputValue) {
+        String sql = "SELECT tkkh.*, kh.*, tt.ten_trang_thai, ltk.ten_loai_tai_khoan FROM tbl_tai_khoan_khach_hang tkkh"
+            + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
+            + " LEFT JOIN tbl_loai_tai_khoan ltk ON tkkh.ma_loai_tai_khoan = ltk.ma_loai_tai_khoan"
+            + " LEFT JOIN tbl_trang_thai tt ON tkkh.ma_trang_thai = tt.ma_trang_thai"
+            + " WHERE tkkh.ma_tk_khach_hang != ?";
+
+        StringBuilder conditionalClause = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(0);
+        
+        if (typeName.equals("name")) {
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ? OR CONCAT(kh.ho_dem, ' ', kh.ten) LIKE ? OR tkkh.ten_tai_khoan LIKE ?)");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (typeName.equals("accountNum")) {
+            conditionalClause.append(" AND tkkh.so_tai_khoan LIKE ?");
+            params.add("%" + inputValue + "%");
+        }
+
+        if (conditionalClause.length() > 0) {
+            sql += conditionalClause.toString();
+        }
+
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql)) {
             for (int i = 1; i <= params.size(); i++) {
                 pstmt.setObject(i, params.get(i - 1));

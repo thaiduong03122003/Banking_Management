@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import quanlynganhang.GUI.adminUI.*;
@@ -14,6 +10,7 @@ import java.text.ParseException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.validation.FormatDate;
@@ -31,11 +28,16 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     private int maTaiKhoanKH;
     private TaiKhoanKHDTO taiKhoanKH;
     private JDialogDoiMatKhauKH capLaiMatKhau;
+    private int quyenSua, quyenXoa;
 
-    public JFrameChiTietTKKH(int maTaiKhoanKH, boolean isEdit) {
+    public JFrameChiTietTKKH(int maTaiKhoanKH, boolean isEdit, int quyenSua, int quyenXoa) {
         khachHangBUS = new KhachHangBUS();
         taiKhoanKHBUS = new TaiKhoanKHBUS();
+        
         this.maTaiKhoanKH = maTaiKhoanKH;
+        this.quyenSua = quyenSua;
+        this.quyenXoa = quyenXoa;
+        
         taiKhoanKH = new TaiKhoanKHDTO();
 
         initComponents();
@@ -130,7 +132,7 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
 
     }
 
-    private boolean capNhatTaiKhoanKhachHang() throws ParseException {
+    private boolean capNhatTaiKhoanKhachHang() {
         StringBuilder error = new StringBuilder();
         FormatDate fDate = new FormatDate();
         error.append("");
@@ -160,9 +162,9 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
                 this.taiKhoanKH = taiKhoanKH;
                 return true;
             } else {
+                MessageBox.showErrorMessage(null, "Số tài khoản này đã tồn tại trong hệ thống! Vui lòng chọn số tài khoản khác");
                 return false;
             }
-
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -994,6 +996,11 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCCCDActionPerformed
 
     private void btnSuaThongTinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaThongTinActionPerformed
+        if (quyenSua != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         if (btnSuaThongTin.getText().equals("Sửa thông tin")) {
             if (!lbGhiChu.getText().isEmpty()) {
                 MessageBox.showErrorMessage(null, "Không thể sửa thông tin tài khoản của khách hàng đã bị xóa!");
@@ -1011,16 +1018,10 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
 
     private void btnCapNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCapNhatActionPerformed
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn cập nhật thông tin?") == JOptionPane.YES_OPTION) {
-            try {
                 if (capNhatTaiKhoanKhachHang()) {
                     MessageBox.showInformationMessage(null, "", "Cập nhật thông tin tài khoản khách hàng thành công!");
                     btnSuaThongTinActionPerformed(null);
-                } else {
-                    MessageBox.showErrorMessage(null, "Cập nhật thông tin tài khoản khách hàng thất bại!");
                 }
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
         } else {
             return;
         }
@@ -1045,7 +1046,7 @@ public class JFrameChiTietTKKH extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTrangThaiTKtxtNgayVaoLamActionPerformed
 
     private void btnDoiTrangThaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiTrangThaiActionPerformed
-        JDiaLogDoiTrangThai doiTrangThai = new JDiaLogDoiTrangThai(null, true, "Mã tài khoản", "Account and Card", taiKhoanKH.getMaTKKH(), taiKhoanKH.getTenTrangThai(), "TKKH");
+        JDiaLogDoiTrangThai doiTrangThai = new JDiaLogDoiTrangThai(null, true, "Mã tài khoản", "Account and Card", taiKhoanKH.getMaTKKH(), taiKhoanKH.getTenTrangThai(), "TKKH", quyenXoa);
         doiTrangThai.setResizable(false);
         doiTrangThai.setDefaultCloseOperation(JDiaLogDoiTrangThai.DISPOSE_ON_CLOSE);
         doiTrangThai.setVisible(true);

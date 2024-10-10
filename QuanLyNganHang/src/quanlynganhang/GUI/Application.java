@@ -65,7 +65,6 @@ public class Application extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 
-        System.out.println("Nothing!");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

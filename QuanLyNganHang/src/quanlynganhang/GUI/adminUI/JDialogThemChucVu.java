@@ -48,14 +48,29 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxGiaoDich.setSelected(false);
             chxGuiTietKiem.setSelected(false);
             chxVayVon.setSelected(false);
-            chxVayTinDung.setSelected(false);
             jPPhanQuyen.setVisible(true);
             jPChucVu.setVisible(true);
 
+            jPKhachHang.setVisible(false);
+            jPTKKhachHang.setVisible(false);
+            jPNhanVien.setVisible(false);
+            jPTKNhanVien.setVisible(false);
+            jPThe.setVisible(false);
+            jPQLChucVu.setVisible(false);
+            
+            chxThongKe.setSelected(false);
+            chxKhachHang.setSelected(false);
+            chxTKKhachHang.setSelected(false);
+            chxNhanVien.setSelected(false);
+            chxTKNhanVien.setSelected(false);
+            chxThe.setSelected(false);
+            chxQLChucVu.setSelected(false);
+            
             chxNhanVien.setEnabled(true);
             chxTKNhanVien.setEnabled(true);
 
             chxKHThem.setSelected(false);
+            chxKHThem.setEnabled(false);
             chxKHSua.setSelected(false);
             chxKHXoa.setSelected(false);
 
@@ -64,6 +79,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxNVXoa.setSelected(false);
 
             chxTKKHThem.setSelected(false);
+            chxTKKHThem.setEnabled(false);
             chxTKKHSua.setSelected(false);
             chxTKKHXoa.setSelected(false);
 
@@ -72,6 +88,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxTKNVXoa.setSelected(false);
 
             chxTheThem.setSelected(false);
+            chxTheThem.setEnabled(false);
             chxTheSua.setSelected(false);
             chxTheXoa.setSelected(false);
 
@@ -80,19 +97,38 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxKHXoa.setEnabled(false);
 
             chxTKKHThem.setEnabled(false);
-            chxTKKHSua.setEnabled(false);
-            chxTKKHXoa.setEnabled(false);
+            chxTKKHSua.setEnabled(true);
+            chxTKKHXoa.setEnabled(true);
 
             chxTheThem.setEnabled(false);
-            chxTheSua.setEnabled(false);
-            chxTheXoa.setEnabled(false);
+            chxTheSua.setEnabled(true);
+            chxTheXoa.setEnabled(true);
+            
+            chxChucVuThem.setEnabled(true);
+            chxChucVuSua.setEnabled(true);
+            chxChucVuXoa.setEnabled(true);
 
         } else {
             chxPhanQuyen.setSelected(false);
-            chxThemChucVu.setSelected(false);
+            chxQLChucVu.setSelected(false);
             jPChoNhanVien.setVisible(true);
             jPPhanQuyen.setVisible(false);
             jPChucVu.setVisible(false);
+            
+            jPKhachHang.setVisible(false);
+            jPTKKhachHang.setVisible(false);
+            jPNhanVien.setVisible(false);
+            jPTKNhanVien.setVisible(false);
+            jPThe.setVisible(false);
+            jPQLChucVu.setVisible(false);
+            
+            chxThongKe.setSelected(false);
+            chxKhachHang.setSelected(false);
+            chxTKKhachHang.setSelected(false);
+            chxNhanVien.setSelected(false);
+            chxTKNhanVien.setSelected(false);
+            chxThe.setSelected(false);
+            chxQLChucVu.setSelected(false);
 
             chxNVThem.setSelected(false);
             chxNVSua.setSelected(false);
@@ -119,6 +155,10 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             chxTheThem.setEnabled(true);
             chxTheSua.setEnabled(true);
             chxTheXoa.setEnabled(true);
+            
+            chxChucVuThem.setEnabled(false);
+            chxChucVuSua.setEnabled(false);
+            chxChucVuXoa.setEnabled(false);
         }
     }
 
@@ -151,16 +191,15 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         chucVu.setqLGiaoDich(chxGiaoDich.isSelected() ? 1 : 0);
         chucVu.setqLGuiTietKiem(chxGuiTietKiem.isSelected() ? 1 : 0);
         chucVu.setqLVayVon(chxVayVon.isSelected() ? 1 : 0);
-        chucVu.setqLVayTinDung(chxVayTinDung.isSelected() ? 1 : 0);
         chucVu.setPhanQuyen(chxPhanQuyen.isSelected() ? 1 : 0);
-        chucVu.setThemChucVu(chxThemChucVu.isSelected() ? 1 : 0);
 
         chucVu.setqLKhachHang(layQuyenCheckBox(chxKhachHang, chxKHThem, chxKHSua, chxKHXoa));
         chucVu.setqLNhanVien(layQuyenCheckBox(chxNhanVien, chxNVThem, chxNVSua, chxNVXoa));
         chucVu.setqLTKKhachHang(layQuyenCheckBox(chxTKKhachHang, chxTKKHThem, chxTKKHSua, chxTKKHXoa));
         chucVu.setqLTKNhanVien(layQuyenCheckBox(chxTKNhanVien, chxTKNVThem, chxTKNVSua, chxTKNVXoa));
         chucVu.setqLThe(layQuyenCheckBox(chxThe, chxTheThem, chxTheSua, chxTheXoa));
-
+        chucVu.setqlChucVu(layQuyenCheckBox(chxQLChucVu, chxChucVuThem, chxChucVuSua, chxChucVuXoa));
+        
         if (!isUpdate) {
             return chucVuBUS.addChucVu(chucVu, 0) != null ? true : false;
         } else {
@@ -237,23 +276,11 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         } else {
             chxVayVon.setSelected(false);
         }
-
-        if (chucVu.getqLVayTinDung() == 1) {
-            chxVayTinDung.setSelected(true);
-        } else {
-            chxVayTinDung.setSelected(false);
-        }
         
         if (chucVu.getPhanQuyen()== 1) {
             chxPhanQuyen.setSelected(true);
         } else {
             chxPhanQuyen.setSelected(false);
-        }
-        
-        if (chucVu.getThemChucVu()== 1) {
-            chxThemChucVu.setSelected(true);
-        } else {
-            chxThemChucVu.setSelected(false);
         }
 
         convertDataToCheckbox(chucVu.getqLKhachHang(), chxKhachHang, chxKHXem, chxKHThem, chxKHSua, chxKHXoa, jPKhachHang);
@@ -261,6 +288,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         convertDataToCheckbox(chucVu.getqLTKKhachHang(), chxTKKhachHang, chxTKKHXem, chxTKKHThem, chxTKKHSua, chxTKKHXoa, jPTKKhachHang);
         convertDataToCheckbox(chucVu.getqLTKNhanVien(), chxTKNhanVien, chxTKNVXem, chxTKNVThem, chxTKNVSua, chxTKNVXoa, jPTKNhanVien);
         convertDataToCheckbox(chucVu.getqLThe(), chxThe, chxTheXem, chxTheThem, chxTheSua, chxTheXoa, jPThe);
+        convertDataToCheckbox(chucVu.getqlChucVu(), chxQLChucVu, chxChucVuXem, chxChucVuThem, chxChucVuSua, chxChucVuXoa, jPQLChucVu);
 
     }
 
@@ -342,12 +370,16 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         jPPhanQuyen = new javax.swing.JPanel();
         chxPhanQuyen = new javax.swing.JCheckBox();
         jPChucVu = new javax.swing.JPanel();
-        chxThemChucVu = new javax.swing.JCheckBox();
+        chxQLChucVu = new javax.swing.JCheckBox();
         jPChoNhanVien = new javax.swing.JPanel();
         chxGiaoDich = new javax.swing.JCheckBox();
         chxVayVon = new javax.swing.JCheckBox();
-        chxVayTinDung = new javax.swing.JCheckBox();
         chxGuiTietKiem = new javax.swing.JCheckBox();
+        jPQLChucVu = new javax.swing.JPanel();
+        chxChucVuXoa = new javax.swing.JCheckBox();
+        chxChucVuSua = new javax.swing.JCheckBox();
+        chxChucVuThem = new javax.swing.JCheckBox();
+        chxChucVuXem = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -1039,7 +1071,12 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        chxThemChucVu.setText("Thêm chức vụ");
+        chxQLChucVu.setText("Chức vụ");
+        chxQLChucVu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxQLChucVuActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPChucVuLayout = new javax.swing.GroupLayout(jPChucVu);
         jPChucVu.setLayout(jPChucVuLayout);
@@ -1047,15 +1084,15 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
             jPChucVuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPChucVuLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(chxThemChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(438, 438, 438))
+                .addComponent(chxQLChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPChucVuLayout.setVerticalGroup(
             jPChucVuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPChucVuLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(chxThemChucVu)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(chxQLChucVu)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         chxGiaoDich.setText("Giao dịch");
@@ -1066,8 +1103,6 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         });
 
         chxVayVon.setText("Vay vốn");
-
-        chxVayTinDung.setText("Vay tín dụng");
 
         chxGuiTietKiem.setText("Gửi tiết kiệm");
 
@@ -1082,9 +1117,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
                 .addComponent(chxGuiTietKiem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chxVayVon, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chxVayTinDung, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6))
+                .addGap(114, 114, 114))
         );
         jPChoNhanVienLayout.setVerticalGroup(
             jPChoNhanVienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1093,8 +1126,63 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
                 .addGroup(jPChoNhanVienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chxGiaoDich)
                     .addComponent(chxVayVon)
-                    .addComponent(chxVayTinDung)
                     .addComponent(chxGuiTietKiem))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        chxChucVuXoa.setText("Xóa");
+        chxChucVuXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxChucVuXoaActionPerformed(evt);
+            }
+        });
+
+        chxChucVuSua.setText("Sửa");
+        chxChucVuSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxChucVuSuaActionPerformed(evt);
+            }
+        });
+
+        chxChucVuThem.setText("Thêm");
+        chxChucVuThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxChucVuThemActionPerformed(evt);
+            }
+        });
+
+        chxChucVuXem.setText("Xem");
+        chxChucVuXem.setEnabled(false);
+        chxChucVuXem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chxChucVuXemActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPQLChucVuLayout = new javax.swing.GroupLayout(jPQLChucVu);
+        jPQLChucVu.setLayout(jPQLChucVuLayout);
+        jPQLChucVuLayout.setHorizontalGroup(
+            jPQLChucVuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPQLChucVuLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(chxChucVuXem, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(chxChucVuThem, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(chxChucVuSua, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(chxChucVuXoa, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPQLChucVuLayout.setVerticalGroup(
+            jPQLChucVuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPQLChucVuLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPQLChucVuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chxChucVuXoa)
+                    .addComponent(chxChucVuSua)
+                    .addComponent(chxChucVuThem)
+                    .addComponent(chxChucVuXem))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1107,7 +1195,10 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
                 .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPPhanQuyen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPChucVu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel26Layout.createSequentialGroup()
+                        .addComponent(jPChucVu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPQLChucVu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel26Layout.createSequentialGroup()
                         .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jPanel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1162,7 +1253,9 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPPhanQuyen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel26Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPQLChucVu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1241,6 +1334,8 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         if (chxThe.isSelected()) {
             jPThe.setVisible(true);
             chxTheXem.setSelected(true);
+            chxTheSua.setEnabled(true);
+            chxTheXoa.setEnabled(true);
         } else {
             chxTheXem.setSelected(false);
             chxTheThem.setSelected(false);
@@ -1270,6 +1365,9 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         if (chxTKNhanVien.isSelected()) {
             jPTKNhanVien.setVisible(true);
             chxTKNVXem.setSelected(true);
+            chxTKNVThem.setEnabled(true);
+            chxTKNVSua.setEnabled(true);
+            chxTKNVXoa.setEnabled(true);
         } else {
             chxTKNVXem.setSelected(false);
             chxTKNVThem.setSelected(false);
@@ -1299,6 +1397,8 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         if (chxTKKhachHang.isSelected()) {
             jPTKKhachHang.setVisible(true);
             chxTKKHXem.setSelected(true);
+            chxTKKHSua.setEnabled(true);
+            chxTKKHXoa.setEnabled(true);
         } else {
             chxTKKHXem.setSelected(false);
             chxTKKHThem.setSelected(false);
@@ -1328,6 +1428,9 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         if (chxNhanVien.isSelected()) {
             jPNhanVien.setVisible(true);
             chxNVXem.setSelected(true);
+            chxNVThem.setEnabled(true);
+            chxNVSua.setEnabled(true);
+            chxNVXoa.setEnabled(true);
         } else {
             chxNVXem.setSelected(false);
             chxNVThem.setSelected(false);
@@ -1341,6 +1444,8 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         if (chxKhachHang.isSelected()) {
             jPKhachHang.setVisible(true);
             chxKHXem.setSelected(true);
+            chxKHSua.setEnabled(true);
+            chxKHXoa.setEnabled(true);
         } else {
             chxKHXem.setSelected(false);
             chxKHThem.setSelected(false);
@@ -1403,52 +1508,53 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnThemChucVuActionPerformed
 
+    private void chxChucVuXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxChucVuXoaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chxChucVuXoaActionPerformed
+
+    private void chxChucVuSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxChucVuSuaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chxChucVuSuaActionPerformed
+
+    private void chxChucVuThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxChucVuThemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chxChucVuThemActionPerformed
+
+    private void chxChucVuXemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxChucVuXemActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chxChucVuXemActionPerformed
+
+    private void chxQLChucVuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chxQLChucVuActionPerformed
+        if (chxQLChucVu.isSelected()) {
+            jPQLChucVu.setVisible(true);
+            chxChucVuXem.setSelected(true);
+            chxChucVuThem.setEnabled(true);
+            chxChucVuSua.setEnabled(true);
+            chxChucVuXoa.setEnabled(true);
+        } else {
+            chxChucVuXem.setSelected(false);
+            chxChucVuThem.setSelected(false);
+            chxChucVuSua.setSelected(false);
+            chxChucVuXoa.setSelected(false);
+            jPQLChucVu.setVisible(false);
+        }
+    }//GEN-LAST:event_chxQLChucVuActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemChucVu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemChucVu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemChucVu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemChucVu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                JDialogThemChucVu dialog = new JDialogThemChucVu(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup btnGroupGiaoDien;
     private javax.swing.JButton btnHuy;
     private javax.swing.JButton btnThemChucVu;
+    private javax.swing.JCheckBox chxChucVuSua;
+    private javax.swing.JCheckBox chxChucVuThem;
+    private javax.swing.JCheckBox chxChucVuXem;
+    private javax.swing.JCheckBox chxChucVuXoa;
     private javax.swing.JCheckBox chxGiaoDich;
     private javax.swing.JCheckBox chxGuiTietKiem;
     private javax.swing.JCheckBox chxKHSua;
@@ -1462,6 +1568,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
     private javax.swing.JCheckBox chxNVXoa;
     private javax.swing.JCheckBox chxNhanVien;
     private javax.swing.JCheckBox chxPhanQuyen;
+    private javax.swing.JCheckBox chxQLChucVu;
     private javax.swing.JCheckBox chxTKKHSua;
     private javax.swing.JCheckBox chxTKKHThem;
     private javax.swing.JCheckBox chxTKKHXem;
@@ -1477,9 +1584,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
     private javax.swing.JCheckBox chxTheThem;
     private javax.swing.JCheckBox chxTheXem;
     private javax.swing.JCheckBox chxTheXoa;
-    private javax.swing.JCheckBox chxThemChucVu;
     private javax.swing.JCheckBox chxThongKe;
-    private javax.swing.JCheckBox chxVayTinDung;
     private javax.swing.JCheckBox chxVayVon;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1489,6 +1594,7 @@ public class JDialogThemChucVu extends javax.swing.JDialog {
     private javax.swing.JPanel jPKhachHang;
     private javax.swing.JPanel jPNhanVien;
     private javax.swing.JPanel jPPhanQuyen;
+    private javax.swing.JPanel jPQLChucVu;
     private javax.swing.JPanel jPTKKhachHang;
     private javax.swing.JPanel jPTKNhanVien;
     private javax.swing.JPanel jPThe;

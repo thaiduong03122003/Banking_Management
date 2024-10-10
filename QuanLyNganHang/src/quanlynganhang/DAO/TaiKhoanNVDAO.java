@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package quanlynganhang.DAO;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import quanlynganhang.DTO.KhoiPhucMatKhauDTO;
@@ -334,7 +329,8 @@ public class TaiKhoanNVDAO {
         params.add(0);
 
         if (typeName.equals("name")) {
-            conditionalClause.append(" AND (nv.ho_dem LIKE ? OR nv.ten LIKE ?)");
+            conditionalClause.append(" AND (nv.ho_dem LIKE ? OR nv.ten LIKE ? OR CONCAT(nv.ho_dem, ' ', nv.ten) LIKE ?)");
+            params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
         }

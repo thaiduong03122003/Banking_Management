@@ -2,10 +2,12 @@ package quanlynganhang.GUI.adminUI;
 
 import quanlynganhang.GUI.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.JOptionPane;
 import quanlynganhang.BUS.ThongKeBUS;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import  quanlynganhang.GUI.JDialogTableChonItem;
@@ -21,24 +23,20 @@ public class FormThongKe extends javax.swing.JPanel {
     }
 
     private void loadSoLieu() {
-           Locale localeVN = new Locale("vi", "VN");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
-
-        
         txtTongKH.setText("" + thongKeBUS.tongKH());
         txtTongTKKH.setText("" + thongKeBUS.tongTKKH());
         txtTongNV.setText("" + thongKeBUS.tongNV());
         txtTongTKNV.setText("" + thongKeBUS.tongTKNV());
-        txtTongTien.setText(thongKeBUS.tongTienTrongKho());
+        txtTongTien.setText(FormatNumber.convertNumToVND(new BigInteger(thongKeBUS.tongTienTrongKho())) + " VND");
         txtTongLuotRut.setText("" + thongKeBUS.tongLuotRut());
         txtTongLuotNap.setText("" + thongKeBUS.tongLuotNap());
-        txtMaxTienGD.setText("" + thongKeBUS.maxTien());
+        txtMaxTienGD.setText(FormatNumber.convertNumToVND(new BigInteger(thongKeBUS.maxTien())) + " VND");
         txtTongGuiTK.setText("" + thongKeBUS.tongGTK());
-        txtTongGD.setText("" + thongKeBUS.tongVV());
+        txtTongVV.setText("" + thongKeBUS.tongVV());
         txtTongGD.setText("" + thongKeBUS.tongGiaoDich());
-        txtTongTienNap.setText(thongKeBUS.tongTienNap());
-        txtTongTienRut.setText(thongKeBUS.tongTienRut());
-        txtTongTienVV.setText(thongKeBUS.tongtienVV());
+        txtTongTienNap.setText(FormatNumber.convertNumToVND(new BigInteger(thongKeBUS.tongTienNap())) + " VND");
+        txtTongTienRut.setText(FormatNumber.convertNumToVND(new BigInteger(thongKeBUS.tongTienRut())) + " VND");
+        txtTongTienVV.setText(FormatNumber.convertNumToVND(new BigInteger(thongKeBUS.tongtienVV())) + " VND");
         
     }
     /** This method is called from within the constructor to
@@ -102,6 +100,12 @@ public class FormThongKe extends javax.swing.JPanel {
         jLabel46 = new javax.swing.JLabel();
         jLabel47 = new javax.swing.JLabel();
         txtTongGuiTK = new javax.swing.JLabel();
+        jPanel34 = new javax.swing.JPanel();
+        jSeparator18 = new javax.swing.JSeparator();
+        jButton18 = new javax.swing.JButton();
+        jLabel48 = new javax.swing.JLabel();
+        jLabel51 = new javax.swing.JLabel();
+        txtTongVV = new javax.swing.JLabel();
         jPanel33 = new javax.swing.JPanel();
         jSeparator17 = new javax.swing.JSeparator();
         jButton17 = new javax.swing.JButton();
@@ -514,7 +518,7 @@ public class FormThongKe extends javax.swing.JPanel {
         );
 
         jLabel47.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel47.setText("Tổng lượt gửi tiết kiệm");
+        jLabel47.setText("Tổng lượt giao dịch gửi tiết kiệm");
 
         txtTongGuiTK.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         txtTongGuiTK.setText("0");
@@ -532,7 +536,7 @@ public class FormThongKe extends javax.swing.JPanel {
                 .addComponent(jLabel46, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel32Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel47, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                    .addComponent(jLabel47, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtTongGuiTK, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -553,6 +557,60 @@ public class FormThongKe extends javax.swing.JPanel {
         );
 
         jPanel29.add(jPanel32);
+
+        jButton18.setText("<html><i>Xem chi tiết</i></html>");
+        jButton18.setBorderPainted(false);
+        jButton18.setContentAreaFilled(false);
+        jButton18.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton18.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton18ActionPerformed(evt);
+            }
+        });
+
+        jLabel48.setIcon(new FlatSVGIcon("quanlynganhang/icon/all_gui_tiet_kiem.svg")
+        );
+
+        jLabel51.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel51.setText("Tổng lượt giao dịch vay vốn");
+
+        txtTongVV.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        txtTongVV.setText("0");
+
+        javax.swing.GroupLayout jPanel34Layout = new javax.swing.GroupLayout(jPanel34);
+        jPanel34.setLayout(jPanel34Layout);
+        jPanel34Layout.setHorizontalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator18)
+            .addGroup(jPanel34Layout.createSequentialGroup()
+                .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel34Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel51, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtTongVV, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel34Layout.setVerticalGroup(
+            jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel34Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel34Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel34Layout.createSequentialGroup()
+                        .addComponent(jLabel51, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtTongVV)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel29.add(jPanel34);
 
         jButton17.setText("<html><i>Xem chi tiết</i></html>");
         jButton17.setBorderPainted(false);
@@ -1021,6 +1079,18 @@ public class FormThongKe extends javax.swing.JPanel {
                     // TODO add your handling code here:
     }//GEN-LAST:event_jButton1MouseClicked
 
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+        if(thongKeBUS.tongGTK()==0)  {
+             JOptionPane.showMessageDialog(this, "Không có lượt vay nào");
+             return;
+         }
+         
+        JDialogTableChonItem chonKH = new JDialogTableChonItem(null, true, this, "Danh sách vay vốn", "DSGDVV", false);
+        chonKH.setResizable(false);
+        chonKH.setDefaultCloseOperation(JDialogTableChonItem.DISPOSE_ON_CLOSE);
+        chonKH.setVisible(true);
+    }//GEN-LAST:event_jButton18ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -1028,6 +1098,7 @@ public class FormThongKe extends javax.swing.JPanel {
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
+    private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -1054,9 +1125,11 @@ public class FormThongKe extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel47;
+    private javax.swing.JLabel jLabel48;
     private javax.swing.JLabel jLabel49;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel50;
+    private javax.swing.JLabel jLabel51;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
@@ -1082,6 +1155,7 @@ public class FormThongKe extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
     private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -1098,6 +1172,7 @@ public class FormThongKe extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator15;
     private javax.swing.JSeparator jSeparator16;
     private javax.swing.JSeparator jSeparator17;
+    private javax.swing.JSeparator jSeparator18;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -1119,5 +1194,6 @@ public class FormThongKe extends javax.swing.JPanel {
     private javax.swing.JLabel txtTongTienNap;
     private javax.swing.JLabel txtTongTienRut;
     private javax.swing.JLabel txtTongTienVV;
+    private javax.swing.JLabel txtTongVV;
     // End of variables declaration//GEN-END:variables
 }

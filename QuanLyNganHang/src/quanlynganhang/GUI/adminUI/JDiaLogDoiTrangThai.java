@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.DangNhapBUS;
 import quanlynganhang.BUS.KhoaTaiKhoanBUS;
 import quanlynganhang.BUS.TaiKhoanKHBUS;
@@ -30,17 +31,21 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
     private String loaiTaiKhoan, tenTrangThai;
     private FormatDate fDate;
     private KhoaTaiKhoanDTO khoaTK;
+    private int quyenXoa;
 
-    public JDiaLogDoiTrangThai(java.awt.Frame parent, boolean modal, String loaiMa, String danhMuc, int maTK, String tenTrangThai, String loaiTaiKhoan) {
+    public JDiaLogDoiTrangThai(java.awt.Frame parent, boolean modal, String loaiMa, String danhMuc, int maTK, String tenTrangThai, String loaiTaiKhoan, int quyenXoa) {
         super(parent, modal);
         trangThaiBUS = new TrangThaiBUS();
         khoaTaiKhoanBUS = new KhoaTaiKhoanBUS();
         dangNhapBUS = new DangNhapBUS();
+        
         this.danhMuc = danhMuc;
         this.loaiMa = loaiMa;
         this.maTK = maTK;
         this.tenTrangThai = tenTrangThai;
         this.loaiTaiKhoan = loaiTaiKhoan;
+        this.quyenXoa = quyenXoa;
+        
         fDate = new FormatDate();
         initComponents();
         customUI();
@@ -435,6 +440,11 @@ public class JDiaLogDoiTrangThai extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiActionPerformed
+        if (cbxTrangThai.getSelectedItem().equals("Closed") && quyenXoa != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         if (loaiTaiKhoan.equals("TKNV")) {
             if (taiKhoanNVBUS.getTaiKhoanNVById(maTK).getTinhTrangDangNhap() == 1) {
                 if (MessageBox.showConfirmMessage(this, "Tài khoản này đang hoạt động, bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.BUS.TheATMBUS;
 import quanlynganhang.BUS.TrangThaiBUS;
 import quanlynganhang.DTO.TheATMDTO;
@@ -11,17 +12,19 @@ import quanlynganhang.GUI.model.message.MessageBox;
 
 public class JDialogDoiTrangThaiThe extends javax.swing.JDialog {
 
-    private int maThe;
+    private int maThe, quyenXoa;
     private TheATMBUS theATMBUS;
     private TrangThaiBUS trangThaiBUS;
     private TheATMDTO theATM;
     private final String danhMuc = "Account and Card";
 
-    public JDialogDoiTrangThaiThe(java.awt.Frame parent, boolean modal, int maThe) {
+    public JDialogDoiTrangThaiThe(java.awt.Frame parent, boolean modal, int maThe, int quyenXoa) {
         super(parent, modal);
         theATMBUS = new TheATMBUS();
         trangThaiBUS = new TrangThaiBUS();
+        
         this.maThe = maThe;
+        this.quyenXoa = quyenXoa;
 
         initComponents();
         dienThongTinThe();
@@ -220,6 +223,11 @@ public class JDialogDoiTrangThaiThe extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiActionPerformed
+        if (cbxTrangThai.getSelectedItem().equals("Closed") && quyenXoa != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         if (MessageBox.showConfirmMessage(null, "Xác nhận thay đổi trạng thái?") == JOptionPane.YES_OPTION) {
             doiTrangThai();
         } else {

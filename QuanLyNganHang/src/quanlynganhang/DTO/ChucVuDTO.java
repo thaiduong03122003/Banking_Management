@@ -1,31 +1,10 @@
 package quanlynganhang.DTO;
 
 public class ChucVuDTO {
-    private int maChucVu, isAdmin, qLThongKe, qLGiaoDich, qLGuiTietKiem, qLVayVon, qLVayTinDung, biXoa, soChucVu, phanQuyen, themChucVu;
-    private String tenChucVu, moTa, qLKhachHang, qLNhanVien, qLTKKhachHang,qLTKNhanVien, qLThe;
+    private int maChucVu, isAdmin, qLThongKe, qLGiaoDich, qLGuiTietKiem, qLVayVon, biXoa, soChucVu, phanQuyen;
+    private String tenChucVu, moTa, qLKhachHang, qLNhanVien, qLTKKhachHang,qLTKNhanVien, qLThe, qlChucVu;
 
     public ChucVuDTO() {
-    }
-
-    public ChucVuDTO(int maChucVu, int isAdmin, int qLThongKe, int qLGiaoDich, int qLGuiTietKiem, int qLVayVon, int qLVayTinDung, int biXoa, int soChucVu, int phanQuyen, int themChucVu, String tenChucVu, String moTa, String qLKhachHang, String qLNhanVien, String qLTKKhachHang, String qLTKNhanVien, String qLThe) {
-        this.maChucVu = maChucVu;
-        this.isAdmin = isAdmin;
-        this.qLThongKe = qLThongKe;
-        this.qLGiaoDich = qLGiaoDich;
-        this.qLGuiTietKiem = qLGuiTietKiem;
-        this.qLVayVon = qLVayVon;
-        this.qLVayTinDung = qLVayTinDung;
-        this.biXoa = biXoa;
-        this.soChucVu = soChucVu;
-        this.phanQuyen = phanQuyen;
-        this.themChucVu = themChucVu;
-        this.tenChucVu = tenChucVu;
-        this.moTa = moTa;
-        this.qLKhachHang = qLKhachHang;
-        this.qLNhanVien = qLNhanVien;
-        this.qLTKKhachHang = qLTKKhachHang;
-        this.qLTKNhanVien = qLTKNhanVien;
-        this.qLThe = qLThe;
     }
 
     public int getMaChucVu() {
@@ -76,14 +55,6 @@ public class ChucVuDTO {
         this.qLVayVon = qLVayVon;
     }
 
-    public int getqLVayTinDung() {
-        return qLVayTinDung;
-    }
-
-    public void setqLVayTinDung(int qLVayTinDung) {
-        this.qLVayTinDung = qLVayTinDung;
-    }
-
     public int getBiXoa() {
         return biXoa;
     }
@@ -108,12 +79,12 @@ public class ChucVuDTO {
         this.phanQuyen = phanQuyen;
     }
 
-    public int getThemChucVu() {
-        return themChucVu;
+    public String getqlChucVu() {
+        return qlChucVu;
     }
 
-    public void setThemChucVu(int themChucVu) {
-        this.themChucVu = themChucVu;
+    public void setqlChucVu(String qlChucVu) {
+        this.qlChucVu = qlChucVu;
     }
 
     public String getTenChucVu() {
@@ -172,6 +143,5 @@ public class ChucVuDTO {
         this.qLThe = qLThe;
     }
 
-    
     
 }

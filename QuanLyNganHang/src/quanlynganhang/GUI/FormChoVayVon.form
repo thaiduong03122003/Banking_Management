@@ -213,6 +213,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtTienVay">
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtTienVayKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel1">
               <Properties>
@@ -609,6 +612,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtThuNhap">
+              <Events>
+                <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtThuNhapKeyReleased"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel3">
               <Properties>

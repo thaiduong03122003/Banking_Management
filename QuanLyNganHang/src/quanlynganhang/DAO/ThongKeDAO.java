@@ -205,9 +205,10 @@ public class ThongKeDAO {
     }
 
     public int tongGuiTK() {
-        String sql = "SELECT COUNT(ma_gui_tk) AS tong_gui_tiet_kiem FROM tbl_dich_vu_gui_tiet_kiem";
+        String sql = "SELECT COUNT(ma_giao_dich) AS tong_gui_tiet_kiem FROM tbl_giao_dich WHERE ma_loai_giao_dich = ?";
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-
+            pstmt.setInt(1, 5);
+            
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     int tongGTK = rs.getInt("tong_gui_tiet_kiem");
@@ -222,7 +223,7 @@ public class ThongKeDAO {
     }
 
     public int tongVayVon() {
-        String sql = "SELECT COUNT(ma_vay_von) AS tong_vay_von FROM tbl_dich_vu_vay_von";
+        String sql = "SELECT COUNT(ma_giao_dich) AS tong_vay_von FROM tbl_giao_dich WHERE ma_loai_giao_dich = 7";
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 
             try (ResultSet rs = pstmt.executeQuery()) {

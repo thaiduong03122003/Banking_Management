@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
@@ -25,10 +21,6 @@ import quanlynganhang.DTO.TietKiemDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormRutTien extends javax.swing.JPanel {
 
     private TaiKhoanNVDTO taiKhoanNV;
@@ -42,6 +34,7 @@ public class FormRutTien extends javax.swing.JPanel {
     private BigInteger maxSoTienGD;
     private KiemTraDuLieuBUS kiemTraDuLieuBUS;
     private TaiKhoanKHDTO taiKhoanKH;
+    private int maTaiKhoanKH;
 
     public FormRutTien(TaiKhoanNVDTO taiKhoanNV) {
         this.taiKhoanNV = taiKhoanNV;
@@ -123,6 +116,7 @@ public class FormRutTien extends javax.swing.JPanel {
 
         if (taiKhoanKH != null) {
             this.taiKhoanKH = taiKhoanKH;
+            this.maTaiKhoanKH = maTaiKhoanKH;
 
             if (taiKhoanKH.getMaTrangThai() != 6 && taiKhoanKH.getMaLoaiTaiKhoan() == 4) {
                 MessageBox.showErrorMessage(null, "Không thể sử dụng tài khoản này!");
@@ -190,6 +184,13 @@ public class FormRutTien extends javax.swing.JPanel {
         }
 
         if (error.isEmpty()) {
+            
+            if (taiKhoanKH.getBiXoa() == 1) {
+                if (MessageBox.showConfirmMessage(null, "Chủ sở hữu tài khoản này đã bị xóa khỏi hệ thống, xác nhận vẫn rút?") == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+            
             if (taiKhoanKH.getMaLoaiTaiKhoan() == 3) {
                 String soTienLai = txtSoTienRut.getText();
                 TietKiemDTO tietKiem = tietKiemBUS.getTietKiemByMaTKKH(taiKhoanKH.getMaTKKH());
@@ -200,7 +201,7 @@ public class FormRutTien extends javax.swing.JPanel {
                         soTienLai = soTienLai(soTienLai, tietKiem, isTruocHan);
 
                         giaoDich.setMaTaiKhoanKH(taiKhoanKH.getMaTKKH());
-                        giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaNhanVien());
+                        giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
                         giaoDich.setMaLoaiGiaoDich(5);
                         giaoDich.setNoiDungGiaoDich("Chuyển tiền lãi không kỳ hạn về số tài khoản " + taiKhoanKH.getSoTaiKhoan());
                         giaoDich.setNgayGiaoDich(fDate.getToday());
@@ -240,7 +241,7 @@ public class FormRutTien extends javax.swing.JPanel {
             if (isSuccess) {
 
                 giaoDich.setMaTaiKhoanKH(taiKhoanKH.getMaTKKH());
-                giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaNhanVien());
+                giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
                 giaoDich.setTenKhachHang(lbHoTenKH.getText());
                 giaoDich.setTenNhanVien(taiKhoanNV.getTenNhanVien());
                 giaoDich.setMaLoaiGiaoDich(3);
@@ -249,6 +250,8 @@ public class FormRutTien extends javax.swing.JPanel {
 
                 if (giaoDichBUS.rutTien(giaoDich)) {
                     MessageBox.showInformationMessage(null, "", "Rút tiền thành công!");
+                    dienThongTinTKKH(maTaiKhoanKH);
+                    txtSoTienRut.setText("");
                 } else {
                     MessageBox.showErrorMessage(null, "Rút tiền thất bại!");
                 }
@@ -965,7 +968,9 @@ public class FormRutTien extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtSoTienRutFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienRutFocusLost
-
+        if (InputValidation.kiemTraSoTien(txtSoTienRut.getText().trim().replace(",", ""))) {
+            lbSoTienRut.setText(txtSoTienRut.getText() + " VND");
+        }
     }//GEN-LAST:event_txtSoTienRutFocusLost
 
     private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
@@ -988,6 +993,10 @@ public class FormRutTien extends javax.swing.JPanel {
     }//GEN-LAST:event_btnRutTienActionPerformed
 
     private void txtSoTienRutKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoTienRutKeyReleased
+        if (txtSoTienRut.getText().trim().isEmpty()) {
+            return;
+        }
+        
         onCodeTextChanged();
     }//GEN-LAST:event_txtSoTienRutKeyReleased
 

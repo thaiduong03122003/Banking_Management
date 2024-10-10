@@ -343,7 +343,7 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         txtTenDangNhap.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtTenDangNhap.setText("laithivan1111");
+        txtTenDangNhap.setText("duyan1111");
         txtTenDangNhap.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtTenDangNhapKeyReleased(evt);
@@ -351,7 +351,7 @@ public class JFrameDangNhap extends javax.swing.JFrame {
         });
 
         pwfMatKhau.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pwfMatKhau.setText("Thai@123456");
+        pwfMatKhau.setText("Test@123");
         pwfMatKhau.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 pwfMatKhauKeyReleased(evt);

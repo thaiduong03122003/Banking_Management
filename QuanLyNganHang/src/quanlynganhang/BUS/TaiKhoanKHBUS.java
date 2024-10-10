@@ -21,6 +21,7 @@ import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DAO.TaiKhoanKHDAO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
+import quanlynganhang.GUI.model.message.MessageBox;
 
 public class TaiKhoanKHBUS {
 
@@ -30,33 +31,21 @@ public class TaiKhoanKHBUS {
     public TaiKhoanKHBUS() {
     }
 
-    public List<TaiKhoanKHDTO> getDSTaiKhoanKH() {
-        return taiKhoanKHDAO.selectAll();
-    }
-
-    public List<TaiKhoanKHDTO> getAllDSTaiKhoanKH() {
-        return taiKhoanKHDAO.selectAllIncludeDeleted();
+    public List<TaiKhoanKHDTO> getDSTaiKhoanKH(int maLoaiTaiKhoan) {
+        return taiKhoanKHDAO.selectAll(maLoaiTaiKhoan);
     }
 
     public List<TaiKhoanKHDTO> getDSTaiKhoanNguon(int maKhachHang) {
         return taiKhoanKHDAO.selectByMaKH(maKhachHang);
     }
 
-    private List<TaiKhoanKHDTO> getDSTaiKhoanVay() {
-        return taiKhoanKHDAO.selectTKVay();
-    }
-
-    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, boolean isSearched, List<TaiKhoanKHDTO> listTaiKhoanKH, boolean isBiXoa) {
+    public Object[][] doiSangObjectTaiKhoanKH(boolean isFiltered, boolean isSearched, List<TaiKhoanKHDTO> listTaiKhoanKH, int maLoaiTaiKhoan) {
         List<TaiKhoanKHDTO> list = new ArrayList<>();
 
         if (isFiltered || isSearched) {
             list = listTaiKhoanKH;
         } else {
-            if (isBiXoa) {
-                list = getDSTaiKhoanKH();
-            } else {
-                list = getAllDSTaiKhoanKH();
-            }
+            list = getDSTaiKhoanKH(maLoaiTaiKhoan);
         }
 
         FormatDate fDate = new FormatDate();
@@ -73,7 +62,7 @@ public class TaiKhoanKHBUS {
             } else {
                 data[rowIndex][4] = "<html><p style='color:rgb(255,0,0);'>Không xác định</p></html>";
             }
-            
+
             data[rowIndex][5] = fDate.toString(taiKhoanKH.getNgayTao());
             data[rowIndex][6] = taiKhoanKH.getTenLoaiTaiKhoan();
 
@@ -85,26 +74,6 @@ public class TaiKhoanKHBUS {
                 data[rowIndex][7] = taiKhoanKH.getTenTrangThai();
             }
 
-            rowIndex++;
-        }
-        return data;
-    }
-
-    public Object[][] doiSangObjectTaiKhoanVay() {
-        List<TaiKhoanKHDTO> list = getDSTaiKhoanVay();
-
-        FormatDate fDate = new FormatDate();
-
-        Object[][] data = new Object[list.size()][7];
-        int rowIndex = 0;
-        for (TaiKhoanKHDTO taiKhoanKH : list) {
-            data[rowIndex][0] = taiKhoanKH.getMaTKKH();
-            data[rowIndex][1] = taiKhoanKH.getSoTaiKhoan();
-            data[rowIndex][2] = taiKhoanKH.getTenTaiKhoan();
-            data[rowIndex][3] = taiKhoanKH.getTenKhachHang();
-            data[rowIndex][4] = fDate.toString(taiKhoanKH.getNgayTao());
-            data[rowIndex][5] = taiKhoanKH.getTenLoaiTaiKhoan();
-            data[rowIndex][6] = taiKhoanKH.getTenTrangThai();
             rowIndex++;
         }
         return data;
@@ -182,6 +151,10 @@ public class TaiKhoanKHBUS {
 
     public List<TaiKhoanKHDTO> timKiemTheoLoai(String typeName, String inputValue) {
         return taiKhoanKHDAO.searchByInputType(typeName, inputValue);
+    }
+
+    public List<TaiKhoanKHDTO> timKiemVayTheoLoai(String typeName, String inputValue) {
+        return taiKhoanKHDAO.searchVVByInputType(typeName, inputValue);
     }
 
     public boolean doiMatKhau(TaiKhoanKHDTO taiKhoanKH) {

@@ -25,12 +25,24 @@ public class InputValidation {
 
         return true;
     }
+    
+    public static boolean kiemTraTenDangNhap(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+
+        if (!Pattern.matches("^[a-zA-Z0-9@_.-]+$", name)) {
+            return false;
+        }
+
+        return true;
+    }
 
     public static boolean kiemTraSDT(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             return false;
         } else {
-            String regex = "^0[0-9]{9}$";
+            String regex = "^0[0-9]{9,10}$";
             return Pattern.matches(regex, phoneNumber);
         }
     }

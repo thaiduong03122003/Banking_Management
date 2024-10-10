@@ -364,7 +364,8 @@ public class KhachHangDAO {
         params.add(biXoa);
 
         if (typeName.equals("name")) {
-            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ?)");
+            conditionalClause.append(" AND (kh.ho_dem LIKE ? OR kh.ten LIKE ? OR CONCAT(kh.ho_dem, ' ', kh.ten) LIKE ?)");
+            params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
             params.add("%" + inputValue + "%");
         }
@@ -387,7 +388,6 @@ public class KhachHangDAO {
         if (conditionalClause.length() > 0) {
             sql += conditionalClause.toString();
         }
-        System.out.println("Cau SQL: " + sql);
 
         try (Connection con = DatabaseConnect.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
             for (int i = 1; i <= params.size(); i++) {

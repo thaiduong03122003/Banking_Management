@@ -305,8 +305,6 @@ public class JDialogDoiMatKhauKH extends javax.swing.JDialog {
             if (capNhatMatKhau()) {
                 MessageBox.showConfirmMessage(null, "Đổi thành công!");
                 this.dispose();
-            } else {
-                MessageBox.showErrorMessage(null, "Cập nhật thất bại!");
             }
         }
     }//GEN-LAST:event_btnDoiActionPerformed

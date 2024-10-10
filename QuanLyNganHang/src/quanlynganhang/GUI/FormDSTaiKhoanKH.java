@@ -88,8 +88,8 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) jTableDSTaiKhoanKH.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = (isFiltered || isSearched) ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, null, false);
-        currentList = (isFiltered || isSearched) ? list : taiKhoanKHBUS.getDSTaiKhoanKH();
+        Object[][] dataModel = (isFiltered || isSearched) ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, list, 0) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(isFiltered, isSearched, null, 0);
+        currentList = (isFiltered || isSearched) ? list : taiKhoanKHBUS.getDSTaiKhoanKH(0);
         String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
 
         model.setDataVector(dataModel, title);
@@ -463,7 +463,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                         MessageBox.showErrorMessage(null, "Mã tài khoản khách hàng không tồn tại!");
                         return;
                     } else {
-                        formChiTiet = new JFrameChiTietTKKH(maTaiKhoanKH, false);
+                        formChiTiet = new JFrameChiTietTKKH(maTaiKhoanKH, false, quyenSua, quyenXoa);
                         formChiTiet.setDefaultCloseOperation(JFrameChiTietTKKH.DISPOSE_ON_CLOSE);
                         formChiTiet.setVisible(true);
 
@@ -505,7 +505,7 @@ public class FormDSTaiKhoanKH extends javax.swing.JPanel {
                         return;
                     } else {
 
-                        JFrameChiTietTKKH formSua = new JFrameChiTietTKKH(maTaiKhoanKH, true);
+                        JFrameChiTietTKKH formSua = new JFrameChiTietTKKH(maTaiKhoanKH, true, quyenSua, quyenXoa);
                         formSua.setDefaultCloseOperation(JFrameChiTietTKKH.DISPOSE_ON_CLOSE);
                         formSua.setVisible(true);
 

@@ -268,7 +268,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         jTableDS.setDefaultEditor(Object.class, null);
     }
 
-    public void loadDSGuiTietKiem() throws Exception {
+    public void loadDSGuiTietKiem() {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
@@ -278,8 +278,19 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
 
         jTableDS.setDefaultEditor(Object.class, null);
     }
+    
+    public void loadDSGDVayVon() {
+        DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
+        model.setRowCount(0);
 
-    public void loadDSGiaoDich() throws Exception {
+        Object[][] dataModel = giaoDichBUS.doiSangObjectGiaoDichTK(false, null, 7);
+        String[] title = {"Mã giao dịch", "Số tài khoản", "Tên khách hàng", "Số tiền", "Ngày giao dịch", "Loại giao dịch", "Tên nhân viên", "Tên trạng thái"};
+        model.setDataVector(dataModel, title);
+
+        jTableDS.setDefaultEditor(Object.class, null);
+    }
+
+    public void loadDSGiaoDich() {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
@@ -354,19 +365,20 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = isSearched ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, list, false) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, null, false);
+        Object[][] dataModel = isSearched ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, list, 0) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, null, 0);
         String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
 
         model.setDataVector(dataModel, title);
         jTableDS.setDefaultEditor(Object.class, null);
     }
 
-    public void loadDSTaiKhoanVay() throws Exception {
+    public void loadDSTaiKhoanVay(boolean isSearched, List<TaiKhoanKHDTO> list) {
+        this.isSearched = isSearched;
         DefaultTableModel model = (DefaultTableModel) jTableDS.getModel();
         model.setRowCount(0);
 
-        Object[][] dataModel = taiKhoanKHBUS.doiSangObjectTaiKhoanVay();
-        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Ngày tạo", "Loại tài khoản", "Trạng thái tài khoản"};
+        Object[][] dataModel = isSearched ? taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, list, 4) : taiKhoanKHBUS.doiSangObjectTaiKhoanKH(false, isSearched, null, 4);
+        String[] title = {"Mã tài khoản", "Số tài khoản", "Tên tài khoản", "Tên khách hàng", "Số dư trong tài khoản vay", "Ngày tạo khoản vay", "Loại tài khoản", "Trạng thái tài khoản"};
         model.setDataVector(dataModel, title);
 
         jTableDS.setDefaultEditor(Object.class, null);
@@ -443,38 +455,47 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                 loadDSTaiKhoanKH(false, null);
 
             } else if (loaiDanhSach.equals("DSTKV")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
                 taiKhoanKHBUS = new TaiKhoanKHBUS();
-                loadDSTaiKhoanVay();
+
+                txtSearchData.addEventOptionSelected(new SearchOptinEvent() {
+                    @Override
+                    public void optionSelected(SearchOption option, int index) {
+                        txtSearchData.setHint("Tìm kiếm theo " + option.getName() + "...");
+                    }
+                });
+
+                txtSearchData.addOption(new SearchOption("họ tên khách hàng hoặc tên tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_name.svg")));
+                txtSearchData.addOption(new SearchOption("số tài khoản", new FlatSVGIcon("quanlynganhang/icon/searchData_cccd.svg")));
+                txtSearchData.setSelectedIndex(0);
+
+                loadDSTaiKhoanVay(false, null);
+
             } else if (loaiDanhSach.equals("DSRT")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSRutTien();
             } else if (loaiDanhSach.equals("DSNT")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSNapTien();
             } else if (loaiDanhSach.equals("DSGTK")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSGuiTietKiem();
+                } else if (loaiDanhSach.equals("DSGDVV")) {
+                disableControl();
+                giaoDichBUS = new GiaoDichBUS();
+                loadDSGDVayVon();
             } else if (loaiDanhSach.equals("DSGD")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSGiaoDich();
             } else if (loaiDanhSach.equals("DSMGD")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSMaxGiiaoDich();
             } else if (loaiDanhSach.equals("DSVV")) {
-                txtSearchData.setVisible(false);
-                btnSearch.setVisible(false);
+                disableControl();
                 giaoDichBUS = new GiaoDichBUS();
                 loadDSVayVon();
             } else {
@@ -482,7 +503,7 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            MessageBox.showErrorMessage(null, "Load danh sách thất bại!");
+            MessageBox.showErrorMessage(null, "load danh sách thất bại!");
         }
     }
 
@@ -596,6 +617,16 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
                 return;
             }
             showError();
+        } else if (loaiDanhSach.equals("DSTKV")) {
+            int option = txtSearchData.getSelectedIndex();
+            String typeName = option == 0 ? "name" : "accountNum";
+
+            List<TaiKhoanKHDTO> listTKKH = taiKhoanKHBUS.timKiemTheoLoai(typeName, txtSearchData.getText().trim());
+            if (listTKKH != null && !listTKKH.isEmpty()) {
+                loadDSTaiKhoanKH(true, listTKKH);
+                return;
+            }
+            showError();
         }
     }
 
@@ -616,6 +647,12 @@ public class JDialogTableChonItem extends javax.swing.JDialog {
         } else if (loaiDanhSach.equals("DSTKKH")) {
             loadDSTaiKhoanKH(false, null);
         }
+    }
+
+    private void disableControl() {
+        txtSearchData.setVisible(false);
+        btnSearch.setVisible(false);
+        btnReset.setVisible(false);
     }
 
     /** This method is called from within the constructor to

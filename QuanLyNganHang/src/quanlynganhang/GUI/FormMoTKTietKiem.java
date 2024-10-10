@@ -26,7 +26,6 @@ import quanlynganhang.DTO.KyHanGuiTKDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.DTO.TietKiemDTO;
-import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
 public class FormMoTKTietKiem extends javax.swing.JPanel {
@@ -194,7 +193,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         StringBuilder error = new StringBuilder();
         error.append("");
 
-        boolean isTienTK = rdbTaiKhoan.isSelected() ? true : false;
+        boolean isTienTK = rdbTaiKhoan.isSelected();
 
         if (rdbTaiKhoan.isSelected() && maTaiKhoanKH == 0) {
             error.append("Vui lòng chọn tài khoản nguồn!");
@@ -203,7 +202,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         if (txtTienTietKiem.getText().isEmpty() || cbxKyHan.getSelectedIndex() == 0 || cbxGiaHan.getSelectedIndex() == 0 || cbxNhanLai.getSelectedIndex() == 0 || (txtSTKTietKiem.getText().isEmpty() && !isAutoGenerateSTK) || txtTenTKTietKiem.getText().isEmpty()) {
             error.append("Vui lòng nhập đầu đủ thông tin");
         } else {
-            try {
+            if (InputValidation.kiemTraSoTien(txtTienTietKiem.getText().trim().replace(",", ""))) {
                 soTien = new BigInteger(txtTienTietKiem.getText().trim().replace(",", ""));
                 if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
                     error.append("\nSố tiền tiết kiệm nằm trong khoảng 1 triệu VND và 2 tỷ VND cho một lần gửi!");
@@ -212,23 +211,21 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 if (rdbTaiKhoan.isSelected() && cbxTKNguon.getSelectedIndex() != 0 && soTien.compareTo(soDu) > 0) {
                     error.append("\nSố dư không đủ để thực hiện giao dịch!");
                 }
-            } catch (NumberFormatException ne) {
+            } else {
                 error.append("\nVui lòng nhập đúng số tiền giao dịch!");
             }
         }
-        
-        
 
         GiaoDichDTO giaoDich = new GiaoDichDTO();
         TaiKhoanKHDTO taiKhoanGTK = new TaiKhoanKHDTO();
         TietKiemDTO tietKiem = new TietKiemDTO();
-        
+
         if (InputValidation.kiemTraTen(txtTenTKTietKiem.getText())) {
             taiKhoanGTK.setTenTaiKhoan(txtTenTKTietKiem.getText().trim());
         } else {
             error.append("\nTên tài khoản không hợp lệ");
         }
-        
+
         if (isAutoGenerateSTK) {
             String soTaiKhoanMoi = taiKhoanKHBUS.taoSTKTuDong();
 
@@ -246,68 +243,86 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             }
         }
 
-        if (error.isEmpty()) {
-            taiKhoanGTK.setMaKhachHang(maKhachHang);
-            taiKhoanGTK.setSoDu("0");
-            taiKhoanGTK.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
-            taiKhoanGTK.setMaLoaiTaiKhoan(3);
-            taiKhoanGTK.setMaNganHang(1);
-            taiKhoanGTK.setMaTrangThai(6);
-            taiKhoanGTK.setNgayTao(fDate.getToday());
+        if (!error.isEmpty()) {
+            MessageBox.showErrorMessage(null, "Lỗi: " + error);
+            return;
+        }
 
-            if (isTienTK) {
-                giaoDich.setMaTaiKhoanKH(taiKhoanNguon.getMaTKKH());
-                tietKiem.setMaTaiKhoanNguonTien(taiKhoanNguon.getMaTKKH());
-            } else {
-                giaoDich.setMaTaiKhoanKH(0);
-                tietKiem.setMaTaiKhoanNguonTien(0);
-            }
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn tạo tài khoản tiết kiệm cho khách hàng này?") == JOptionPane.NO_OPTION) {
+            return;
+        }
 
+        taiKhoanGTK.setMaKhachHang(maKhachHang);
+        taiKhoanGTK.setSoDu("0");
+        taiKhoanGTK.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
+        taiKhoanGTK.setMaLoaiTaiKhoan(3);
+        taiKhoanGTK.setMaNganHang(1);
+        taiKhoanGTK.setMaTrangThai(6);
+        taiKhoanGTK.setNgayTao(fDate.getToday());
+
+        int maTaiKhoanGTK = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanGTK);
+
+        if (isTienTK) {
+            giaoDich.setMaTaiKhoanKH(taiKhoanNguon.getMaTKKH());
+            tietKiem.setMaTaiKhoanNguonTien(taiKhoanNguon.getMaTKKH());
             giaoDich.setNgayGiaoDich(fDate.getToday());
-            giaoDich.setSoTien(txtTienTietKiem.getText());
-            giaoDich.setNoiDungGiaoDich("Khách hàng " + lbHotenKH.getText() + " gửi tiết kiệm");
+            giaoDich.setSoTien(txtTienTietKiem.getText().trim().replace(",", ""));
+            giaoDich.setNoiDungGiaoDich("Chuyển tiền để gửi tiết kiệm đến tài khoản " + taiKhoanGTK.getSoTaiKhoan());
             giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
             giaoDich.setMaLoaiGiaoDich(5);
             giaoDich.setMaTrangThai(4);
+        } else {
+            giaoDich.setMaTaiKhoanKH(maTaiKhoanGTK);
+            tietKiem.setMaTaiKhoanNguonTien(0);
+            giaoDich.setNgayGiaoDich(fDate.getToday());
+            giaoDich.setSoTien(txtTienTietKiem.getText().trim().replace(",", ""));
+            giaoDich.setNoiDungGiaoDich("Nhận tiền để gửi tiết kiệm từ nguồn tiền mặt");
+            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
+            giaoDich.setMaLoaiGiaoDich(5);
+            giaoDich.setMaTrangThai(4);
+        }
 
-            KyHanGuiTKDTO kyHanGui = tietKiemBUS.getKyHanById(maKyHan);
-            if (kyHanGui != null) {
-                tietKiem.setNgayNhanLai(fDate.addMonth(kyHanGui.getSoKyHan()));
-                System.out.println("So ngay den nhan lai: " + tietKiem.getNgayNhanLai());
+        KyHanGuiTKDTO kyHanGui = tietKiemBUS.getKyHanById(maKyHan);
+        if (kyHanGui != null) {
+            tietKiem.setNgayNhanLai(fDate.addMonth(kyHanGui.getSoKyHan()));
+            System.out.println("So ngay den nhan lai: " + fDate.toString(tietKiem.getNgayNhanLai()));
+        } else {
+            MessageBox.showErrorMessage(null, "Lấy thông tin kỳ hạn thất bại!");
+        }
+
+        tietKiem.setMaKyHan(maKyHan);
+        tietKiem.setHinhThucGiaHan(cbxGiaHan.getSelectedItem().toString());
+        tietKiem.setHinhThucNhanLai(cbxNhanLai.getSelectedItem().toString());
+        tietKiem.setNgayMoTK(fDate.getToday());
+        tietKiem.setSoTienGoc(txtTienTietKiem.getText().trim().replace(",", ""));
+        tietKiem.setMaTrangThai(10);
+
+        if (maTaiKhoanGTK == 0) {
+            MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
+            return;
+        }
+
+        tietKiem.setMaTaiKhoanTK(maTaiKhoanGTK);
+        taiKhoanGTK.setMaTKKH(maTaiKhoanGTK);
+
+        if (isTienTK) {
+            if (giaoDichBUS.chuyenTien(giaoDich, isTienTK, taiKhoanGTK, 1) && tietKiemBUS.addGuiTietKiem(tietKiem) != 0) {
+                MessageBox.showInformationMessage(null, "", "Tạo tài khoản gửi tiết kiệm thành công!");
             } else {
-                MessageBox.showErrorMessage(null, "Lấy thông tin kỳ hạn thất bại!");
-            }
-
-            tietKiem.setMaKyHan(maKyHan);
-            tietKiem.setHinhThucGiaHan(cbxGiaHan.getSelectedItem().toString());
-            tietKiem.setHinhThucNhanLai(cbxNhanLai.getSelectedItem().toString());
-            tietKiem.setNgayMoTK(fDate.getToday());
-            tietKiem.setSoTienGoc(txtTienTietKiem.getText().trim().replace(",", ""));
-            tietKiem.setMaTrangThai(10);
-
-            int maTaiKhoanGTK = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanGTK);
-            if (maTaiKhoanGTK != 0) {
-                tietKiem.setMaTaiKhoanTK(maTaiKhoanGTK);
-                taiKhoanGTK.setMaTKKH(maTaiKhoanGTK);
-
-                if (giaoDichBUS.chuyenTien(giaoDich, isTienTK, taiKhoanGTK, 1)) {
-                    if (tietKiemBUS.addGuiTietKiem(tietKiem) != 0) {
-                        MessageBox.showInformationMessage(null, "", "Tạo tài khoản gửi tiết kiệm thành công!");
-                    } else {
-                        MessageBox.showErrorMessage(null, "Gửi tiết kiệm thất bại");
-                    }
-                }
-            } else {
-                MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
+                MessageBox.showErrorMessage(null, "Gửi tiết kiệm thất bại");
             }
         } else {
-            MessageBox.showErrorMessage(null, "Lỗi: " + error);
+            if (giaoDichBUS.napTien(giaoDich) && tietKiemBUS.addGuiTietKiem(tietKiem) != 0) {
+                MessageBox.showInformationMessage(null, "", "Tạo tài khoản gửi tiết kiệm thành công!");
+            } else {
+                MessageBox.showErrorMessage(null, "Gửi tiết kiệm thất bại");
+            }
         }
     }
-    
+
     private void onCodeTextChanged() {
         String currency = txtTienTietKiem.getText().trim().replace(",", "");
-        
+
         if (InputValidation.kiemTraSoTien(currency)) {
             txtTienTietKiem.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
         } else {
@@ -1240,12 +1255,10 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     }//GEN-LAST:event_cbxGiaHanItemStateChanged
 
     private void btnTaoTKTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoTKTKActionPerformed
-        if (lbHotenKH.equals("Chưa chọn")) {
+        if (lbHotenKH.getText().trim().equals("(Chưa chọn)")) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
             return;
-        }
-        
-        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn tạo tài khoản tiết kiệm cho khách hàng này?") == JOptionPane.YES_OPTION) {
+        } else {
             taoTaiKhoanTK();
         }
     }//GEN-LAST:event_btnTaoTKTKActionPerformed
@@ -1327,6 +1340,9 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     }//GEN-LAST:event_chxSTKTuDongActionPerformed
 
     private void txtTienTietKiemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienTietKiemKeyReleased
+        if (txtTienTietKiem.getText().trim().isEmpty()) {
+            return;
+        }
         onCodeTextChanged();
     }//GEN-LAST:event_txtTienTietKiemKeyReleased
 

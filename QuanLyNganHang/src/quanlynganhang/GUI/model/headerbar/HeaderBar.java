@@ -1,28 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI.model.headerbar;
 
-import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -30,12 +21,8 @@ import quanlynganhang.BUS.ChiaQuyenBUS;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.Application;
 import quanlynganhang.GUI.FormPopupProfile;
-import quanlynganhang.GUI.JFrameThongBao;
 import quanlynganhang.GUI.adminUI.ApplicationAdmin;
-import quanlynganhang.GUI.model.glasspanepopup.DefaultOption;
 import quanlynganhang.GUI.model.glasspanepopup.GlassPanePopup;
-import quanlynganhang.GUI.model.menubar.PopupSubMenu;
-import quanlynganhang.GUI.model.message.MessageBox;
 
 public class HeaderBar extends javax.swing.JPanel {
 
@@ -72,6 +59,7 @@ public class HeaderBar extends javax.swing.JPanel {
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tìm kiếm trong menu");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("quanlynganhang/icon/search_btn.svg"));
         txtSearch.setVisible(false);
+        
         // Khởi tạo danh sách gợi ý và popup
         suggestions = new ArrayList<>();
         suggestions.add("Trang chủ");

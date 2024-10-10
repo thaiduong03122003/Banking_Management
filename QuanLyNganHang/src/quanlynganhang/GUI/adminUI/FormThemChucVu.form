@@ -157,7 +157,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btnDoiBang" min="-2" pref="221" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" pref="156" max="-2" attributes="0"/>
+                      <Component id="btnThemChucVu" min="-2" pref="156" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -171,7 +171,7 @@
                           <Component id="btnSearchData" max="32767" attributes="0"/>
                           <Component id="btnReload" max="32767" attributes="0"/>
                           <Component id="btnInfoTable" max="32767" attributes="0"/>
-                          <Component id="jButton1" max="32767" attributes="0"/>
+                          <Component id="btnThemChucVu" max="32767" attributes="0"/>
                           <Component id="btnDoiBang" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -223,7 +223,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInfoTableActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton1">
+            <Component class="javax.swing.JButton" name="btnThemChucVu">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="new FlatSVGIcon(&quot;quanlynganhang/icon/quyen_label.svg&quot;)&#xd;&#xa;" type="code"/>
@@ -231,7 +231,7 @@
                 <Property name="text" type="java.lang.String" value="Th&#xea;m ch&#x1ee9;c v&#x1ee5;"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnThemChucVuActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnDoiBang">

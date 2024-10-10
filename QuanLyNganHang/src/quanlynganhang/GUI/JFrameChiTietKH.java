@@ -150,6 +150,10 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     private void dienThongTin(KhachHangDTO khachHang) {
         FormatDate fDate = new FormatDate();
 
+        if (khachHang.getBiXoa() == 1) {
+            btnXoaKH.setEnabled(false);
+        }
+        
         txtMaKH.setText("" + khachHang.getMaKH());
         txtHoDem.setText(khachHang.getHoDem());
         txtTen.setText(khachHang.getTen());
@@ -1021,28 +1025,30 @@ public class JFrameChiTietKH extends javax.swing.JFrame {
     }//GEN-LAST:event_btnXoaNoActionPerformed
 
     private void btnXoaKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaKHActionPerformed
+        if (quyenXoa != 1) {
+            ChiaQuyenBUS.showError();
+            return;
+        }
+        
         if (khachHangDTO.getBiXoa() == 1) {
             MessageBox.showErrorMessage(null, "Khách hàng này không tồn tại!");
             return;
         }
-        
+
         int maKH = Integer.parseInt(txtMaKH.getText());
-        
+
         if (maKH != 0) {
-                    if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa khách hàng này?") == JOptionPane.YES_OPTION) {
-                        boolean isDelete = khachHangBUS.deleteKhachHang(maKH);
-                        if (isDelete == false) {
-                            MessageBox.showErrorMessage(null, "Xóa khách hàng thất bại!");
-                            return;
-                        } else {
-                            MessageBox.showInformationMessage(null, "", "Xóa khách hàng thành công");
-                            
-                            btnXoaKH.setEnabled(false);
-                        }
-                    } else {
-                        return;
-                    }
+            if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn xóa khách hàng này?") == JOptionPane.YES_OPTION) {
+                boolean isDelete = khachHangBUS.deleteKhachHang(maKH);
+                if (isDelete == false) {
+                    MessageBox.showErrorMessage(null, "Xóa khách hàng thất bại!");
+                } else {
+                    MessageBox.showInformationMessage(null, "", "Xóa khách hàng thành công");
+
+                    btnXoaKH.setEnabled(false);
                 }
+            }
+        }
     }//GEN-LAST:event_btnXoaKHActionPerformed
 
     private void cbxQuanHuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxQuanHuyenActionPerformed

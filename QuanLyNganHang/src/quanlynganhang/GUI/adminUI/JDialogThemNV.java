@@ -3,7 +3,6 @@ package quanlynganhang.GUI.adminUI;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.io.File;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
@@ -17,17 +16,13 @@ import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class JDialogThemNV extends javax.swing.JDialog {
-
+    
     private NhanVienBUS nhanVienBUS;
     private DiaChiBUS diaChiBUS;
     private Integer maTinhThanh, maQuanHuyen, maPhuongXa;
     private String fileName;
-
+    
     public JDialogThemNV(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         nhanVienBUS = new NhanVienBUS();
@@ -37,7 +32,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
         initCustomUI();
         loadTinhThanh();
     }
-
+    
     private void initCustomUI() {
         txtHo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Họ và tên đệm");
         txtTen.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tên");
@@ -51,119 +46,120 @@ public class JDialogThemNV extends javax.swing.JDialog {
         cbxPhuongXa.setEnabled(false);
         txtSoNha.setEnabled(false);
     }
-
+    
     private void loadTinhThanh() {
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListTinhThanhToMap();
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn tỉnh thành-");
-
+        
         for (String tenTinhThanh : map.values()) {
             model.addElement(tenTinhThanh);
         }
-
+        
         cbxTinhThanh.setModel(model);
     }
-
+    
     private void loadQuanHuyen(int maTinhThanh) {
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListQuanHuyenToMap(maTinhThanh);
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn quận huyện-");
-
+        
         for (String tenQuanHuyen : map.values()) {
             model.addElement(tenQuanHuyen);
         }
-
+        
         cbxQuanHuyen.setModel(model);
     }
-
+    
     private void loadPhuongXa(int maQuanHuyen) {
         Map<Integer, String> map = new HashMap<>();
         map = diaChiBUS.convertListPhuongXaToMap(maQuanHuyen);
-
+        
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("-Chọn phường xã-");
-
+        
         for (String tenPhuongXa : map.values()) {
             model.addElement(tenPhuongXa);
         }
-
+        
         cbxPhuongXa.setModel(model);
     }
-
-    private boolean themNhanVien() throws ParseException {
+    
+    private boolean themNhanVien() {
         StringBuilder error = new StringBuilder();
         FormatDate fDate = new FormatDate();
         error.append("");
-
+        
         NhanVienDTO nhanVien = new NhanVienDTO();
-
+        
         if (InputValidation.kiemTraTen(txtHo.getText())) {
             nhanVien.setHoDem(txtHo.getText());
         } else {
             error.append("\nHọ đệm không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraTen(txtTen.getText())) {
             nhanVien.setTen(txtTen.getText());
         } else {
             error.append("\nTên không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraNgay(txtNgaySinh.getText())) {
             if (InputValidation.kiemTratuoi(txtNgaySinh.getText())) {
                 nhanVien.setNgaySinh(fDate.toDate(txtNgaySinh.getText()));
-                System.out.println("Ngay sinh: " + nhanVien.getNgaySinh());
             } else {
                 error.append("\nKhông thể thêm nhân viên với độ tuổi này");
             }
         } else {
             error.append("\nNgày sinh không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraCCCD(txtCCCD.getText())) {
             nhanVien.setCccd(txtCCCD.getText());
         } else {
             error.append("\nMã căn cước không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraEmail(txtEmail.getText())) {
             nhanVien.setEmail(txtEmail.getText());
         } else {
             error.append("\nEmail không hợp lệ");
         }
-
+        
         if (InputValidation.kiemTraSDT(txtSdt.getText())) {
             nhanVien.setSdt(txtSdt.getText());
         } else {
             error.append("\nSố điện thoại không hợp lệ");
         }
-
+        
         if (!txtSoNha.getText().isEmpty()) {
             nhanVien.setSoNha(txtSoNha.getText());
         } else {
             error.append("\nVui lòng nhập địa chỉ");
         }
-
+        
         if (maTinhThanh == null || maQuanHuyen == null || maPhuongXa == null) {
             error.append("\nVui lòng nhập đầy đủ tỉnh, huyện, xã");
         } else {
             nhanVien.setMaPhuongXa(maPhuongXa);
         }
-
-        if (InputValidation.kiemTraNgay(txtNgayVaoLam.getText())) {
-            nhanVien.setNgayVaoLam(fDate.toDate(txtNgayVaoLam.getText()));
+        
+        if (txtNgayVaoLam.getText().trim().isEmpty()) {
+            nhanVien.setNgayVaoLam(fDate.getToday());
         } else {
-            error.append("\nNgày vào làm không hợp lệ");
+            if (InputValidation.kiemTraNgay(txtNgayVaoLam.getText())) {
+                nhanVien.setNgayVaoLam(fDate.toDate(txtNgayVaoLam.getText()));
+            } else {
+                error.append("\nNgày vào làm không hợp lệ");
+            }
         }
-
         
         nhanVien.setAnhDaiDien(fileName);
         
-
         if (rdbNam.isSelected()) {
             nhanVien.setGioiTinh("Nam");
         } else if (rdbNu.isSelected()) {
@@ -171,9 +167,9 @@ public class JDialogThemNV extends javax.swing.JDialog {
         } else {
             nhanVien.setGioiTinh("Khác");
         }
-
+        
         if (error.isEmpty()) {
-            return nhanVienBUS.addNhanVien(nhanVien, 0) != null ? true : false;
+            return nhanVienBUS.addNhanVien(nhanVien, 0) != null;
         } else {
             MessageBox.showErrorMessage(null, "Lỗi: " + error);
             return false;
@@ -719,12 +715,6 @@ public class JDialogThemNV extends javax.swing.JDialog {
         if (fileName.equals("")) {
             this.dispose();
         } else {
-//            if (XuLyAnhBUS.deleteImage(fileName)) {
-//                this.dispose();
-//            } else {
-//                System.out.println("Delete image file error!");
-//            }
-//      Sau khi thêm, nên thêm reset form thêm nhân viên thì mới không bị mất ảnh sau khi thêm
             this.dispose();
         }
 
@@ -735,14 +725,14 @@ public class JDialogThemNV extends javax.swing.JDialog {
         if (tenTinhThanh.equals("-Chọn tỉnh thành-")) {
             cbxQuanHuyen.setSelectedIndex(0);
             cbxPhuongXa.setSelectedIndex(0);
-
+            
             cbxQuanHuyen.setEnabled(false);
             cbxPhuongXa.setEnabled(false);
             txtSoNha.setEnabled(false);
             maTinhThanh = null;
         } else {
             maTinhThanh = diaChiBUS.getIdFromTenTinhThanh(tenTinhThanh);
-
+            
             if (maTinhThanh != null) {
                 loadQuanHuyen(maTinhThanh.intValue());
                 cbxQuanHuyen.setEnabled(true);
@@ -760,13 +750,13 @@ public class JDialogThemNV extends javax.swing.JDialog {
         String tenQuanHuyen = (String) cbxQuanHuyen.getSelectedItem();
         if (tenQuanHuyen.equals("-Chọn quận huyện-")) {
             cbxPhuongXa.setSelectedIndex(0);
-
+            
             cbxPhuongXa.setEnabled(false);
             txtSoNha.setEnabled(false);
             maQuanHuyen = null;
         } else {
             maQuanHuyen = diaChiBUS.getIdFromTenQuanHuyen(tenQuanHuyen, maTinhThanh);
-
+            
             if (maQuanHuyen != null) {
                 loadPhuongXa(maQuanHuyen.intValue());
                 cbxPhuongXa.setEnabled(true);
@@ -783,9 +773,8 @@ public class JDialogThemNV extends javax.swing.JDialog {
             maPhuongXa = null;
         } else {
             maPhuongXa = diaChiBUS.getIdFromTenPhuongXa(tenPhuongXa, maQuanHuyen);
-
+            
             if (maPhuongXa != null) {
-                System.out.println("Id xã: " + maPhuongXa + " - Id huyện: " + maQuanHuyen + " - Id tỉnh: " + maTinhThanh);
                 txtSoNha.setEnabled(true);
             } else {
                 MessageBox.showErrorMessage(null, "Lấy id của phường xã thất bại!");
@@ -794,15 +783,9 @@ public class JDialogThemNV extends javax.swing.JDialog {
     }//GEN-LAST:event_cbxPhuongXaItemStateChanged
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        try {
-            if (themNhanVien()) {
-                MessageBox.showInformationMessage(null, "", "Thêm nhân viên mới thành công!");
-                btnCloseActionPerformed(null);
-            } else {
-                MessageBox.showErrorMessage(null, "Thêm nhân viên thất bại!");
-            }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
+        if (themNhanVien()) {
+            MessageBox.showInformationMessage(null, "", "Thêm nhân viên mới thành công!");
+            btnCloseActionPerformed(null);
         }
     }//GEN-LAST:event_btnThemActionPerformed
 
@@ -812,7 +795,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
             fileChooser.setDialogTitle("Chọn ảnh");
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png", "gif");
             fileChooser.setFileFilter(filter);
-
+            
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
@@ -821,7 +804,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
             } else {
                 return;
             }
-
+            
             btnThemAnh.setText("Xóa ảnh");
         } else {
             if (XuLyAnhBUS.deleteImage(fileName)) {
@@ -838,42 +821,7 @@ public class JDialogThemNV extends javax.swing.JDialog {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogThemNV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                JDialogThemNV dialog = new JDialogThemNV(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,7 +1,5 @@
 package quanlynganhang.BUS;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import quanlynganhang.DAO.ChucVuDAO;
 import quanlynganhang.DAO.NhanVienDAO;
 import quanlynganhang.DAO.TaiKhoanNVDAO;
@@ -18,16 +16,11 @@ public class DangNhapBUS {
     private final TinhTrangDangNhapDAO tinhTrangDangNhapDAO = new TinhTrangDangNhapDAO();
 
     public TaiKhoanNVDTO kiemTraDangNhap(String tenDangNhap, String matKhau) {
-        try {
-            TaiKhoanNVDTO taiKhoanNV = taiKhoanNVDAO.selectByUserName(tenDangNhap);
+        TaiKhoanNVDTO taiKhoanNV = taiKhoanNVDAO.selectByUserName(tenDangNhap);
 
-            if (MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMatKhau(), matKhau)) {
-                return taiKhoanNV;
-            } else {
-                return null;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMatKhau(), matKhau)) {
+            return taiKhoanNV;
+        } else {
             return null;
         }
     }

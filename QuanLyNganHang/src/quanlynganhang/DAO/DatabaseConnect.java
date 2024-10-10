@@ -24,9 +24,9 @@ public class DatabaseConnect {
         } catch (Exception e) {
             StringBuilder errorString = new StringBuilder();
             errorString.append("Lỗi kết nối đến cơ sở dữ liệu, vui lòng kiểm tra lại cấu hình!");
-            errorString.append("\nTên cơ sở dữ liệu: " + DB_NAME);
-            errorString.append("\nusername: " + USERNAME);
-            errorString.append("\npassword: " + PASSWORD);
+            errorString.append("\nTên cơ sở dữ liệu bạn đang kết nối: " + DB_NAME);
+            errorString.append("\nusername bạn đặt để kết nối: " + USERNAME);
+            errorString.append("\npassword bạn đặt để kết nối: " + PASSWORD);
             MessageBox.showErrorMessage(null, errorString.toString());
             return null;
         }

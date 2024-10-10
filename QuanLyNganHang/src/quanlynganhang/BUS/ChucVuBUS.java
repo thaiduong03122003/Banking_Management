@@ -4,22 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import quanlynganhang.DAO.ChucVuDAO;
 import quanlynganhang.DTO.ChucVuDTO;
-import quanlynganhang.DTO.NhanVienDTO;
 
 public class ChucVuBUS {
 
     private final ChucVuDAO chucVuDAO = new ChucVuDAO();
-    private NhanVienDTO nhanVien;
 
     public ChucVuBUS() {
-    }
-
-    public ChucVuBUS(NhanVienDTO nhanVien) {
-        this.nhanVien = nhanVien;
     }
 
     private List<ChucVuDTO> getDSChucVu(int biXoa) {
@@ -49,10 +41,10 @@ public class ChucVuBUS {
             data[rowIndex][7] = chucVu.getqLTKKhachHang();
             data[rowIndex][8] = chucVu.getqLTKNhanVien();
             data[rowIndex][9] = chucVu.getqLThe();
-            data[rowIndex][10] = chucVu.getqLGiaoDich();
-            data[rowIndex][11] = chucVu.getqLGuiTietKiem();
-            data[rowIndex][12] = chucVu.getqLVayVon();
-            data[rowIndex][13] = chucVu.getqLVayTinDung();
+            data[rowIndex][10] = chucVu.getqlChucVu();
+            data[rowIndex][11] = chucVu.getqLGiaoDich();
+            data[rowIndex][12] = chucVu.getqLGuiTietKiem();
+            data[rowIndex][13] = chucVu.getqLVayVon();
             rowIndex++;
         }
         return data;

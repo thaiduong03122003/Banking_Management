@@ -1,8 +1,5 @@
 package quanlynganhang.BUS;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
 import quanlynganhang.DTO.ChucVuDTO;
 import quanlynganhang.DTO.NhanVienDTO;
 import quanlynganhang.DTO.TaiKhoanNVDTO;
@@ -58,7 +55,6 @@ public class DieuHuongMenuBUS {
         
     }
     
-
     private void showError() {
         MessageBox.showErrorMessage(null, "Bạn không có quyền để mở giao diện này!");
     }
@@ -157,7 +153,7 @@ public class DieuHuongMenuBUS {
                         return;
                     }
                 } else if (index == 9) {
-                    if (chucVu.getThemChucVu() == 1) {
+                    if (splitQuyen(chucVu.getqlChucVu()) == 1) {
                         appAdmin.showForm(new FormThemChucVu(taiKhoanNV, chucVu), "Thêm chức vụ");
                     } else {
                         showError();
@@ -228,7 +224,7 @@ public class DieuHuongMenuBUS {
                             return;
                         }
                     } else if (subIndex == 2) {
-                        if (splitQuyen(chucVu.getqLThe() , 2) == 1 && chucVu.getqLVayTinDung() == 1) {
+                        if (splitQuyen(chucVu.getqLThe() , 2) == 1) {
                             app.showForm(new FormMoTheTinDung(taiKhoanNV, chucVu), "Mở thẻ tín dụng");
                         } else {
                             showError();

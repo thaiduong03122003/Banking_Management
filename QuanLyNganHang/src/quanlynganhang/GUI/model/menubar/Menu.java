@@ -103,7 +103,6 @@ public class Menu extends JPanel {
         setContentMenu();
         init();
         setInfoMenuHeader();
-        System.out.println("Gia tri cua isAdmin: " + this.isAdmin);
     }
  
     private void init() {

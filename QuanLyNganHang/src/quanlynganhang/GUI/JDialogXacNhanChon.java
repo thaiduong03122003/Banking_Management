@@ -123,6 +123,7 @@ public class JDialogXacNhanChon extends javax.swing.JDialog {
         lbTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lbTitle.setText("Nhập mật khẩu xác nhận của");
 
+        pwfMatKhau.setText("Test@123");
         pwfMatKhau.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 pwfMatKhauKeyReleased(evt);

@@ -1,17 +1,8 @@
 package quanlynganhang.GUI.adminUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import java.awt.Font;
 import java.io.File;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import quanlynganhang.BUS.MaHoaMatKhauBUS;
 import quanlynganhang.BUS.NhanVienBUS;
 import quanlynganhang.BUS.TaiKhoanNVBUS;
@@ -106,7 +97,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
 
         String tenDangNhap = txtTenDangNhap.getText().trim();
         if (!tenDangNhap.isEmpty()) {
-            if (InputValidation.kiemTraTen(tenDangNhap)) {
+            if (InputValidation.kiemTraTenDangNhap(tenDangNhap)) {
                 taiKhoanNV.setTenDangNhap(tenDangNhap);
             } else {
                 error.append("\nTên đăng nhập không hợp lệ!");
@@ -858,16 +849,7 @@ public class JFrameThemTKNV2 extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-//        FlatRobotoFont.install();
-//        FlatLaf.registerCustomDefaultsSource("quanlynganhang.GUI.themes");
-//        UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 13));
-//        FlatMacLightLaf.setup();
-//
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                System.out.println("The form will be executed if there are arguments passed in!");
-//            }
-//        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

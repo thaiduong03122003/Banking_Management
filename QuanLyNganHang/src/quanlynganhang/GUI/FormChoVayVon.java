@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import quanlynganhang.BUS.validation.FormatNumber;
 
 public class FormChoVayVon extends javax.swing.JPanel {
 
@@ -277,14 +278,14 @@ public class FormChoVayVon extends javax.swing.JPanel {
     }
 
     private void taoTaiKhoanVV() {
-        if (txtTienVay.getText().isEmpty() || maThoiHan == 0 || txtThuNhap.getText().isEmpty() || (txtSTKVay.getText().isEmpty() && !isAutoGenerateSTK) || txtTenTKVay.getText().isEmpty()) {
+        if (txtTienVay.getText().isEmpty() || txtThuNhap.getText().isEmpty() || (txtSTKVay.getText().isEmpty() && !isAutoGenerateSTK) || txtTenTKVay.getText().isEmpty()) {
             MessageBox.showErrorMessage(null, "Vui lòng điền đầy đủ thông tin!");
         } else {
             StringBuilder error = new StringBuilder();
             error.append("");
 
             try {
-                soTien = new BigInteger(txtTienVay.getText());
+                soTien = new BigInteger(txtTienVay.getText().trim().replace(",", ""));
 
                 if (isVayTinChap == 1) {
                     if (soTien.compareTo(maxGD1) > 0 || soTien.compareTo(minGD) < 0) {
@@ -307,6 +308,19 @@ public class FormChoVayVon extends javax.swing.JPanel {
                 } else {
                     error.append("\nNgày trả nợ không hợp lệ, vui lòng nhập đúng định dạng dd/mm/yyyy");
                 }
+            }
+            
+            if (rdbVayCoDB.isSelected() && btnXemMinhChung.getText().equals("(Chưa có)")) {
+                error.append("\nVui lòng cung cấp minh chứng");
+            }
+            
+            if (cbxThoiHan.getSelectedIndex() == 0) {
+                error.append("\nVui lòng chọn thời hạn vay");
+            }
+
+            String thuNhap = txtThuNhap.getText().trim().replace(",", "");
+            if (!InputValidation.kiemTraSoTien(thuNhap)) {
+                error.append("\nSố tiền thu nhập trung bình không hợp lệ");
             }
 
             TaiKhoanKHDTO taiKhoanKH = new TaiKhoanKHDTO();
@@ -334,64 +348,70 @@ public class FormChoVayVon extends javax.swing.JPanel {
                 error.append("\nTên tài khoản vay không hợp lệ");
             }
 
-            if (error.isEmpty()) {
-                if (isVayTinChap == 1 && !vayVonBUS.kiemTraDieuKienVay(txtThuNhap.getText(), txtTienVay.getText(), maThoiHan)) {
-                    MessageBox.showErrorMessage(null, "Thu nhập của người này không đủ điều kiện để vay!");
-                } else {
+            if (!error.isEmpty()) {
+                MessageBox.showErrorMessage(null, "Lỗi: " + error);
+                return;
+            }
 
-                    taiKhoanKH.setMaKhachHang(khachHang.getMaKH());
-                    taiKhoanKH.setNgayTao(fDate.getToday());
-                    taiKhoanKH.setMaNganHang(1);
-                    taiKhoanKH.setSoDu("0");
-                    taiKhoanKH.setMaLoaiTaiKhoan(4);
-                    taiKhoanKH.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
-                    taiKhoanKH.setMaTrangThai(6);
+            if (isVayTinChap == 1 && !vayVonBUS.kiemTraDieuKienVay(txtThuNhap.getText().trim().replace(",", ""), txtTienVay.getText().trim().replace(",", ""), maThoiHan)) {
+                MessageBox.showErrorMessage(null, "Thu nhập của người này không đủ điều kiện để vay!");
+                return;
+            }
 
-                    int maTKKH = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanKH);
+            if (MessageBox.showConfirmMessage(null, "Xác nhận tạo tài khoản vay vốn cho khách hàng " + khachHang.getHoDem() + " " + khachHang.getTen() + "?") == JOptionPane.NO_OPTION) {
+                return;
+            }
 
-                    if (maTKKH != 0) {
+            taiKhoanKH.setMaKhachHang(khachHang.getMaKH());
+            taiKhoanKH.setNgayTao(fDate.getToday());
+            taiKhoanKH.setMaNganHang(1);
+            taiKhoanKH.setSoDu("0");
+            taiKhoanKH.setMaLoaiTaiKhoan(4);
+            taiKhoanKH.setMatKhau(MaHoaMatKhauBUS.encryptPassword("123"));
+            taiKhoanKH.setMaTrangThai(6);
 
-                        ThoiHanVayDTO thoiHan = vayVonBUS.getThoiHanById(maThoiHan);
+            int maTKKH = taiKhoanKHBUS.addTaiKhoanKH(taiKhoanKH);
 
-                        VayVonDTO vayVon = new VayVonDTO();
+            if (maTKKH != 0) {
 
-                        vayVon.setMaThoiHan(maThoiHan);
-                        vayVon.setTaiSanDamBao(isVayTinChap);
-                        vayVon.setAnhMinhChung(fileName);
-                        vayVon.setMaTaiKhoanKH(maTKKH);
-                        vayVon.setSoTienVay(txtTienVay.getText());
-                        vayVon.setMaTrangThai(8);
-                        vayVon.setNgayTraNo(ngayTraNo == "" ? fDate.addMonth(1) : fDate.toDate(ngayTraNo));
-                        vayVon.setNgayHetThoiHan(fDate.addMonth(thoiHan.getSoThoiHan()));
-                        vayVon.setDuNoGoc(txtTienVay.getText());
+                ThoiHanVayDTO thoiHan = vayVonBUS.getThoiHanById(maThoiHan);
 
-                        if (vayVonBUS.addVayVon(vayVon) != 0) {
+                VayVonDTO vayVon = new VayVonDTO();
 
-                            GiaoDichDTO giaoDich = new GiaoDichDTO();
+                vayVon.setMaThoiHan(maThoiHan);
+                vayVon.setTaiSanDamBao(isVayTinChap);
+                vayVon.setAnhMinhChung(fileName);
+                vayVon.setMaTaiKhoanKH(maTKKH);
+                vayVon.setSoTienVay(txtTienVay.getText().trim().replace(",", ""));
+                vayVon.setMaTrangThai(8);
+                vayVon.setNgayTraNo(ngayTraNo == "" ? fDate.addMonth(1) : fDate.toDate(ngayTraNo));
+                vayVon.setNgayHetThoiHan(fDate.addMonth(thoiHan.getSoThoiHan()));
+                vayVon.setDuNoGoc(txtTienVay.getText().trim().replace(",", ""));
 
-                            giaoDich.setSoTien(txtTienVay.getText());
-                            giaoDich.setMaTaiKhoanKH(maTKKH);
-                            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
-                            giaoDich.setMaLoaiGiaoDich(7);
-                            giaoDich.setNgayGiaoDich(fDate.getToday());
-                            giaoDich.setNoiDungGiaoDich("Chuyển về vay vốn về số tài khoản " + taiKhoanKH.getSoTaiKhoan());
-                            giaoDich.setMaTrangThai(4);
+                if (vayVonBUS.addVayVon(vayVon) != 0) {
 
-                            if (giaoDichBUS.chuyenTienLaiTKVeTK(giaoDich)) {
-                                MessageBox.showInformationMessage(null, "", "Tạo tài khoản vay vốn thành công!");
-                            } else {
-                                MessageBox.showErrorMessage(null, "Chuyển tiền thất bại");
-                            }
-                        } else {
-                            MessageBox.showErrorMessage(null, "Tạo khoản vay thất bại!");
-                        }
+                    GiaoDichDTO giaoDich = new GiaoDichDTO();
+
+                    giaoDich.setSoTien(txtTienVay.getText().trim().replace(",", ""));
+                    giaoDich.setMaTaiKhoanKH(maTKKH);
+                    giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
+                    giaoDich.setMaLoaiGiaoDich(7);
+                    giaoDich.setNgayGiaoDich(fDate.getToday());
+                    giaoDich.setNoiDungGiaoDich("Chuyển về vay vốn về số tài khoản " + taiKhoanKH.getSoTaiKhoan());
+                    giaoDich.setMaTrangThai(4);
+
+                    if (giaoDichBUS.chuyenTienLaiTKVeTK(giaoDich)) {
+                        MessageBox.showInformationMessage(null, "", "Tạo tài khoản vay vốn thành công!");
                     } else {
-                        MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
+                        MessageBox.showErrorMessage(null, "Chuyển tiền thất bại");
                     }
+                } else {
+                    MessageBox.showErrorMessage(null, "Tạo khoản vay thất bại!");
                 }
             } else {
-                MessageBox.showErrorMessage(null, "Lỗi: " + error);
+                MessageBox.showErrorMessage(null, "Số tài khoản đã tồn tại trong hệ thống!");
             }
+
         }
     }
 
@@ -484,6 +504,12 @@ public class FormChoVayVon extends javax.swing.JPanel {
         jLabel4.setIcon(new FlatSVGIcon("quanlynganhang/icon/money_label.svg")
         );
         jLabel4.setText("Số tiền đề nghị vay");
+
+        txtTienVay.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtTienVayKeyReleased(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel1.setText("VND");
@@ -748,6 +774,12 @@ public class FormChoVayVon extends javax.swing.JPanel {
         jLabel17.setIcon(new FlatSVGIcon("quanlynganhang/icon/account_num_label.svg")
         );
         jLabel17.setText("Thu nhập trung bình/tháng");
+
+        txtThuNhap.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtThuNhapKeyReleased(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel3.setText("VND");
@@ -1311,11 +1343,7 @@ public class FormChoVayVon extends javax.swing.JPanel {
         if (txtHoDem.getText().isEmpty()) {
             MessageBox.showErrorMessage(null, "Vui lòng chọn khách hàng!");
         } else {
-            if (MessageBox.showConfirmMessage(null, "Xác nhận tạo tài khoản vay vốn cho khách hàng " + khachHang.getHoDem() + " " + khachHang.getTen() + "?") == JOptionPane.YES_OPTION) {
-                taoTaiKhoanVV();
-            } else {
-                return;
-            }
+            taoTaiKhoanVV();
         }
     }//GEN-LAST:event_btnTaoTKVayActionPerformed
 
@@ -1367,6 +1395,33 @@ public class FormChoVayVon extends javax.swing.JPanel {
             isAutoGenerateSTK = false;
         }
     }//GEN-LAST:event_chxSTKTuDongActionPerformed
+
+    private void txtTienVayKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTienVayKeyReleased
+        String currency = txtTienVay.getText().trim().replace(",", "");
+        if (currency.isEmpty()) {
+            return;
+        }
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtTienVay.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
+        }
+    }//GEN-LAST:event_txtTienVayKeyReleased
+
+    private void txtThuNhapKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtThuNhapKeyReleased
+        String currency = txtThuNhap.getText().trim().replace(",", "");
+
+        if (currency.isEmpty()) {
+            return;
+        }
+        
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtThuNhap.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
+        }
+    }//GEN-LAST:event_txtThuNhapKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

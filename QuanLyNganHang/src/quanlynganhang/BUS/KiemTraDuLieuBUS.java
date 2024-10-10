@@ -1,12 +1,8 @@
 package quanlynganhang.BUS;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import quanlynganhang.BUS.validation.FormatDate;
 import quanlynganhang.BUS.GiaoDichBUS;
 import quanlynganhang.BUS.validation.InputValidation;
@@ -72,11 +68,8 @@ public class KiemTraDuLieuBUS {
             return;
         }
         
-        System.out.println("Dang kiem tra tai khoan khoa");
-        
         for (KhoaTaiKhoanDTO khoaTK : listKhoaTK) {
             if (!InputValidation.kiemTraNgayKhoa(fDate.toString(khoaTK.getNgayMoKhoa()))) {
-                System.out.println("Mo khoa!");
                 
                 khoaTaiKhoanDAO.unlock(khoaTK.getMaKhoaTK());
                 doiTrangThaiTaiKhoan(khoaTK.getMaTaiKhoan(), khoaTK.getLoaiTaiKhoan());
@@ -94,8 +87,6 @@ public class KiemTraDuLieuBUS {
 
     public void chayKiemTraTinhTrangGTK() {
         try {
-            System.out.println("Dang kiem tra tinh trang!");
-
             List<TietKiemDTO> listTK = tietKiemDAO.selectAll();
             TaiKhoanKHDTO taiKhoanKH;
             if (listTK != null && !listTK.isEmpty()) {
@@ -103,10 +94,7 @@ public class KiemTraDuLieuBUS {
 
                     Date ktNgayNhanLai = tietKiemItem.getNgayNhanLai();
 
-                    System.out.println("Gia tri ban dau: " + ktNgayNhanLai.getTime());
-
                     while (ktNgayNhanLai.getTime() < fDate.getToday().getTime()) {
-                        System.out.println("Kiem tra ngay nhan lai thanh cong!");
 
                         taiKhoanKH = taiKhoanKHDAO.selectById(tietKiemItem.getMaTaiKhoanTK());
 
@@ -122,7 +110,6 @@ public class KiemTraDuLieuBUS {
                                 soDu = soDu.add(tienLai);
 
                                 if (giaoDichBUS.truTienTKTrongKho(soTienLai)) {
-                                    System.out.println("So du moi: " + soDu);
                                     taiKhoanKHDAO.updateMoney(tietKiem.getMaTaiKhoanTK(), soDu.toString());
 
                                     TaiKhoanKHDTO taiKhoanNguon = taiKhoanKHDAO.selectById(tietKiem.getMaTaiKhoanNguonTien());
@@ -171,7 +158,6 @@ public class KiemTraDuLieuBUS {
                             tietKiemDAO.updateTietKiem(tietKiem.getMaGuiTK(), newNgayMoTK, newNgayNhanLai, tietKiem.getSoTienGoc());
                             //GIA HẠN CẢ GỐC VÀ LÃI
                         } else {
-                            System.out.println("Dang xu ly gia han!");
 
                             String soTienLai = soTienLai(taiKhoanKH, tietKiem, fDate.getToday(), false);
                             BigInteger soDu = new BigInteger(taiKhoanKH.getSoDu());
@@ -179,36 +165,22 @@ public class KiemTraDuLieuBUS {
 
                             if (tietKiem.getHinhThucNhanLai().equals("Chuyển về tài khoản tiết kiệm")) {
 
-                                System.out.println("Dang thuc hien chuyen tien ve tktk");
-
                                 GiaoDichDTO giaoDich = thongTinGD(taiKhoanKH.getMaTKKH(), soTienLai, "Chuyển tiền lãi tiết kiệm về tài khoản " + taiKhoanKH.getSoTaiKhoan());
-                                if (giaoDichBUS.chuyenTienLaiTKVeTK(giaoDich)) {
-                                    System.out.println("Giao dich thanh cong!");
-                                } else {
-                                    System.out.println("Giao dich that bai!");
-                                }
+                                giaoDichBUS.chuyenTienLaiTKVeTK(giaoDich);
                             }
 
                             Date newNgayNhanLai = fDate.addMonth(tietKiem.getNgayNhanLai(), tietKiem.getSoKyHan());
 
                             ktNgayNhanLai = newNgayNhanLai;
 
-                            System.out.println("Ngay nhan lai moi: " + ktNgayNhanLai);
-
                             Date newNgayMoTK = fDate.addMonth(tietKiem.getNgayMoTK(), tietKiem.getSoKyHan());
 
-                            System.out.println("Ngay mo gui tiet kiem moi: " + newNgayMoTK);
-
                             String newSoTienGoc = (soDu.add(tienLai)).toString();
-
-                            System.out.println("So tien gui tiet kiem moi: " + newSoTienGoc);
 
                             tietKiemDAO.updateTietKiem(tietKiem.getMaGuiTK(), newNgayMoTK, newNgayNhanLai, newSoTienGoc);
                         }
                     }
                 }
-            } else {
-                System.out.println("Danh sach kiem tra rong!");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -217,28 +189,21 @@ public class KiemTraDuLieuBUS {
     }
 
     public void chayKiemTraTinhTrangVayVon() {
-        System.out.println("Dang kiem tra tinh trang vay von");
-
         List<VayVonDTO> listVayVon = vayVonBUS.getDSVayVon();
         if (listVayVon != null && !listVayVon.isEmpty()) {
             for (VayVonDTO vayVon : listVayVon) {
                 xuLyTaiKhoanVay(vayVon);
             }
-        } else {
-            System.out.println("Chua co khoan vay nao can thanh toan!");
         }
     }
 
     public void xuLyTaiKhoanVay(VayVonDTO vayVon) {
         int soNgay = fDate.tinhSoNgay(toDay, vayVon.getNgayTraNo());
 
-        System.out.println("So ngay vay: " + soNgay);
         if (soNgay >= 1) {
 
             List<TraKhoanVayDTO> listTraVay = traVayBUS.getDSByMaVayVon(vayVon.getMaVayVon());
             int soThang = fDate.tinhSoThang(toDay, vayVon.getNgayTraNo());
-
-            System.out.println("So thang: " + soThang);
 
             if (soThang > vayVon.getSoThoiHan()) {
                 soThang = vayVon.getSoThoiHan();
@@ -271,8 +236,6 @@ public class KiemTraDuLieuBUS {
             traVay.setKyTraNo(kyTraVay);
             traVay.setThoiGian(fDate.addMonth(vayVon.getNgayTraNo(), i));
 
-            System.out.println("Thoi gian: " + traVay.getThoiGian());
-
             traVay.setSoTienDaTra("0");
             traVay.setTienConThieu("0");
             traVay.setTienNoGoc(tinhTienVayTheoKy(vayVon.getSoTienVay(), vayVon.getSoThoiHan()));
@@ -282,7 +245,6 @@ public class KiemTraDuLieuBUS {
 
             traVayBUS.addTraKhoanNo(traVay);
             if (fDate.tinhSoThang(fDate.addMonth(vayVon.getNgayTraNo(), i), vayVon.getNgayHetThoiHan()) > 0) {
-                System.out.println("Da den gioi han!");
                 return;
             }
 
@@ -332,8 +294,6 @@ public class KiemTraDuLieuBUS {
     }
 
     private void xuLyTienPhat(VayVonDTO vayVon) {
-        System.out.println("Dang xu ly tien phat");
-
         List<TraKhoanVayDTO> listTraVay = traVayBUS.getDSByMaVayVon(vayVon.getMaVayVon());
 
         if (listTraVay != null && !listTraVay.isEmpty()) {
@@ -351,23 +311,15 @@ public class KiemTraDuLieuBUS {
             soThang = fDate.tinhSoThang(toDay, traVay.getThoiGian());
 
             if (soThang >= 1) {
-                System.out.println("Dang cap nhat trang thai cho ma " + traVay.getMaKyTraNo());
 
                 if (traVay.getMaTrangThai() == 14) {
-                    System.out.println("Phat hien co khoan vay chua tra du!");
 
                     if (traVayBUS.updateTrangThai(traVay.getMaKyTraNo(), 15)) {
-                        System.out.println("Kiem tra lai phat thanh cong cho ma " + traVay.getMaKyTraNo());
                         tinhTienPhat(traVay.getMaKyTraNo(), vayVon);
-                    } else {
-                        System.out.println("Kiem tra lai phat that cua ma " + traVay.getMaKyTraNo() + " that bai!");
                     }
                 } else if (traVay.getMaTrangThai() == 8) {
                     if (traVayBUS.updateTrangThai(traVay.getMaKyTraNo(), 13)) {
-                        System.out.println("Kiem tra lai phat thanh cong cho ma " + traVay.getMaKyTraNo());
                         tinhTienPhat(traVay.getMaKyTraNo(), vayVon);
-                    } else {
-                        System.out.println("Kiem tra lai phat that cua ma " + traVay.getMaKyTraNo() + " that bai!");
                     }
                 }
             }
@@ -375,7 +327,6 @@ public class KiemTraDuLieuBUS {
     }
 
     private void tinhTienPhat(int maKyTraNo, VayVonDTO vayVon) {
-        System.out.println("Dang tinh tien phat");
 
         TraKhoanVayDTO traVay = traVayBUS.getTraKhoanVayById(maKyTraNo);
 
@@ -419,11 +370,7 @@ public class KiemTraDuLieuBUS {
             return;
         }
 
-        if (traVayBUS.updateTienPhat(traVay.getMaKyTraNo(), result.toString())) {
-            System.out.println("Cap nhat lai phat thanh cong cho ma " + traVay.getMaKyTraNo());
-        } else {
-            System.out.println("Cap nhat lai phat that cua ma " + traVay.getMaKyTraNo() + " that bai!");
-        }
+        traVayBUS.updateTienPhat(traVay.getMaKyTraNo(), result.toString());
     }
 
     private String soTienLai(TaiKhoanKHDTO taiKhoanKH, TietKiemDTO tietKiem, Date homNay, boolean isTruocHan) {
@@ -450,7 +397,6 @@ public class KiemTraDuLieuBUS {
             laiSuat = new BigInteger(String.valueOf((int) (tietKiem.getLaiSuat() * 10)));
         }
 
-        System.out.println("So ngay: " + soNgay);
         BigInteger nam = new BigInteger("365");
 
         BigInteger lai = new BigInteger("1000");

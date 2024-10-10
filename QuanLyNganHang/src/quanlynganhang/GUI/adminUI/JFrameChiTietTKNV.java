@@ -132,7 +132,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
 
     }
 
-    private boolean capNhatTaiKhoanNhanVien() throws ParseException {
+    private boolean capNhatTaiKhoanNhanVien() {
         StringBuilder error = new StringBuilder();
         FormatDate fDate = new FormatDate();
         error.append("");
@@ -142,10 +142,10 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
         int maTaiKhoanNV = Integer.parseInt(txtMaTKNV.getText());
         taiKhoanNV.setMaTKNV(maTaiKhoanNV);
 
-        if (InputValidation.kiemTraTen(txtTenDangNhap.getText().trim())) {
+        if (InputValidation.kiemTraTenDangNhap(txtTenDangNhap.getText().trim())) {
             taiKhoanNV.setTenDangNhap(txtTenDangNhap.getText().trim());
         } else {
-            error.append("Tên đang nhập không hợp lệ!");
+            error.append("Tên đăng nhập không hợp lệ!");
         }
 
         if (error.isEmpty()) {
@@ -154,6 +154,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
                 this.taiKhoanNV = taiKhoanNV;
                 return true;
             } else {
+                MessageBox.showErrorMessage(null, "Tên đăng nhập này đã có trong hệ thống, vui lòng chọn tên khác!");
                 return false;
             }
 
@@ -989,16 +990,10 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
 
     private void btnCapNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCapNhatActionPerformed
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn cập nhật thông tin?") == JOptionPane.YES_OPTION) {
-            try {
                 if (capNhatTaiKhoanNhanVien()) {
                     MessageBox.showInformationMessage(null, "", "Cập nhật thông tin tài khoản nhân viên thành công!");
                     btnSuaThongTinActionPerformed(null);
-                } else {
-                    MessageBox.showErrorMessage(null, "Cập nhật thông tin tài khoản nhân viên thất bại!");
-                }
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
+                } 
         } else {
             return;
         }
@@ -1027,7 +1022,7 @@ public class JFrameChiTietTKNV extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTrangThaiTKtxtNgayVaoLamActionPerformed
 
     private void btnDoiTrangThaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiTrangThaiActionPerformed
-        JDiaLogDoiTrangThai doiTrangThai = new JDiaLogDoiTrangThai(null, true, "Mã tài khoản", "Account and Card", taiKhoanNV.getMaTKNV(), taiKhoanNV.getTenTrangThai(), "TKNV");
+        JDiaLogDoiTrangThai doiTrangThai = new JDiaLogDoiTrangThai(null, true, "Mã tài khoản", "Account and Card", taiKhoanNV.getMaTKNV(), taiKhoanNV.getTenTrangThai(), "TKNV", quyenXoa);
         doiTrangThai.setResizable(false);
         doiTrangThai.setDefaultCloseOperation(JDiaLogDoiTrangThai.DISPOSE_ON_CLOSE);
         doiTrangThai.setVisible(true);

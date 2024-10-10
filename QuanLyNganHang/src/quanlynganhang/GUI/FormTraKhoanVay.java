@@ -20,6 +20,7 @@ import quanlynganhang.BUS.TaiKhoanKHBUS;
 import quanlynganhang.BUS.TraKhoanVayBUS;
 import quanlynganhang.BUS.VayVonBUS;
 import quanlynganhang.BUS.validation.FormatDate;
+import quanlynganhang.BUS.validation.FormatNumber;
 import quanlynganhang.BUS.validation.InputValidation;
 import quanlynganhang.DTO.GiaoDichDTO;
 import quanlynganhang.DTO.TaiKhoanKHDTO;
@@ -89,13 +90,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
 
     public void getMaTaiKhoanVay(int maTaiKhoanKH) {
         maTaiKhoanKHVay = maTaiKhoanKH;
+        loadThongTinTKVay();
 
-        try {
-            loadThongTinTKVay();
-        } catch (Exception ex) {
-            System.out.println("Lỗi tài khoản vay vốn");
-            ex.printStackTrace();
-        }
     }
 
     private void initCustomUI() {
@@ -110,8 +106,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jPSoTienTra.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPDuNo.putClientProperty(FlatClientProperties.STYLE, ""
-            + "background:$BodyPanel.background;");
-        jPPINCode.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
         jPFooterCus.putClientProperty(FlatClientProperties.STYLE, ""
             + "background:$BodyPanel.background;");
@@ -132,9 +126,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         txtLaiPhat.putClientProperty(FlatClientProperties.STYLE, ""
             + "foreground:$BodyPanel.foreground;");
 
-        pwfMaPINNV.putClientProperty(FlatClientProperties.STYLE, ""
-            + "showRevealButton:true;");
-
         txtSTK.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtTenTK.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
         txtTienPhaiTra.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "(Chưa chọn)");
@@ -147,42 +138,42 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     }
 
     private void loadThongTinTKVay() {
-        try {
-            TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKHVay);
+        TaiKhoanKHDTO taiKhoanKH = taiKhoanKHBUS.getTaiKhoanKHById(maTaiKhoanKHVay);
 
-            if (taiKhoanKH != null) {
-                taiKhoanKHVay = taiKhoanKH;
-                maKhachHang = taiKhoanKH.getMaKhachHang();
+        if (taiKhoanKH != null) {
 
-                loadTKNguon();
-
-                lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
-                lbMaTK.setText("" + taiKhoanKH.getMaTKKH());
-                txtSTK.setText(taiKhoanKH.getSoTaiKhoan());
-                txtTenTK.setText(taiKhoanKH.getTenTaiKhoan());
-
-                VayVonDTO vayVon = vayVonBUS.getByMaTKKH(taiKhoanKHVay.getMaTKKH());
-
-                if (vayVon != null) {
-                    maVayVon = vayVon.getMaVayVon();
-
-                    duNo = vayVon.getDuNoGoc();
-                    txtDuNo.setValue(new BigDecimal(duNo));
-
-                    System.out.println("Du no goc: " + vayVon.getDuNoGoc());
-
-                    lbTenKH.setText(taiKhoanKH.getTenKhachHang());
-
-                    loadDanhSachKyTraNo(true);
-                } else {
-                    MessageBox.showErrorMessage(null, "Tài khoản này đã bị đóng!");
-                }
-
-            } else {
-                MessageBox.showErrorMessage(null, "Không tìm thấy thông tin tài khoản vay!");
+            if (taiKhoanKH.getMaTrangThai() != 6) {
+                MessageBox.showErrorMessage(null, "Tài khoản này chưa được kích hoạt hoặc đã bị đóng!");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            taiKhoanKHVay = taiKhoanKH;
+            maKhachHang = taiKhoanKH.getMaKhachHang();
+
+            loadTKNguon();
+            capNhatCacKyVay();
+            
+            lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
+            lbMaTK.setText("" + taiKhoanKH.getMaTKKH());
+            txtSTK.setText(taiKhoanKH.getSoTaiKhoan());
+            txtTenTK.setText(taiKhoanKH.getTenTaiKhoan());
+
+            VayVonDTO vayVon = vayVonBUS.getByMaTKKH(taiKhoanKHVay.getMaTKKH());
+
+            if (vayVon != null) {
+                maVayVon = vayVon.getMaVayVon();
+
+                duNo = vayVon.getDuNoGoc();
+                txtDuNo.setValue(new BigDecimal(duNo));
+
+                lbTenKH.setText(taiKhoanKH.getTenKhachHang());
+
+                loadDanhSachKyTraNo(true);
+            } else {
+                MessageBox.showErrorMessage(null, "Không tìm thấy khoản vay của tài khoản này!!");
+            }
+
+        } else {
+            MessageBox.showErrorMessage(null, "Không tìm thấy thông tin tài khoản vay!");
         }
     }
 
@@ -210,7 +201,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
 
     private void kiemTraThanhToanKhoanNo() {
 
-        String maPIN = String.valueOf(pwfMaPINNV.getPassword());
         if (maTraKhoanVay == 0) {
             MessageBox.showErrorMessage(null, "Không tìm thấy khoản vay!");
             return;
@@ -221,21 +211,14 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
             return;
         }
 
-//        if (!MaHoaMatKhauBUS.checkPassword(taiKhoanNV.getMaPIN(), maPIN)) {
-//            MessageBox.showErrorMessage(null, "Mã PIN không đúng!");
-//            return;
-//        }
-
-        BigDecimal soTienTra = new BigDecimal((txtSoTienTra.getValue()).toString());
-
-        if (!InputValidation.kiemTraSoTien(soTienTra.toString()) || !InputValidation.kiemTraSoTien(tongTien) || !InputValidation.kiemTraSoTien(tienVay) || !InputValidation.kiemTraSoTien(tienLai) || !InputValidation.kiemTraSoTien(tienPhat)) {
+        if (!InputValidation.kiemTraSoTien(txtSoTienTra.getText().trim().replace(",", "")) || !InputValidation.kiemTraSoTien(tongTien) || !InputValidation.kiemTraSoTien(tienVay) || !InputValidation.kiemTraSoTien(tienLai) || !InputValidation.kiemTraSoTien(tienPhat)) {
             MessageBox.showErrorMessage(null, "Số tiền không hợp lệ");
             return;
         }
 
-        if (InputValidation.kiemTraSoTien(soTienTra.toString())) {
+        BigDecimal soTienTra = new BigDecimal(txtSoTienTra.getText().trim().replace(",", ""));
 
-            System.out.println("Dang kiem tra so tien");
+        if (InputValidation.kiemTraSoTien(soTienTra.toString())) {
 
             BigDecimal duNoGoc, tongTien, sotienDaTra, tienVay;
 
@@ -249,8 +232,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 return;
             } else {
                 BigDecimal phanTramTra = soTienTra.divide(tongTien, 1, RoundingMode.HALF_UP).multiply(new BigDecimal("100"));
-
-                System.out.println("Phan tram tra: " + phanTramTra.toString() + "%");
 
                 if (sotienDaTra.compareTo(new BigDecimal("0")) == 0 && phanTramTra.compareTo(new BigDecimal("60")) == -1) {
                     MessageBox.showErrorMessage(null, "Vui lòng thanh toán ít nhất 60% số tiền cần trả!");
@@ -305,10 +286,10 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
 
     private boolean capNhatKyThanhToan(BigDecimal soTienTra, BigDecimal soTienDaTra, BigDecimal tongTien) {
         int maTrangThai;
-        BigDecimal soTienConThieu;
+        BigDecimal soTienVayConThieu;
         if (soTienTra.compareTo(tongTien) == 0) {
             maTrangThai = 9;
-            soTienConThieu = new BigDecimal("0");
+            soTienVayConThieu = new BigDecimal("0");
         } else {
             maTrangThai = 14;
 
@@ -318,19 +299,19 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
             phat = new BigDecimal(tienPhat);
             vay = new BigDecimal(tienVay);
 
-            soTienConThieu = soTienTra.subtract(phat);
-            soTienConThieu = soTienConThieu.subtract(lai);
-            soTienConThieu = vay.subtract(soTienConThieu);
+            soTienVayConThieu = soTienTra.subtract(phat);
+            soTienVayConThieu = soTienVayConThieu.subtract(lai);
+            soTienVayConThieu = vay.subtract(soTienVayConThieu);
 
-            this.soTienConThieu = soTienConThieu.toString();
-            if (!(soTienConThieu.compareTo(BigDecimal.ZERO) == 1)) {
-                soTienConThieu = BigDecimal.ZERO;
+            this.soTienConThieu = soTienVayConThieu.toString();
+            if (!(soTienVayConThieu.compareTo(BigDecimal.ZERO) == 1)) {
+                soTienVayConThieu = BigDecimal.ZERO;
             }
         }
 
         soTienTra = soTienTra.add(soTienDaTra);
 
-        return traVayBUS.updateKhoanVayDaTra(maTraKhoanVay, soTienTra.toString(), soTienConThieu.toString(), fDate.getToday(), maTrangThai);
+        return traVayBUS.updateKhoanVayDaTra(maTraKhoanVay, soTienTra.toString(), soTienVayConThieu.toString(), fDate.getToday(), maTrangThai);
     }
 
     private boolean capNhatDuNo(BigDecimal duNo, BigDecimal soTienTra, BigDecimal tongSoTienCanTra, BigDecimal soTienVay) {
@@ -382,7 +363,16 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         loadDanhSachKyTraNo(isSelected);
 
         txtSoTienTra.setText("");
-        pwfMaPINNV.setText("");
+    }
+
+    private void onCodeTextChanged() {
+        String currency = txtSoTienTra.getText().trim().replace(",", "");
+
+        if (InputValidation.kiemTraSoTien(currency)) {
+            txtSoTienTra.setText(FormatNumber.convertNumToVND(new BigInteger(currency.trim())));
+        } else {
+            MessageBox.showErrorMessage(null, "Định dạng nhập không đúng!");
+        }
     }
 
     /** This method is called from within the constructor to
@@ -405,7 +395,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jPSoTienTra = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        txtSoTienTra = new javax.swing.JFormattedTextField();
+        txtSoTienTra = new javax.swing.JTextField();
         jPThongTinGD = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         lbMaNV = new javax.swing.JLabel();
@@ -415,14 +405,11 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         lbTenKH = new javax.swing.JLabel();
-        lbSoTienRut = new javax.swing.JLabel();
+        lbSoTienTra = new javax.swing.JLabel();
         lbLoaiGiaoDich = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         btnTraKhoanVay = new javax.swing.JButton();
         btnChonTKVay = new javax.swing.JButton();
-        jPPINCode = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        pwfMaPINNV = new javax.swing.JPasswordField();
         jPTKNguon = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         cbxTKNguon = new javax.swing.JComboBox<>();
@@ -525,10 +512,14 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel6.setText("VND");
 
-        txtSoTienTra.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,###"))));
         txtSoTienTra.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtSoTienTraFocusLost(evt);
+            }
+        });
+        txtSoTienTra.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSoTienTraKeyReleased(evt);
             }
         });
 
@@ -582,8 +573,8 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         lbTenKH.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         lbTenKH.setText("(Chưa chọn)");
 
-        lbSoTienRut.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        lbSoTienRut.setText("0 VND");
+        lbSoTienTra.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        lbSoTienTra.setText("0 VND");
 
         lbLoaiGiaoDich.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         lbLoaiGiaoDich.setText("Thanh toán khoản vay");
@@ -602,7 +593,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                     .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbSoTienRut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbSoTienTra, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbTenKH, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbTenNV, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbLoaiGiaoDich, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -627,7 +618,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel25)
-                    .addComponent(lbSoTienRut))
+                    .addComponent(lbSoTienTra))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPThongTinGDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
@@ -666,32 +657,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 btnChonTKVayActionPerformed(evt);
             }
         });
-
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel15.setIcon(new FlatSVGIcon("quanlynganhang/icon/pin_code_label.svg")
-        );
-        jLabel15.setText("Mã PIN của nhân viên thực hiện giao dịch");
-
-        javax.swing.GroupLayout jPPINCodeLayout = new javax.swing.GroupLayout(jPPINCode);
-        jPPINCode.setLayout(jPPINCodeLayout);
-        jPPINCodeLayout.setHorizontalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(97, Short.MAX_VALUE))
-        );
-        jPPINCodeLayout.setVerticalGroup(
-            jPPINCodeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPPINCodeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pwfMaPINNV, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel5.setIcon(new FlatSVGIcon("quanlynganhang/icon/thunhap_label.svg")
@@ -784,7 +749,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                     .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                         .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPCustomerInfoLayout.createSequentialGroup()
                                 .addComponent(jPSoTienTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -810,9 +774,7 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                 .addGroup(jPCustomerInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPSoTienTra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPDuNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPPINCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(86, 86, 86)
                 .addComponent(jPThongTinGD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPFooterCus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1258,7 +1220,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
                     tienPhat = new BigInteger(traVay.getTienPhat());
 
                     if (traVay.getMaTrangThai() == 15 || traVay.getMaTrangThai() == 14) {
-                        System.out.println("Khoan vay nay dang tra thieu!");
 
                         tienNoGoc = new BigInteger(traVay.getTienConThieu());
                         tienLai = new BigInteger("0");
@@ -1308,8 +1269,17 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnTraKhoanVayActionPerformed
 
+    private void txtSoTienTraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoTienTraKeyReleased
+        if (txtSoTienTra.getText().trim().isEmpty()) {
+            return;
+        }
+        onCodeTextChanged();
+    }//GEN-LAST:event_txtSoTienTraKeyReleased
+
     private void txtSoTienTraFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienTraFocusLost
-        lbSoTienRut.setText(txtSoTienTra.getText() + " VND");
+        if (InputValidation.kiemTraSoTien(txtSoTienTra.getText().trim().replace(",", ""))) {
+            lbSoTienTra.setText(txtSoTienTra.getText() + " VND");
+        }
     }//GEN-LAST:event_txtSoTienTraFocusLost
 
 
@@ -1324,7 +1294,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -1355,7 +1324,6 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     private javax.swing.JPanel jPFooterCus;
     private javax.swing.JPanel jPIdCentizenCard;
     private javax.swing.JPanel jPNguonTien;
-    private javax.swing.JPanel jPPINCode;
     private javax.swing.JPanel jPSoTienTra;
     private javax.swing.JPanel jPTKNguon;
     private javax.swing.JPanel jPThongTinGD;
@@ -1368,17 +1336,16 @@ public class FormTraKhoanVay extends javax.swing.JPanel {
     private javax.swing.JLabel lbLoaiGiaoDich;
     private javax.swing.JLabel lbMaNV;
     private javax.swing.JLabel lbMaTK;
-    private javax.swing.JLabel lbSoTienRut;
+    private javax.swing.JLabel lbSoTienTra;
     private javax.swing.JLabel lbTenKH;
     private javax.swing.JLabel lbTenNV;
     private javax.swing.JLabel lbTitle;
-    private javax.swing.JPasswordField pwfMaPINNV;
     private javax.swing.JRadioButton rdbTienMat;
     private javax.swing.JRadioButton rdbTienTaiKhoan;
     private javax.swing.JFormattedTextField txtDuNo;
     private javax.swing.JFormattedTextField txtLaiPhat;
     private javax.swing.JTextField txtSTK;
-    private javax.swing.JFormattedTextField txtSoTienTra;
+    private javax.swing.JTextField txtSoTienTra;
     private javax.swing.JTextField txtTenTK;
     private javax.swing.JFormattedTextField txtTienLai;
     private javax.swing.JFormattedTextField txtTienPhaiTra;

@@ -425,7 +425,11 @@
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="jPanel20" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jPPhanQuyen" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jPChucVu" alignment="0" max="32767" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jPChucVu" max="32767" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jPQLChucVu" max="32767" attributes="0"/>
+                                          </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                                   <Component id="jPanel16" alignment="0" max="32767" attributes="0"/>
@@ -495,7 +499,10 @@
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jPPhanQuyen" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="jPChucVu" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jPChucVu" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jPQLChucVu" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
@@ -1138,8 +1145,8 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="chxThemChucVu" min="-2" pref="127" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="438" max="-2" attributes="0"/>
+                                          <Component id="chxQLChucVu" min="-2" pref="127" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1147,17 +1154,20 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="chxThemChucVu" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="chxQLChucVu" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace pref="18" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
                               </Layout>
                               <SubComponents>
-                                <Component class="javax.swing.JCheckBox" name="chxThemChucVu">
+                                <Component class="javax.swing.JCheckBox" name="chxQLChucVu">
                                   <Properties>
-                                    <Property name="text" type="java.lang.String" value="Th&#xea;m ch&#x1ee9;c v&#x1ee5;"/>
+                                    <Property name="text" type="java.lang.String" value="Ch&#x1ee9;c v&#x1ee5;"/>
                                   </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chxQLChucVuActionPerformed"/>
+                                  </Events>
                                 </Component>
                               </SubComponents>
                             </Container>
@@ -1173,9 +1183,7 @@
                                           <Component id="chxGuiTietKiem" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="chxVayVon" min="-2" pref="86" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="chxVayTinDung" min="-2" pref="102" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="114" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1186,7 +1194,6 @@
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="chxGiaoDich" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="chxVayVon" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="chxVayTinDung" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="chxGuiTietKiem" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="32767" attributes="0"/>
@@ -1208,15 +1215,79 @@
                                     <Property name="text" type="java.lang.String" value="Vay v&#x1ed1;n"/>
                                   </Properties>
                                 </Component>
-                                <Component class="javax.swing.JCheckBox" name="chxVayTinDung">
-                                  <Properties>
-                                    <Property name="text" type="java.lang.String" value="Vay t&#xed;n d&#x1ee5;ng"/>
-                                  </Properties>
-                                </Component>
                                 <Component class="javax.swing.JCheckBox" name="chxGuiTietKiem">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" value="G&#x1eed;i ti&#x1ebf;t ki&#x1ec7;m"/>
                                   </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPQLChucVu">
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="chxChucVuXem" min="-2" pref="76" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="chxChucVuThem" min="-2" pref="84" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="chxChucVuSua" min="-2" pref="74" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="chxChucVuXoa" min="-2" pref="74" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="chxChucVuXoa" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="chxChucVuSua" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="chxChucVuThem" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="chxChucVuXem" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                              <SubComponents>
+                                <Component class="javax.swing.JCheckBox" name="chxChucVuXoa">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="X&#xf3;a"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chxChucVuXoaActionPerformed"/>
+                                  </Events>
+                                </Component>
+                                <Component class="javax.swing.JCheckBox" name="chxChucVuSua">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="S&#x1eed;a"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chxChucVuSuaActionPerformed"/>
+                                  </Events>
+                                </Component>
+                                <Component class="javax.swing.JCheckBox" name="chxChucVuThem">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chxChucVuThemActionPerformed"/>
+                                  </Events>
+                                </Component>
+                                <Component class="javax.swing.JCheckBox" name="chxChucVuXem">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" value="Xem"/>
+                                    <Property name="enabled" type="boolean" value="false"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chxChucVuXemActionPerformed"/>
+                                  </Events>
                                 </Component>
                               </SubComponents>
                             </Container>

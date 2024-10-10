@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package quanlynganhang.GUI;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.math.BigInteger;
+import javax.swing.JOptionPane;
 import quanlynganhang.BUS.GiaoDichBUS;
 import quanlynganhang.BUS.KhachHangBUS;
 import quanlynganhang.BUS.MaHoaMatKhauBUS;
@@ -22,12 +19,9 @@ import quanlynganhang.DTO.TaiKhoanNVDTO;
 import quanlynganhang.GUI.model.menubar.Menu;
 import quanlynganhang.GUI.model.message.MessageBox;
 
-/**
- *
- * @author THAI
- */
 public class FormNapTien extends javax.swing.JPanel {
 
+    private TaiKhoanKHDTO taiKhoanKH;
     private TaiKhoanNVDTO taiKhoanNV;
     private FormatDate fDate;
     private TaiKhoanKHBUS taiKhoanBUS;
@@ -102,6 +96,7 @@ public class FormNapTien extends javax.swing.JPanel {
             if (taiKhoanKH.getMaTrangThai() != 6 && (taiKhoanKH.getMaLoaiTaiKhoan() != 1 || taiKhoanKH.getMaLoaiTaiKhoan() != 2)) {
                 MessageBox.showErrorMessage(null, "Không thể sử dụng tài khoản này!");
             } else {
+                this.taiKhoanKH = taiKhoanKH;
                 this.soDu = new BigInteger(taiKhoanKH.getSoDu());
 
                 lbHoTenKH.setText(taiKhoanKH.getTenKhachHang());
@@ -154,8 +149,15 @@ public class FormNapTien extends javax.swing.JPanel {
         }
 
         if (error.isEmpty()) {
+            
+            if (taiKhoanKH.getBiXoa() == 1) {
+                if (MessageBox.showConfirmMessage(null, "Chủ sở hữu tài khoản này đã bị xóa khỏi hệ thống, xác nhận vẫn nạp?") == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+            
             giaoDich.setMaTaiKhoanKH(Integer.parseInt(lbMaTKKH.getText()));
-            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaNhanVien());
+            giaoDich.setMaTaiKhoanNV(taiKhoanNV.getMaTKNV());
             giaoDich.setTenKhachHang(lbHoTenKH.getText());
             giaoDich.setTenNhanVien(taiKhoanNV.getTenNhanVien());
             giaoDich.setMaLoaiGiaoDich(4);
@@ -165,6 +167,8 @@ public class FormNapTien extends javax.swing.JPanel {
 
             if (giaoDichBUS.napTien(giaoDich)) {
                 MessageBox.showInformationMessage(null, "", "Nạp tiền thành công!");
+                dienThongTinTKKH(taiKhoanKH.getMaTKKH());
+                txtSoTienNap.setText("");
             } else {
                 MessageBox.showErrorMessage(null, "Nạp tiền thất bại!");
             }
@@ -896,7 +900,9 @@ public class FormNapTien extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void txtSoTienNapFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienNapFocusLost
-        lbSoTienNap.setText("" + txtSoTienNap.getText() + " VND");
+        if (InputValidation.kiemTraSoTien(txtSoTienNap.getText().trim().replace(",", ""))) {
+            lbSoTienNap.setText(txtSoTienNap.getText() + " VND");
+        }
     }//GEN-LAST:event_txtSoTienNapFocusLost
 
     private void btnChonTKKHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChonTKKHActionPerformed
@@ -915,6 +921,10 @@ public class FormNapTien extends javax.swing.JPanel {
     }//GEN-LAST:event_btnNapActionPerformed
 
     private void txtSoTienNapKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSoTienNapKeyReleased
+        if (txtSoTienNap.getText().trim().isEmpty()) {
+            return;
+        }
+        
         onCodeTextChanged();
     }//GEN-LAST:event_txtSoTienNapKeyReleased
 

@@ -72,7 +72,7 @@ public class GiaoDichDAO {
     }
 
     //==================17/9
-    public List<GiaoDichDTO> getMaxGiaoDich() throws Exception {
+    public List<GiaoDichDTO> getMaxGiaoDich() {
         String sql = "SELECT gd.*, lgd.*, tkkh.so_tai_khoan, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.*, "
             + "MAX(so_tien) AS max_so_tien FROM tbl_giao_dich gd "
             + "LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang "
@@ -105,12 +105,15 @@ public class GiaoDichDAO {
 
                     list.add(giaoDich);
                 }
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
-    public List<GiaoDichDTO> selectAll() throws Exception {
+    public List<GiaoDichDTO> selectAll() {
         String sql = "SELECT gd.*, lgd.*, tkkh.*, kh.*, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
             + " LEFT JOIN tbl_khach_hang kh ON tkkh.ma_khach_hang = kh.ma_khach_hang"
@@ -143,9 +146,12 @@ public class GiaoDichDAO {
 
                     list.add(giaoDich);
                 }
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public GiaoDichDTO selectById(int maGiaoDich) {
@@ -276,7 +282,7 @@ public class GiaoDichDAO {
         }
         return null;
     }
-    
+
     public List<GiaoDichDTO> searchByInputType(String typeName, String inputValue) {
         String sql = "SELECT gd.*, lgd.*, tkkh.*, kh.ho_dem, kh.ten, nv.ho_dem, nv.ten, tt.* FROM tbl_giao_dich gd"
             + " LEFT JOIN tbl_tai_khoan_khach_hang tkkh ON gd.ma_tk_khach_hang = tkkh.ma_tk_khach_hang"
