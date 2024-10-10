@@ -28,10 +28,6 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
             + "showRevealButton:true;");
 
         txtMaTK.setText("" + maTaiKhoan);
-
-        lbTitle.setText("Đổi mã PIN");
-        lbMKMoi.setText("Mã PIN mới:");
-        lbNhapLaiMKMoi.setText("Nhập lại mã PIN mới:");
     }
 
     private boolean capNhatMatKhau() {
@@ -45,14 +41,22 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
             return false;
         }
 
-        if (InputValidation.kiemTraMatKhau(password1)) {
-            taiKhoanNV.setMatKhau(MaHoaMatKhauBUS.encryptPassword(password1));
-            
-            return taiKhoanNVBUS.doiMatKhau(taiKhoanNV);
-        } else {
+        if (!InputValidation.kiemTraMatKhau(password1)) {
             MessageBox.showErrorMessage(null, "Mật khẩu phải có độ dài từ 6-12 ký tự, chứa cả ký tự hoa, thường và ký tự đặc biệt");
             return false;
         }
+
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đổi mật khẩu?") == JOptionPane.YES_OPTION) {
+            taiKhoanNV.setMatKhau(MaHoaMatKhauBUS.encryptPassword(password1));
+
+            if (taiKhoanNVBUS.doiMatKhau(taiKhoanNV)) {
+                MessageBox.showInformationMessage(null, "", "Đổi mật khẩu thành công!");
+                this.dispose();
+            } else {
+                MessageBox.showErrorMessage(null, "Đổi mật khẩu thất bại!");
+            }
+        }
+        return false;
     }
 
     /** This method is called from within the constructor to
@@ -273,49 +277,14 @@ public class JDialogDoiMatKhau extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCloseActionPerformed
 
     private void btnDoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiActionPerformed
-        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đổi?") == JOptionPane.YES_OPTION) {
-            if (capNhatMatKhau()) {
-                MessageBox.showConfirmMessage(null, "Đổi thành công!");
-                this.dispose();
-            } else {
-                MessageBox.showErrorMessage(null, "Cập nhật thất bại!");
-            }
-        }
+        capNhatMatKhau();
     }//GEN-LAST:event_btnDoiActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(JDialogDoiMatKhau.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(JDialogDoiMatKhau.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(JDialogDoiMatKhau.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JDialogDoiMatKhau.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
