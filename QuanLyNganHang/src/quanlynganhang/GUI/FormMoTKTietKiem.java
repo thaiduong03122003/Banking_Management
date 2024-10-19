@@ -354,7 +354,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         btnTaoTKTK = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonKH = new javax.swing.JButton();
         jPTKNguon = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
@@ -515,10 +515,10 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             }
         });
 
-        jButton3.setText("Đặt lại");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -528,7 +528,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTaoTKTK, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -539,7 +539,7 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnTaoTKTK)
-                    .addComponent(jButton3))
+                    .addComponent(btnReset))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1218,9 +1218,11 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(9, 1);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
 
     private void rdbTienMatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbTienMatActionPerformed
         if (rdbTienMat.isSelected()) {
@@ -1351,13 +1353,13 @@ public class FormMoTKTietKiem extends javax.swing.JPanel {
     private javax.swing.JButton btnChonKH;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupMoney;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTaoTKTK;
     private javax.swing.JComboBox<String> cbxGiaHan;
     private javax.swing.JComboBox<String> cbxKyHan;
     private javax.swing.JComboBox<String> cbxNhanLai;
     private javax.swing.JComboBox<String> cbxTKNguon;
     private javax.swing.JCheckBox chxSTKTuDong;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

@@ -140,7 +140,7 @@ public class FormNapTien extends javax.swing.JPanel {
         } else {
             try {
                 soTien = new BigInteger(txtSoTienNap.getText().trim().replace(",", ""));
-                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
                     error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
                 }
             } catch (NumberFormatException ne) {
@@ -222,7 +222,7 @@ public class FormNapTien extends javax.swing.JPanel {
         jLabel29 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         btnNap = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -433,10 +433,10 @@ public class FormNapTien extends javax.swing.JPanel {
             }
         });
 
-        jButton3.setText("Đặt lại");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -446,7 +446,7 @@ public class FormNapTien extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnNap, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -456,7 +456,7 @@ public class FormNapTien extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(btnReset)
                     .addComponent(btnNap))
                 .addContainerGap())
         );
@@ -895,9 +895,11 @@ public class FormNapTien extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(8, 1);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
 
     private void txtSoTienNapFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienNapFocusLost
         if (InputValidation.kiemTraSoTien(txtSoTienNap.getText().trim().replace(",", ""))) {
@@ -933,7 +935,7 @@ public class FormNapTien extends javax.swing.JPanel {
     private javax.swing.JButton btnChonTKKH;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.JButton btnNap;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnReset;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

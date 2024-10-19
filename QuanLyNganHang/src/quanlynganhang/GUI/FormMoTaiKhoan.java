@@ -1268,9 +1268,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
-            resetForm();
-        } else {
-            return;
+            Application.instanceMenu.setSelectedMenu(6, 1);
         }
     }//GEN-LAST:event_btnResetActionPerformed
 
@@ -1419,6 +1417,7 @@ public class FormMoTaiKhoan extends javax.swing.JPanel {
 
     private void btnAutoGenerateSTKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAutoGenerateSTKActionPerformed
         if (btnAutoGenerateSTK.getText().equals("Tạo số tài khoản tự động")) {
+            txtSoTaiKhoan.setText("");
             txtSoTaiKhoan.setEnabled(false);
             isAutoGenerateSTK = true;
             btnAutoGenerateSTK.setText("Hủy tạo tự động");

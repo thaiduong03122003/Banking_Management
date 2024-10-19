@@ -227,6 +227,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         jRadioButton10 = new javax.swing.JRadioButton();
         jPFooterCus = new javax.swing.JPanel();
         btnTaoThe = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
         jPCardName = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
@@ -469,12 +470,21 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             }
         });
 
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPFooterCusLayout = new javax.swing.GroupLayout(jPFooterCus);
         jPFooterCus.setLayout(jPFooterCusLayout);
         jPFooterCusLayout.setHorizontalGroup(
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnTaoThe, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -482,7 +492,9 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnTaoThe)
+                .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnTaoThe)
+                    .addComponent(btnReset))
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
@@ -1004,6 +1016,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
 
     private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
         if (btnTaoMa.getText().equals("Tạo mã")) {
+            txtSoThe.setText("");
             txtSoThe.setEnabled(false);
             isAutoGenerate = true;
             btnTaoMa.setText("Hủy tạo");
@@ -1014,6 +1027,12 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnTaoMaActionPerformed
 
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(7, 1);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
@@ -1021,6 +1040,7 @@ public class FormMoTheGhiNo extends javax.swing.JPanel {
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupPhysicalCard;
     private javax.swing.ButtonGroup btnGroupRankCard;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnTaoThe;
     private javax.swing.JLabel jLabel11;

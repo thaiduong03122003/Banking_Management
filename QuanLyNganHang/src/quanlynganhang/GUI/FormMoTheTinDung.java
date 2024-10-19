@@ -272,7 +272,7 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
         jRadioButton10 = new javax.swing.JRadioButton();
         jPFooterCus = new javax.swing.JPanel();
         btnTaoThe = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonKH = new javax.swing.JButton();
         jPCardName = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
@@ -565,10 +565,10 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
             }
         });
 
-        jButton3.setText("Đặt lại");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -578,7 +578,7 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
                 .addComponent(btnTaoThe, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -588,7 +588,7 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(btnReset)
                     .addComponent(btnTaoThe))
                 .addContainerGap())
         );
@@ -1117,9 +1117,11 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(7, 2);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
 
     private void rdbNoiDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbNoiDiaActionPerformed
         if (rdbNoiDia.isSelected()) {
@@ -1154,6 +1156,7 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
 
     private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
         if (btnTaoMa.getText().equals("Tạo mã")) {
+            txtSoThe.setText("");
             txtSoThe.setEnabled(false);
             isAutoGenerate = true;
             btnTaoMa.setText("Hủy tạo");
@@ -1199,9 +1202,9 @@ public class FormMoTheTinDung extends javax.swing.JPanel {
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupPhysicalCard;
     private javax.swing.ButtonGroup btnGroupRankCard;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnTaoThe;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

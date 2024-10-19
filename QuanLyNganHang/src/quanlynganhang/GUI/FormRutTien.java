@@ -171,7 +171,7 @@ public class FormRutTien extends javax.swing.JPanel {
         } else {
             try {
                 soTien = new BigInteger(txtSoTienRut.getText().trim().replace(",", ""));
-                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
                     error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
                 }
 
@@ -307,6 +307,7 @@ public class FormRutTien extends javax.swing.JPanel {
         jLabel29 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         btnRutTien = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
         jPAccountInfo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -516,12 +517,21 @@ public class FormRutTien extends javax.swing.JPanel {
             }
         });
 
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPFooterCusLayout = new javax.swing.GroupLayout(jPFooterCus);
         jPFooterCus.setLayout(jPFooterCusLayout);
         jPFooterCusLayout.setHorizontalGroup(
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnReset)
+                .addGap(18, 18, 18)
                 .addComponent(btnRutTien, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -529,7 +539,9 @@ public class FormRutTien extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
-                .addComponent(btnRutTien)
+                .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRutTien)
+                    .addComponent(btnReset))
                 .addContainerGap())
         );
 
@@ -1000,10 +1012,17 @@ public class FormRutTien extends javax.swing.JPanel {
         onCodeTextChanged();
     }//GEN-LAST:event_txtSoTienRutKeyReleased
 
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(8, 2);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChonTKKH;
     private javax.swing.ButtonGroup btnGroupGender;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnRutTien;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;

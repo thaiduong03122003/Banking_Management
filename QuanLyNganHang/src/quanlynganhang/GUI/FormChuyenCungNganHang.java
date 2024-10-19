@@ -138,7 +138,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         } else {
             if (InputValidation.kiemTraSoTien(txtSoTienChuyen.getText().trim().replace(",", ""))) {
                 soTien = new BigInteger(txtSoTienChuyen.getText().trim().replace(",", ""));
-                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) <= 0) {
+                if (soTien.compareTo(maxSoTienGD) > 0 || soTien.compareTo(minSoTienGD) < 0) {
                     error.append("\nSố tiền giao dịch nằm trong khoảng 10.000 VND và 1 tỷ VND cho một lần giao dịch!");
                 }
 
@@ -187,7 +187,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
 
             if (giaoDichBUS.chuyenTien(giaoDich, isTienTK, taiKhoanKHNhan, 1)) {
                 MessageBox.showInformationMessage(null, "", "Chuyển tiền thành công!");
-                
+
                 dienTKNguoiGui(taiKhoanKHGui.getMaTKKH());
             } else {
                 MessageBox.showErrorMessage(null, "Chuyển tiền thất bại!");
@@ -231,7 +231,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jPFooterCus = new javax.swing.JPanel();
         btnChuyenTien = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         btnChonTKKH = new javax.swing.JButton();
         jPNoiDungChuyen = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
@@ -374,10 +374,10 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             }
         });
 
-        jButton3.setText("Đặt lại");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnReset.setText("Đặt lại");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -387,7 +387,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnChuyenTien, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -397,7 +397,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPFooterCusLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPFooterCusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(btnReset)
                     .addComponent(btnChuyenTien))
                 .addContainerGap())
         );
@@ -880,9 +880,11 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        if (MessageBox.showConfirmMessage(this, "Bạn có chắc chắn muốn đặt lại?") == JOptionPane.YES_OPTION) {
+            Application.instanceMenu.setSelectedMenu(8, 3);
+        }
+    }//GEN-LAST:event_btnResetActionPerformed
 
     private void txtSoTienChuyenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoTienChuyenFocusLost
 
@@ -939,7 +941,7 @@ public class FormChuyenCungNganHang extends javax.swing.JPanel {
     private javax.swing.JButton btnChuyenTien;
     private javax.swing.ButtonGroup btnGroupGender;
     private javax.swing.ButtonGroup btnGroupNguonTien;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnReset;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
